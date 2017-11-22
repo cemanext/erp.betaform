@@ -295,7 +295,7 @@ function stampa_table_static_basic($query, $stile, $titolo, $colore_tabella = CO
   Link: http://keenthemes.com/preview/metronic/theme/admin_1/table_static_basic.html
  */
 
-function stampa_table_static_basic_input($tabella, $query, $stile, $titolo, $colore_tabella = COLORE_PRIMARIO, $allReadonly = false) {
+function stampa_table_static_basic_input($tabella, $query, $stile, $titolo, $colore_tabella = COLORE_PRIMARIO, $allReadonly = false, $record = 0) {
     global $dblink, $where_lista_password;
 
     $colore_tabella = (strlen($colore_tabella) > 0) ? $colore_tabella : COLORE_PRIMARIO;
@@ -336,7 +336,6 @@ function stampa_table_static_basic_input($tabella, $query, $stile, $titolo, $col
     }
     echo "<thead><tr>$headTable</tr></thead>";
     $id = 0;
-    $record = 0;
     $rowTable = "";
     foreach ($rows as $row) {
         $rowTable .= "<tr>\n";

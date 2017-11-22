@@ -168,7 +168,7 @@ function Stampa_HTML_Dettaglio_Corsi($tabella,$id){
             id_attestato AS 'Attestato PDF' 
             FROM `lista_corsi_configurazioni` WHERE id_corso ='".$id."' AND titolo NOT LIKE 'Base'";
             echo "<form enctype=\"multipart/form-data\" role=\"form\" action=\"salva.php?tbl=lista_corsi_configurazioni&idCorso=' . $id . '&fn=salvaConfigurazioneCorso\" method=\"POST\">";
-            stampa_table_static_basic_input('lista_corsi_configurazioni', $sql_0001, '', 'Configurazione', 'green-haze');
+            stampa_table_static_basic_input('lista_corsi_configurazioni', $sql_0001, '', 'Configurazione', 'green-haze', false, 1);
             echo '<center><a href="salva.php?tbl=lista_corsi&idCorso=' . $id . '&fn=aggiungiConfigurazioneCorso" class="btn blue-steel">
                         <i class="fa fa-plus"></i> Aggiungi Configurazione
                         </a>&nbsp;&nbsp;&nbsp;<button type="submit" class="btn green-meadow">
