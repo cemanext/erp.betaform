@@ -2761,7 +2761,10 @@ LISTA_ISCRIZIONI X PARTECIPANTI
 */
 $table_listaIscrizioniPartecipanti = array(
                 "index" => array("campi" => "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
-                IF(abbonamento>=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>', '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>') AS 'Tipo',
+                IF(abbonamento=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>',
+                IF(abbonamento>1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Pacchetto</span>',
+                '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>')
+                ) AS 'Tipo',
                 data_inizio,
              IF(id_professionista>0,(SELECT DISTINCT CONCAT('<h3><b>',cognome, ' ', nome,'</b></h3><small>', IF(id_classe>0,(SELECT DISTINCT nome FROM lista_classi WHERE id = id_classe),'') ,'</small>')  FROM lista_professionisti WHERE id = id_professionista), CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\"></i><br>', cognome_nome_professionista,'<br><small>',IF(id_classe>0,(SELECT DISTINCT nome FROM lista_classi WHERE id = id_classe),''),'</small>')) AS 'Partecipante',
              (SELECT DISTINCT CONCAT('<H3>',nome_prodotto,'</H3>') FROM lista_corsi WHERE id = id_corso) AS 'Corso',
@@ -3017,7 +3020,9 @@ LISTA_ISCRIZIONI X PARTECIPANTI
 $table_listaIscrizioniPartecipantiCompletati = array(
                 "index" => array("campi" => "
                 CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"".BASE_URL."/moduli/corsi/printAttestatoPDF.php?idIscrizione=',id,'\" title=\"ATTESTATO\" alt=\"ATTESTATO\" target=\"_blank\"><i class=\"fa fa-file-pdf-o\"></i></a>') AS 'fa-file-pdf-o',
-                IF(abbonamento>=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>', '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>') AS 'Tipo',
+                IF(abbonamento=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>',
+                IF(abbonamento>1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Pacchetto</span>', 
+                '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>')) AS 'Tipo',
                                             DATE_FORMAT(data_inizio,'%d-%m-%Y') AS data_inizio,
                                             DATE_FORMAT(data_completamento,'%d-%m-%Y') AS data_completamento,
                                             (SELECT CONCAT(cognome, ' ', nome) AS nome FROM lista_professionisti WHERE id = id_professionista LIMIT 1) AS Partecipante,
@@ -3104,7 +3109,9 @@ $table_listaIscrizioniPartecipantiCompletatiPagati = array(
                 "index" => array("campi" => "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
                 CONCAT('<a class=\"btn btn-circle btn-icon-only blue-steel btn-outline\" href=\"".BASE_URL."/moduli/corsi/dettaglio.php?tbl=lista_corsi&id=',id_corso,'\" title=\"CONFIGURAZIONE\" alt=\"CONFIGURAZIONE\" target=\"_blank\"><i class=\"fa fa-cogs\"></i></a>') AS 'fa-cogs',
                 CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"".BASE_URL."/moduli/corsi/printAttestatoPDF.php?idIscrizione=',id,'\" title=\"ATTESTATO\" alt=\"ATTESTATO\" target=\"_blank\"><i class=\"fa fa-file-pdf-o\"></i></a>') AS 'fa-file-pdf-o',
-                IF(abbonamento>=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>', '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>') AS 'Tipo',
+                IF(abbonamento=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>',
+                IF(abbonamento>1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Pacchetto</span>',
+                '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>')) AS 'Tipo',
                                             (SELECT CONCAT('<span class=\"btn sbold uppercase btn-outline blue-steel\">',cognome,' ',nome,'</span>') AS nome FROM lista_professionisti WHERE id = id_professionista LIMIT 1) AS Partecipante,
                                             (SELECT CONCAT('<span class=\"btn sbold uppercase btn-outline blue-steel\">',nome_prodotto,'</span>') AS nome_prodotto FROM lista_corsi WHERE id = id_corso LIMIT 1) AS 'Corso',
                                             DATE_FORMAT(data_completamento,'%d-%m-%Y') AS data_completamento,
@@ -3190,7 +3197,9 @@ $table_listaIscrizioniPartecipantiCompletatiNonPagati = array(
                 "index" => array("campi" => "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
                 CONCAT('<a class=\"btn btn-circle btn-icon-only blue-steel btn-outline\" href=\"".BASE_URL."/moduli/corsi/dettaglio.php?tbl=lista_corsi&id=',id_corso,'\" title=\"CONFIGURAZIONE\" alt=\"CONFIGURAZIONE\" target=\"_blank\"><i class=\"fa fa-cogs\"></i></a>') AS 'fa-cogs',
                 CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"".BASE_URL."/moduli/corsi/printAttestatoPDF.php?idIscrizione=',id,'\" title=\"ATTESTATO\" alt=\"ATTESTATO\" target=\"_blank\"><i class=\"fa fa-file-pdf-o\"></i></a>') AS 'fa-file-pdf-o',
-                IF(abbonamento>=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>', '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>') AS 'Tipo',
+                IF(abbonamento=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>', 
+                IF(abbonamento>1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Pacchetto</span>', 
+                '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>')) AS 'Tipo',
                                             (SELECT CONCAT('<span class=\"btn sbold uppercase btn-outline blue-steel\">',cognome,' ',nome,'</span>') AS nome FROM lista_professionisti WHERE id = id_professionista LIMIT 1) AS Partecipante,
                                             (SELECT CONCAT('<span class=\"btn sbold uppercase btn-outline blue-steel\">',nome_prodotto,'</span>') AS nome_prodotto FROM lista_corsi WHERE id = id_corso LIMIT 1) AS 'Corso',
                                             DATE_FORMAT(data_completamento,'%d-%m-%Y') AS data_completamento,
@@ -3281,7 +3290,9 @@ LISTA_ISCRIZIONI X CONFIGURAZIONE
 */
 $table_listaIscrizioniConfigurazioni = array(
                 "index" => array("campi" => "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
-                IF(abbonamento>=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>', '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>') AS 'Tipo',
+                IF(abbonamento=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>', 
+                IF(abbonamento>1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Pacchetto</span>', 
+                '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>')) AS 'Tipo',
                 data_fine_iscrizione,
                 IF(id_professionista>0,(SELECT DISTINCT CONCAT('<h3><b>',cognome, ' ', nome,'</b></h3>') FROM lista_professionisti WHERE id = id_professionista), CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\"></i><br>', cognome_nome_professionista,'<br><small>',IF(id_classe>0,(SELECT DISTINCT nome FROM lista_classi WHERE id = id_classe),''),'</small>')) AS 'Partecipante',
                 IF(id_classe>0,(SELECT DISTINCT nome FROM lista_classi WHERE id = id_classe),'') AS Classe,
@@ -3356,7 +3367,9 @@ $table_listaIscrizioniConfigurazioni = array(
 
 $table_listaIscrizioniControlloDoppi = array(
                 "index" => array("campi" => "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
-                IF(abbonamento>=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>', '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>') AS 'Tipo',
+                IF(abbonamento=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>', 
+                IF(abbonamento>1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Pacchetto</span>', 
+                '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>')) AS 'Tipo',
                 data_fine_iscrizione,
                 IF(id_professionista>0,(SELECT DISTINCT CONCAT('<h3><b>',cognome, ' ', nome,'</b></h3>') FROM lista_professionisti WHERE id = id_professionista), CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\"></i><br>', cognome_nome_professionista,'<br><small>',IF(id_classe>0,(SELECT DISTINCT nome FROM lista_classi WHERE id = id_classe),''),'</small>')) AS 'Partecipante',
                 IF(id_classe>0,(SELECT DISTINCT nome FROM lista_classi WHERE id = id_classe),'') AS Classe,

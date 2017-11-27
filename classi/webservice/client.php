@@ -752,7 +752,7 @@ class moodleWebService
                         
                         $resp = $this->curl->post($path, $params);
                         
-                        $this->log->log_all_errors("$resp");
+                        $this->log->log_all_errors("$resp","AVVISO");
 
                         if(!$this->curl->get_errno()){
                             $this->log->log_all_errors("client.php->iscrizioneCorsoMoodle\tUtente ($userid) inserisci il corso ($courseId) su mdl_user_enrolments iscritto con il webservice! - PARAM: ".var_export($params,true)."", "OK");

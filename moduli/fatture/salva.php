@@ -711,6 +711,26 @@ if (isset($_GET['fn'])) {
                 header("Location:" . $referer . "&res=0");
             }
             break;
+            
+        case 'attivaPacchettoFattura':
+//          print_r($_GET);
+            $idFattura = $_GET['idFattura'];
+            $idFatturaDettaglio = $_GET['idFatturaDettaglio'];
+            $idCorso = $_GET['idCorso'];
+            $idProdotto = $_GET['idProdotto'];
+            $idUtenteMoodle = $_GET['idUtenteMoodle'];
+            $idCorsoMoodle = $_GET['idCorsoMoodle'];
+            $idProfessionista = $_GET['idProfessionista'];
+
+            $ok = attivaPacchettoFattura($idProfessionista, $idFattura, $idFatturaDettaglio, $idProdotto, $idCorso, $idUtenteMoodle, $idCorsoMoodle);
+            if ($ok) {
+                $log->log_all_errors('attivaPacchettoFattura -> Corso Attivato Correttamente [idCorsoMoodle = ' . $idCorsoMoodle . ']', 'OK');
+                header("Location:" . $referer . "&res=3");
+            } else {
+                $log->log_all_errors('attivaPacchettoFattura -> Corso NON Attivato [idCorsoMoodle = ' . $idCorsoMoodle . ']', 'ERRORE');
+                header("Location:" . $referer . "&res=0");
+            }
+            break;
 
         case 'attivaAbbonamentoFattura':
             $idFattura = $_GET['idFattura'];

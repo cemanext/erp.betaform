@@ -35,7 +35,7 @@ $sql_lista_iscrizioni_annulla = "SELECT id AS idIscrizione, id_utente_moodle, ab
 (SELECT nome FROM lista_classi WHERE id = id_classe LIMIT 1) as nomeClasse, 
 (SELECT id_corso_moodle FROM lista_corsi WHERE id = id_corso LIMIT 1) as id_corso_moodle 
 FROM lista_iscrizioni WHERE stato='Scaduto'
-AND abbonamento='0'";
+AND abbonamento!='1'";
 $rs_lista_iscrizioni_annulla = $dblink->get_results($sql_lista_iscrizioni_annulla);
 
 foreach ($rs_lista_iscrizioni_annulla AS $row_lista_iscrizioni_annulla){
@@ -66,7 +66,7 @@ foreach ($rs_lista_iscrizioni_annulla AS $row_lista_iscrizioni_annulla){
             scrittore = 'autoAnnullaCorsiAbbonamenti'
             WHERE stato='Scaduto' 
             AND id='".$idIscrizione."'
-            AND abbonamento='0'";
+            AND abbonamento!='1'";
             $dblink->query($sql_aggiorno_iscrizione);
             
             $log->log_all_errors('autoAnnullaCorsiAbbonamenti.php -> corso annullato correttamente [id_utente_moodle = '.$id_utente_moodle.']','OK');

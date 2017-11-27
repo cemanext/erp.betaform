@@ -10,7 +10,7 @@ function Stampa_HTML_Dettaglio($tabella, $id) {
             $sql_0001 = "SELECT 
                     CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"modifica.php?tbl=lista_prodotti&id=',id,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>') AS 'fa-edit',
                     CONCAT('<B>',`nome`,'</b>') AS 'Prodotto',
-                    marchio, categoria, tipologia, 
+                    gruppo, tipologia, 
                     codice, 
                     `prezzo_pubblico` AS 'Prezzo €',
                     LEFT(SEC_TO_TIME(`tempo_1`),8) AS 'Durata',

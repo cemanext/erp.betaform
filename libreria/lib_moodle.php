@@ -164,7 +164,7 @@ function attivaCorsoFattura($idProfessionista, $idFattura, $idFatturaDettaglio, 
     resetPasswordUtenteMoodle($idProfessionista);
     
     $sql_00001_01 = "SELECT DISTINCT id, id_classe, (SELECT DISTINCT nome FROM lista_classi WHERE id = id_classe) AS nomeClasse,
-            DATE_ADD(CURDATE(), INTERVAL 370 DAY) AS data_scadenza_corso,
+            DATE_ADD(CURDATE(), INTERVAL ".DURATA_CORSO." DAY) AS data_scadenza_corso,
             UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL " . (DURATA_CORSO+$giorniDifferenza) . " DAY)) AS data_scadenza_corso_timestamp,
             (SELECT DISTINCT codice_esterno FROM lista_classi WHERE id = id_classe) AS codiceClasse
             FROM lista_professionisti WHERE id_moodle_user ='" . $idUtenteMoodle . "' LIMIT 1";
@@ -232,6 +232,98 @@ function attivaCorsoFattura($idProfessionista, $idFattura, $idFatturaDettaglio, 
         return false;
     }
 }
+
+
+function attivaPacchettoFattura($idProfessionista, $idFattura, $idFatturaDettaglio, $idProdotto, $idCorso, $idUtenteMoodle, $idCorsoMoodle, $notifica = true) {
+    global $dblink, $moodle, $log;
+    
+    $sqlConfigurazioneCorso = "SELECT * FROM lista_iscrizioni WHERE id_utente_moodle='".$idUtenteMoodle."' AND id_professionista='$idProfessionista' AND abbonamento='$idProdotto' AND id_corso='$idCorso' AND (stato LIKE 'In Attesa' OR stato LIKE 'In Corso' OR stato LIKE 'In Attesa di Moodle')";
+    $rowConfigurazioneCorso = $dblink->get_row($sqlConfigurazioneCorso,true);
+    if(!empty($rowConfigurazioneCorso)){
+        $dataScadenzaCorso = $rowConfigurazioneCorso['data_fine_iscrizione'];
+        $sql_update_corso = "UPDATE lista_iscrizioni SET dataagg=NOW(), scrittore='annullatoPrimaDellaScadenzaPerRinnovo', stato='Scaduto e Disattivato', data_fine_iscrizione = DATE_SUB(NOW(), INTERVAL 1 DAY) WHERE id_utente_moodle='".$idUtenteMoodle."' AND id_professionista='$idProfessionista' AND abbonamento='$idProdotto' AND id_corso='$idCorso' AND (stato LIKE 'In Corso' OR stato LIKE 'In Attesa')";
+        $dblink->query($sql_update_corso);
+        //include_once(BASE_ROOT.'libreria/automazioni/autoAnnullaCorsiAbbonamenti.php');
+        //sleep(1);
+        $dateTimeScadenzaCorso = new DateTime($dataScadenzaCorso);
+        $datetimeOggi = new DateTime(date("Y-m-d"));    
+        $interval = $datetimeOggi->diff($dateTimeScadenzaCorso);
+        $giorniDifferenza = $interval->format('%a');
+    }
+    
+    resetPasswordUtenteMoodle($idProfessionista);
+    
+    $sql_00001_01 = "SELECT DISTINCT id, id_classe, (SELECT DISTINCT nome FROM lista_classi WHERE id = id_classe) AS nomeClasse,
+            DATE_ADD(CURDATE(), INTERVAL ".DURATA_CORSO." DAY) AS data_scadenza_corso,
+            UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL " . (DURATA_CORSO+$giorniDifferenza) . " DAY)) AS data_scadenza_corso_timestamp,
+            (SELECT DISTINCT codice_esterno FROM lista_classi WHERE id = id_classe) AS codiceClasse
+            FROM lista_professionisti WHERE id_moodle_user ='" . $idUtenteMoodle . "' LIMIT 1";
+    $row_00001_01 = $dblink->get_row($sql_00001_01, true);
+    if (!empty($row_00001_01)) {
+        $nomeClasse = $row_00001_01['nomeClasse'];
+        $data_scadenza_corso = str_replace('-', '/', GiraDataOra($row_00001_01['data_scadenza_corso']));
+        $data_scadenza_corso_timestamp = $row_00001_01['data_scadenza_corso_timestamp'];
+    }
+
+    $tipoVendita = 'Singolo';
+    $nomeClasse = '';
+    $var = $moodle->iscrizioneCorsoMoodle($idUtenteMoodle, $idCorsoMoodle, $nomeClasse, $tipoVendita, $data_scadenza_corso_timestamp);
+
+    if ($var === true) {
+
+        $sql_00001 = "SELECT DISTINCT *, DATE_ADD(CURDATE(), INTERVAL " . (DURATA_CORSO+$giorniDifferenza) . " DAY) AS data_scadenza_corso 
+            FROM lista_fatture_dettaglio WHERE id='" . $idFatturaDettaglio . "' LIMIT 1";
+        $rs_00001 = $dblink->get_results($sql_00001);
+        
+        if (!empty($rs_00001)) {
+            foreach ($rs_00001 as $row_00001) {
+                //$data_scadenza_corso = str_replace('-', '/', GiraDataOra($row_00001['data_scadenza_corso']));
+                //`id`, `dataagg`, `scrittore`, `stato`, `id_corso`, `id_classe`, `id_professionista`, `data_inizio_iscrizione`, `data_fine_iscrizione`, `data_inizio`, `data_fine`, `data_completamento`, `stato_completamento`, `avanzamento_completamento`, `nome_corso`, `nome_classe`, `cognome_nome_professionista`, `id_fattura`, `id_fattura_dettaglio`
+                
+                $sql_iscrivi_corso = "INSERT INTO `lista_iscrizioni` (`id`, `dataagg`, `scrittore`, `stato`, `id_corso`, `id_professionista`, `data_inizio_iscrizione`, `data_fine_iscrizione`,
+                                        `id_fattura`, `id_fattura_dettaglio`, id_utente_moodle, abbonamento) SELECT DISTINCT '', NOW(), '" . addslashes($_SESSION['cognome_nome_utente']) . "', 'In Attesa di Moodle',  '" . $idCorso . "', `id_professionista`, CURDATE(), DATE_ADD(CURDATE(), INTERVAL " . DURATA_CORSO . " DAY),  `id`, '" . $idFatturaDettaglio . "', '" . $idUtenteMoodle . "', '$idProdotto'
+                                        FROM lista_fatture WHERE id=" . $idFattura;
+                $rs_iscrivi_corso = $dblink->query($sql_iscrivi_corso);
+                if ($rs_iscrivi_corso) {
+                    /*$sql_007_update = "UPDATE lista_iscrizioni, lista_professionisti
+                        SET lista_iscrizioni.id_classe = lista_professionisti.id_classe,
+                        lista_iscrizioni. cognome_nome_professionista = CONCAT(lista_professionisti.cognome,' ',lista_professionisti.nome)
+                        WHERE lista_iscrizioni.id_professionista = lista_professionisti.id";
+                    $rs_007_update = mysql_query($sql_007_update);
+
+                    $sql_007_update = "UPDATE lista_iscrizioni, lista_classi
+                        SET lista_iscrizioni. nome_classe = lista_classi.nome
+                        WHERE lista_iscrizioni.id_classe = lista_classi.id";
+                    $rs_007_update = mysql_query($sql_007_update);*/
+
+                    $sql_007_update = "UPDATE lista_iscrizioni, lista_corsi
+                        SET lista_iscrizioni.nome_corso = lista_corsi.nome_prodotto
+                        WHERE lista_iscrizioni.id_corso = lista_corsi.id AND lista_iscrizioni.abbonamento='$idProdotto'";
+                    $rs_007_update = $dblink->query($sql_007_update);
+
+                    if($notifica === false) {
+                        return true;
+                    } else {
+                        $stato_email = inviaEmailTemplate_Base($idProfessionista, 'attivaCorsoFattura', $idFatturaDettaglio);
+                        if ($stato_email) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
+
+
 
 //CREO ATTIVAZIONE ABBONAMENTO
 function attivaAbbonamentoFattura($idProfessionista, $idFattura, $idFatturaDettaglio, $idUtenteMoodle, $notifica = true) {

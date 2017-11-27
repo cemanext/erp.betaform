@@ -124,7 +124,9 @@ function Stampa_HTML_index_Fatture($tabella){
                 lista_fatture_dettaglio.id_fattura AS 'idFattura',
                 lista_fatture_dettaglio.id AS 'idFatturaDettaglio',
                 lista_corsi.id AS 'idCorso',
+                lista_fatture_dettaglio.id_prodotto AS 'idProdotto',
                 id_corso_moodle AS 'idCorsoMoodle',
+                'corso' as tipo_attivazione,
                 id_moodle_user AS 'idUtenteMoodle',
                 lista_password.id_classe AS 'idClasseMoodle',
                 CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"salva.php?tbl=lista_fatture&idFattura=',lista_fatture_dettaglio.id_fattura,'&idFatturaDettaglio=',lista_fatture_dettaglio.id,'&idCorso=',lista_corsi.id,'&idCorsoMoodle=',id_corso_moodle,'&idUtenteMoodle=',id_moodle_user,'&idClasseMoodle=',lista_password.id_classe,'&fn=attivaCorsoFattura&idProfessionista=',lista_fatture_dettaglio.id_professionista,'\" title=\"ISCRIVI SINGOLO CORSO\" alt=\"ISCRIVI SINGOLO CORSO\"><i class=\"fa fa-thumb-tack\"></i></a>') AS 'bottone',
@@ -144,7 +146,9 @@ function Stampa_HTML_index_Fatture($tabella){
                 lista_fatture_dettaglio.id_fattura AS 'idFattura',
                 lista_fatture_dettaglio.id AS 'idFatturaDettaglio',
                 '' AS 'idCorso',
+                lista_fatture_dettaglio.id_prodotto AS 'idProdotto',
                 '' AS 'idCorsoMoodle',
+                'abbonamento' as tipo_attivazione,
                 id_moodle_user AS 'idUtenteMoodle',
                 lista_password.id_classe AS 'idClasseMoodle',
                 IF(lista_password.id_classe<=0,'ATTENZIONE SELEZIONARE CLASSE',CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"salva.php?tbl=lista_fatture&idFattura=',lista_fatture_dettaglio.id_fattura,'&idFatturaDettaglio=',lista_fatture_dettaglio.id,'&idUtenteMoodle=',id_moodle_user,'&idClasseMoodle=',lista_password.id_classe,'&fn=attivaAbbonamentoFattura&idProfessionista=',lista_fatture_dettaglio.id_professionista,'\" title=\"ISCRIVI ABBONAMENTO\" alt=\"ISCRIVI ABBONAMENTO\"><i class=\"fa fa-thumb-tack\"></i></a>')) AS 'bottone',
@@ -159,21 +163,50 @@ function Stampa_HTML_index_Fatture($tabella){
                 //AND lista_fatture_dettaglio.id NOT IN (SELECT DISTINCT id_fattura_dettaglio FROM lista_iscrizioni WHERE 1));";
                 $rs_0002 = $dblink->query($sql_0002);
                 
+                $sql_0002Bis = "CREATE TEMPORARY TABLE pacchetto (SELECT DISTINCT lista_fatture_dettaglio.id_professionista,
+                lista_fatture_dettaglio.id_fattura AS 'idFattura',
+                lista_fatture_dettaglio.id AS 'idFatturaDettaglio',
+                lista_corsi.id AS 'idCorso',
+                lista_fatture_dettaglio.id_prodotto AS 'idProdotto',
+                id_corso_moodle AS 'idCorsoMoodle',
+                'pacchetto' as tipo_attivazione,
+                id_moodle_user AS 'idUtenteMoodle',
+                lista_password.id_classe AS 'idClasseMoodle',
+                CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"salva.php?tbl=lista_fatture&idFattura=',lista_fatture_dettaglio.id_fattura,'&idFatturaDettaglio=',lista_fatture_dettaglio.id,'&idProdotto=',lista_fatture_dettaglio.id_prodotto,'&idCorso=',lista_corsi.id,'&idCorsoMoodle=',id_corso_moodle,'&idUtenteMoodle=',id_moodle_user,'&idClasseMoodle=',lista_password.id_classe,'&fn=attivaPacchettoFattura&idProfessionista=',lista_fatture_dettaglio.id_professionista,'\" title=\"ISCRIVI CORSO DEL PACCHETTO\" alt=\"ISCRIVI CORSO DEL PACCHETTO\"><i class=\"fa fa-thumb-tack\"></i></a>') AS 'bottone',
+                
+                CONVERT(lista_corsi.nome_prodotto USING utf8) AS 'Prodotto'
+                FROM lista_fatture_dettaglio LEFT JOIN lista_prodotti
+                ON lista_prodotti.id = lista_fatture_dettaglio.id_prodotto
+                INNER JOIN lista_prodotti_dettaglio
+                ON lista_prodotti_dettaglio.id_prodotto_0 = lista_fatture_dettaglio.id_prodotto
+                INNER JOIN lista_corsi ON lista_corsi.id_prodotto = lista_prodotti_dettaglio.id_prodotto
+                INNER JOIN lista_password ON lista_password.id_professionista = lista_fatture_dettaglio.id_professionista
+                WHERE lista_fatture_dettaglio.id_professionista>0
+                AND lista_password.id_moodle_user>0
+                AND lista_corsi.id_corso_moodle>0
+                AND lista_prodotti.gruppo LIKE 'PACCHETTO'
+                AND NOT EXISTS (SELECT DISTINCT id_fattura_dettaglio FROM lista_iscrizioni WHERE 1 AND lista_fatture_dettaglio.id=lista_iscrizioni.id_fattura_dettaglio AND lista_iscrizioni.id_corso = lista_corsi.id ));";
+                //AND lista_fatture_dettaglio.id NOT IN (SELECT DISTINCT id_fattura_dettaglio FROM lista_iscrizioni WHERE 1));";
+                $rs_0002Bis = $dblink->query($sql_0002Bis);
+                
                 $sql_0003 = "CREATE TEMPORARY TABLE attivazioniIscrizioni SELECT * FROM corsi
                 UNION 
-                SELECT *  FROM abbonamenti;";
+                SELECT *  FROM abbonamenti 
+                UNION 
+                SELECT *  FROM pacchetto;";
                 $rs_0003 = $dblink->query($sql_0003);
                 
-                $sql_00000000 = "SELECT DISTINCT idFattura, idFatturaDettaglio, idCorso, idCorsoMoodle, idUtenteMoodle, idClasseMoodle,
+                $sql_00000000 = "SELECT DISTINCT idFattura, idFatturaDettaglio, idCorso, idProdotto, idCorsoMoodle, tipo_attivazione, idUtenteMoodle, idClasseMoodle,
                 
                 (SELECT DISTINCT CONCAT(cognome, ' ', nome) FROM lista_professionisti WHERE id = id_professionista) as Professionista, Prodotto, bottone AS 'fa fa-thumb-tack' 
                 FROM attivazioniIscrizioni WHERE 1 ORDER BY idFattura DESC";
                 
                 $sql_00000000 = "SELECT DISTINCT 
                 CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio.php?tbl=lista_professionisti&id=',id_professionista,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-user',
-            CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/modifica.php?tbl=lista_professionisti&id=',id_professionista,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>') AS 'fa-edit',
+                CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/modifica.php?tbl=lista_professionisti&id=',id_professionista,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>') AS 'fa-edit',
                 (SELECT DISTINCT CONCAT('<h3><b>',cognome, ' ', nome,'</b></h3>') FROM lista_professionisti WHERE id = id_professionista) as Professionista, 
-                IF(LCASE(Prodotto) LIKE 'abbonamento%','<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>','<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>') AS 'Tipo',
+                IF(LCASE(tipo_attivazione) LIKE 'abbonamento','<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>',
+                IF(LCASE(tipo_attivazione) LIKE 'pacchetto','<span class=\"btn sbold uppercase btn-outline blue-hoki\">Pacchetto</span>','<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>')) AS 'Tipo',
                 CONCAT('<h3>',Prodotto,'</h3>') AS Prodotto,
                 (SELECT DISTINCT nome FROM lista_classi WHERE id = idClasseMoodle) AS 'Classe',
                 bottone AS 'fa fa-thumb-tack' 
