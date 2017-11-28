@@ -154,6 +154,7 @@ if (isset($_GET['tbl']) && $_GET['tbl'] != "") {
                             <?php
                             if (isset($_POST) && !empty($_POST)) {
                                 $sql_0001 = creaSQLesporta();
+                                //echo "<br><br>";
                                 $titolo = "Esportazione del " . date("d/m/Y H:i:s");
 
                                 stampa_table_datatables_responsive($sql_0001, $titolo, 'tabella_esporta1');

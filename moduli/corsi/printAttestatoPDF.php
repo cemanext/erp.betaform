@@ -42,11 +42,13 @@ if (isset($_GET['idIscrizione'])) {
     
     if($attestatoClasse == "No"){
         $explodeProfessione = explode("-",$professione);
+        $explodeTitolo = explode("-",$titolo_professionista);
+        $n = 0;
         
         foreach ($explodeProfessione as $valoreProfessione) {
-            $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND professione = '$valoreProfessione' AND (((data_inizio<='$dataCompletamento' OR data_inizio='00-00-0000') AND (data_fine>='$dataCompletamento' OR data_fine='00-00-0000')) OR (data_inizio='00-00-0000' OR data_fine='00-00-0000')) ORDER BY data_fine DESC, data_inizio DESC", true);
+            $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND LCASE(professione) = LCASE('$valoreProfessione') AND (((data_inizio<='$dataCompletamento' OR data_inizio='00-00-0000') AND (data_fine>='$dataCompletamento' OR data_fine='00-00-0000')) OR (data_inizio='00-00-0000' OR data_fine='00-00-0000')) ORDER BY data_fine DESC, data_inizio DESC", true);
             if(empty($rowCostiConfig)){
-                $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE titolo LIKE 'Base' ORDER BY data_fine DESC, data_inizio DESC", true);
+                $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND titolo LIKE 'Base' ORDER BY data_fine DESC, data_inizio DESC", true);
             }
             $queryLast = $dblink->get_query();
             $crediti = $rowCostiConfig['crediti'];
@@ -75,6 +77,7 @@ if (isset($_GET['idIscrizione'])) {
             $dataInizio = $tmp[0];
             
             $professione = $valoreProfessione;
+            $titolo_professionista = $explodeTitolo[$n];
 
             $messaggio = str_replace('_XXX_TITOLO_XXX_', $titolo_professionista, $messaggio);
             $messaggio = str_replace('_XXX_PROFESSIONE_XXX_', ucwords(strtolower(html_entity_decode($professione))), $messaggio);
@@ -107,12 +110,13 @@ if (isset($_GET['idIscrizione'])) {
             //$messaggio = mb_convert_encoding(htmlspecialchars_decode(html_entity_decode($messaggio, "ENT_COMPAT", "utf-8")), "UTF-8", "HTML-ENTITIES");
 
             $htmladd .= $messaggio;
+            $n++;
         }
         
     }else{
         $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND id_classe = '$idClasse' AND (((data_inizio<='$dataCompletamento' OR data_inizio='00-00-0000') AND (data_fine>='$dataCompletamento' OR data_fine='00-00-0000')) OR (data_inizio='00-00-0000' OR data_fine='00-00-0000')) ORDER BY data_fine DESC, data_inizio DESC", true);
         if(empty($rowCostiConfig)){
-            $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE titolo LIKE 'Base' ORDER BY data_fine DESC, data_inizio DESC", true);
+            $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND titolo LIKE 'Base' ORDER BY data_fine DESC, data_inizio DESC", true);
         }
         $crediti = $rowCostiConfig['crediti'];
         $durata = $rowCostiConfig['durata_corso'];

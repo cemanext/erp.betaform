@@ -3132,7 +3132,7 @@ $table_listaIscrizioniPartecipantiCompletatiPagati = array(
                                             (SELECT luogo_di_nascita FROM lista_professionisti WHERE id = id_professionista LIMIT 1) AS luogo_di_nascita,
                                             (SELECT DATE_FORMAT(data_di_nascita,'%d-%m-%Y') FROM lista_professionisti WHERE id = id_professionista LIMIT 1) AS Data_di_Nascita,
                                             (SELECT provincia_di_nascita FROM lista_professionisti WHERE id = id_professionista LIMIT 1) AS Provincia_di_Nascita",
-                                "where" => " stato='Completato' AND id_fattura IN (SELECT id FROM lista_fatture WHERE stato LIKE 'Pagata%') ".$where_lista_iscrizioni,
+                                "where" => " stato='Completato' AND (id_fattura IN (SELECT id FROM lista_fatture WHERE stato LIKE 'Pagata%') OR data_completamento < '2017-09-01') ".$where_lista_iscrizioni,
                                 "order" => "ORDER BY dataagg DESC"),
             "modifica" => array(
                 array(  "campo" => "id",
@@ -3220,7 +3220,7 @@ $table_listaIscrizioniPartecipantiCompletatiNonPagati = array(
                                             (SELECT luogo_di_nascita FROM lista_professionisti WHERE id = id_professionista LIMIT 1) AS luogo_di_nascita,
                                             (SELECT DATE_FORMAT(data_di_nascita,'%d-%m-%Y') FROM lista_professionisti WHERE id = id_professionista LIMIT 1) AS Data_di_Nascita,
                                             (SELECT provincia_di_nascita FROM lista_professionisti WHERE id = id_professionista LIMIT 1) AS Provincia_di_Nascita",
-                                "where" => " stato='Completato' AND id_fattura IN (SELECT id FROM lista_fatture WHERE stato LIKE 'In Attesa%') ".$where_lista_iscrizioni,
+                                "where" => " stato='Completato' AND id_fattura IN (SELECT id FROM lista_fatture WHERE stato LIKE 'In Attesa%') AND data_completamento >= '2017-09-01' ".$where_lista_iscrizioni,
                                 "order" => "ORDER BY dataagg DESC"),
             "modifica" => array(
                 array(  "campo" => "id",

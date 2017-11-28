@@ -298,7 +298,7 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
             FROM lista_iscrizioni
             WHERE id=" . $id." ORDER BY data_fine  ASC";
             stampa_table_static_basic($sql_0001, '', 'Partecipante', '');
-            if($tipoAbbonamento===1){
+            if($tipoAbbonamento==1){
                 echo '</div></div>';
                 echo '<div class="row">';
                 echo '<div class="col-md-6 col-sm-12">';
@@ -315,7 +315,7 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
             }
 
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
-            if($tipoAbbonamento===1){
+            if($tipoAbbonamento==1){
                 //CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"#####.php?tbl=lista_documenti&id=',id_professionista,'\" title=\"ATTESTATO\" alt=\"ATTESTATO\"><i class=\"fa fa fa-file-pdf-o\"></i></a>') AS 'fa-file-text',
                 $sql_0001 = "SELECT
                 IF(lista_iscrizioni.id_classe>0,(SELECT nome FROM lista_classi WHERE id = lista_iscrizioni.id_classe LIMIT 1),'') AS 'Classe',
@@ -326,8 +326,9 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
                 FROM lista_corsi_configurazioni INNER JOIN lista_iscrizioni
                 ON lista_corsi_configurazioni.id_corso = lista_iscrizioni.id_corso
                 WHERE lista_iscrizioni.id='".$id."' 
-                AND lista_iscrizioni.id_classe = lista_corsi_configurazioni.id_classe
-                ORDER BY lista_iscrizioni.data_fine  ASC";
+                AND (lista_iscrizioni.id_classe = lista_corsi_configurazioni.id_classe
+                OR lista_corsi_configurazioni.titolo LIKE 'Base')
+                ORDER BY lista_corsi_configurazioni.id_classe DESC, lista_iscrizioni.data_fine ASC LIMIT 1";
             }else{
                 $sql_0001 = "SELECT
                lista_iscrizioni.data_inizio_iscrizione AS 'Attivazione', 
@@ -340,10 +341,10 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
             stampa_table_static_basic($sql_0001, '', 'Attestati', '');
             echo '</div></div>';
 
-            if(($tipoAbbonamento===1 && $statoIscrizione=='Configurazione') || ($statoIscrizione!="Scaduto" && $statoIscrizione!='Completato' && $statoIscrizione!='Scaduto e Disattivato')){
+            if(($tipoAbbonamento==1 && $statoIscrizione=='Configurazione') || ($statoIscrizione!="Scaduto" && $statoIscrizione!='Completato' && $statoIscrizione!='Scaduto e Disattivato')){
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
 
-            if($tipoAbbonamento===1){
+            if($tipoAbbonamento==1){
             $sql_0001 = "SELECT
             CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$id."&idFattura=".$idFattura."&idUtenteMoodle=".$idUtenteMoodle."&NomeClasse=".$NomeClasse."&fn=annullaAbbonamentoMoodle\"><span class=\"btn sbold uppercase btn-outline red\">Disabilita Abbonamento</span></a>') AS 'Disabilita Abbonamento',
             CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$id."&idFattura=".$idFattura."&idUtenteMoodle=".$idUtenteMoodle."&NomeClasse=".$NomeClasse."&DataFineIscrizione=".$DataFineIscrizione."&fn=riabilitaAbbonamentoMoodle\"><span class=\"btn sbold uppercase btn-outline green-jungle\">Abilita Abbonamento</span></a>') AS 'Abilita Abbonamento',
@@ -392,7 +393,7 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
                   <div class="portlet-body">
                   <center>';
 
-                  if($tipoAbbonamento===1){
+                  if($tipoAbbonamento==1){
                   echo'<a href="'.BASE_URL.'/moduli/iscrizioni/salva.php?idFattura='.$idFattura.'&idUtenteMoodle='.$idUtenteMoodle.'&NomeClasse='.$NomeClasse.'&fn=annullaAbbonamentoMoodle" class="btn red"><i class="fa fa-exclamation-triangle"></i> Disabilita Abbonamento</a>
                       <a href="'.BASE_URL.'/moduli/iscrizioni/salva.php?idFattura='.$idFattura.'&idUtenteMoodle='.$idUtenteMoodle.'&NomeClasse='.$NomeClasse.'&DataFineIscrizione='.$DataFineIscrizione.'&fn=riabilitaAbbonamentoMoodle" class="btn green-jungle"><i class="fa fa-exclamation-triangle"></i> Abilita Abbonamento</a>
                       <a href="'.BASE_URL.'/moduli/iscrizioni/salva.php?idFattura='.$idFattura.'&idUtenteMoodle='.$idUtenteMoodle.'&NomeClasse='.$NomeClasse.'&DataFineIscrizione='.$DataFineIscrizione.'&fn=riabilitaAbbonamentoMoodle" class="btn green"><i class="fa fa-exclamation-triangle"></i> Proroga Abbonamento</a>';

@@ -1359,6 +1359,8 @@ function get_campi_tabella($dati, $ret = array()){
                             case "dataagg":
                             case "datainsert":
                             case "data":
+                            case "data_inizio":
+                            case "data_fine":
                                 $campi_where .= ' AND '.$key." ".$arraySLK['slk_'.$key]." '".GiraDataOra($value)."' ";
                             break;
 

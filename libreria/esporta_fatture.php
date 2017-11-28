@@ -109,8 +109,8 @@ foreach ($rowsFatture as $rowFattura) {
         $riga .= aggiungiSpaziAllaStringa(str_replace(".","", sprintf('%0.2f', abs($rowFattura['importo']))), 12, true, "0", false);  //TRF-TOT-FATT
         
         //Conti di ricavo/costo
-        $riga .= aggiungiSpaziAllaStringa("", 7, false, "0");  //TRF-CONTO-RIC
-        $riga .= aggiungiSpaziAllaStringa("", 12, false, "0");  //TRF-IMP-RIC
+        $riga .= aggiungiSpaziAllaStringa("5810005", 7, true, "0");  //TRF-CONTO-RIC
+        $riga .= aggiungiSpaziAllaStringa(str_replace(".","", sprintf('%0.2f', abs($rowFattura['imponibile']))), 12, true, "0", false);  //TRF-IMP-RIC
         
         //SPAZIO VUOTO CON 0
         $riga .= aggiungiSpaziAllaStringa("", 133, false, "0"); //SPAZIO VUOTO ???
