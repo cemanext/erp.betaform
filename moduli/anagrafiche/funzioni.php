@@ -207,7 +207,7 @@ function Stampa_HTML_Dettaglio_Anagrafica($tabella, $id) {
             stampa_table_datatables_responsive($sql_0003, 'Ordini', 'tabella_base3', 'blue', 'fa fa-edit');
 
             //AGGIUNGI NUOVO PREVENTIVO
-            //echo '<CENTER><a href="' . BASE_URL . '/moduli/preventivi/salva.php?tbl=lista_preventivi&idProfessionista=' . $id . '&fn=nuovoPreventivoProfessionista" class="btn green-meadow"><i class="fa fa-plus"></i>  NUOVO ORDINE</a></CENTER><br><br>';
+            echo '<CENTER><a href="' . BASE_URL . '/moduli/preventivi/salva.php?tbl=lista_preventivi&idProfessionista=' . $id . '&fn=nuovoPreventivoProfessionista" class="btn green-meadow"><i class="fa fa-plus"></i>  NUOVO ORDINE</a></CENTER><br><br>';
 
             echo '</div></div>';
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
