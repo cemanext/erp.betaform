@@ -244,6 +244,7 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
                     $data_scadenza_corso_timestamp = $row_00006['data_scadenza_corso_timestamp'];
                     $idFattura= $row_00006['id_fattura'];
                     $tipoAbbonamento = $row_00006['abbonamento'];
+                    $dataCompletamento = $row_00006['data_completamento'];
                     $statoIscrizione = $row_00006['stato'];
                 }
             }
@@ -314,32 +315,36 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
                 echo '</div>';
             }
 
-            echo '<div class="row"><div class="col-md-12 col-sm-12">';
-            if($tipoAbbonamento==1){
-                //CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"#####.php?tbl=lista_documenti&id=',id_professionista,'\" title=\"ATTESTATO\" alt=\"ATTESTATO\"><i class=\"fa fa fa-file-pdf-o\"></i></a>') AS 'fa-file-text',
-                $sql_0001 = "SELECT
-                IF(lista_iscrizioni.id_classe>0,(SELECT nome FROM lista_classi WHERE id = lista_iscrizioni.id_classe LIMIT 1),'') AS 'Classe',
-                CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"".BASE_URL."/moduli/corsi/printAttestatoPDF.php?idIscrizione=',lista_iscrizioni.id,'\" target=\"_blank\" title=\"ATTESTATO\" alt=\"ATTESTATO\"><i class=\"fa fa fa-file-pdf-o\"></i></a>') AS 'fa-file-pdf-o',
-                lista_corsi_configurazioni.`crediti`,
-                CONCAT(lista_corsi_configurazioni.`avanzamento`,'%') AS 'Perc. Completamento',
-                IF(lista_iscrizioni.avanzamento_completamento >= lista_corsi_configurazioni.`avanzamento`,'<i class=\"fa fa-thumbs-o-up\"></i>','<i class=\"fa fa-thumbs-o-down\"></i>')  AS 'fa-graduation-cap'
-                FROM lista_corsi_configurazioni INNER JOIN lista_iscrizioni
-                ON lista_corsi_configurazioni.id_corso = lista_iscrizioni.id_corso
-                WHERE lista_iscrizioni.id='".$id."' 
-                AND (lista_iscrizioni.id_classe = lista_corsi_configurazioni.id_classe
-                OR lista_corsi_configurazioni.titolo LIKE 'Base')
-                ORDER BY lista_corsi_configurazioni.id_classe DESC, lista_iscrizioni.data_fine ASC LIMIT 1";
-            }else{
-                $sql_0001 = "SELECT
-               lista_iscrizioni.data_inizio_iscrizione AS 'Attivazione', 
-               lista_iscrizioni.data_fine_iscrizione AS 'Scadenza', 
-               lista_iscrizioni.data_inizio AS 'Inizio', 
-               lista_iscrizioni.data_completamento AS 'Completato'
-               FROM lista_iscrizioni
-               WHERE lista_iscrizioni.id='".$id."'";
+            $dataCompletamentoTime = strtotime($dataCompletamento);
+            $dataCompletamentoStartTime = strtotime("2017-10-18");
+            if($dataCompletamentoTime >= $dataCompletamentoStartTime){
+                echo '<div class="row"><div class="col-md-12 col-sm-12">';
+                if($tipoAbbonamento==1){
+                    //CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"#####.php?tbl=lista_documenti&id=',id_professionista,'\" title=\"ATTESTATO\" alt=\"ATTESTATO\"><i class=\"fa fa fa-file-pdf-o\"></i></a>') AS 'fa-file-text',
+                    $sql_0001 = "SELECT
+                    IF(lista_iscrizioni.id_classe>0,(SELECT nome FROM lista_classi WHERE id = lista_iscrizioni.id_classe LIMIT 1),'') AS 'Classe',
+                    CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"".BASE_URL."/moduli/corsi/printAttestatoPDF.php?idIscrizione=',lista_iscrizioni.id,'\" target=\"_blank\" title=\"ATTESTATO\" alt=\"ATTESTATO\"><i class=\"fa fa fa-file-pdf-o\"></i></a>') AS 'fa-file-pdf-o',
+                    lista_corsi_configurazioni.`crediti`,
+                    CONCAT(lista_corsi_configurazioni.`avanzamento`,'%') AS 'Perc. Completamento',
+                    IF(lista_iscrizioni.avanzamento_completamento >= lista_corsi_configurazioni.`avanzamento`,'<i class=\"fa fa-thumbs-o-up\"></i>','<i class=\"fa fa-thumbs-o-down\"></i>')  AS 'fa-graduation-cap'
+                    FROM lista_corsi_configurazioni INNER JOIN lista_iscrizioni
+                    ON lista_corsi_configurazioni.id_corso = lista_iscrizioni.id_corso
+                    WHERE lista_iscrizioni.id='".$id."' 
+                    AND (lista_iscrizioni.id_classe = lista_corsi_configurazioni.id_classe
+                    OR lista_corsi_configurazioni.titolo LIKE 'Base')
+                    ORDER BY lista_corsi_configurazioni.id_classe DESC, lista_iscrizioni.data_fine ASC LIMIT 1";
+                }else{
+                    $sql_0001 = "SELECT
+                   lista_iscrizioni.data_inizio_iscrizione AS 'Attivazione', 
+                   lista_iscrizioni.data_fine_iscrizione AS 'Scadenza', 
+                   lista_iscrizioni.data_inizio AS 'Inizio', 
+                   lista_iscrizioni.data_completamento AS 'Completato'
+                   FROM lista_iscrizioni
+                   WHERE lista_iscrizioni.id='".$id."'";
+                }
+                stampa_table_static_basic($sql_0001, '', 'Attestati', '');
+                echo '</div></div>';
             }
-            stampa_table_static_basic($sql_0001, '', 'Attestati', '');
-            echo '</div></div>';
 
             if(($tipoAbbonamento==1 && $statoIscrizione=='Configurazione') || ($statoIscrizione!="Scaduto" && $statoIscrizione!='Completato' && $statoIscrizione!='Scaduto e Disattivato')){
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
