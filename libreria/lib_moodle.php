@@ -69,7 +69,7 @@ function resetPasswordUtenteMoodle($idProfessionista, $forzaReset = false){
     }else{
         $statoUtente = "Attivo - Inviare Password";
         $sql_cerca_in_lista_password = "SELECT DISTINCT * FROM lista_password WHERE id_professionista = '".$idProfessionista."' AND livello='cliente' "
-            . "AND (DATE(data_creazione)<DATE_SUB(CURDATE(), INTERVAL ".DURATA_PASSWORD_UTENTE." DAY) OR (passwd IS NULL OR LENGTH(passwd)<=0))";
+            . "AND (DATE(data_creazione)<DATE_SUB(CURDATE(), INTERVAL ".DURATA_PASSWORD_UTENTE." DAY) OR (passwd IS NULL OR LENGTH(passwd)<=0) OR username LIKE '%@%')";
     //echo "<br>";
     }
     $row_cerca_in_lista_password = $dblink->get_row($sql_cerca_in_lista_password,true);
