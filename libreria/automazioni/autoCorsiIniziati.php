@@ -149,11 +149,11 @@ foreach ($rs_utente_entrato as $row_utente_entrato) {
                         $rs_00005 = $dblink->query($sql_00005);
                         if ($rs_00005) {
 
-                            if ($controlloAbbonamento === 1 and $controlloClasse == 10) {
+                            if ($controlloAbbonamento == 1 and $controlloClasse == 10) {
                                 $sql_00006 = "UPDATE lista_iscrizioni SET data_fine = DATE_ADD(data_inizio, INTERVAL " . DURATA_CORSO_INGEGNERI . " DAY) 
                                                 WHERE id = " . $id_iscrizione . "";
                                 $rs_00006 = $dblink->query($sql_00006);
-                            } elseif ($controlloAbbonamento === 1 and $controlloClasse != 10) {
+                            } elseif ($controlloAbbonamento == 1 and $controlloClasse != 10) {
                                 $sql_00006 = "UPDATE lista_iscrizioni SET data_fine = data_fine_iscrizione
                                                 WHERE id = " . $id_iscrizione . "";
                                 $rs_00006 = $dblink->query($sql_00006);
@@ -214,11 +214,11 @@ foreach ($rs_utente_entrato as $row_utente_entrato) {
                         $rs_00005 = $dblink->query($sql_00005);
                         if ($rs_00005) {
 
-                            if ($controlloAbbonamento > 0 and $controlloClasse == 10) {
+                            if ($controlloAbbonamento == 1 and $controlloClasse == 10) {
                                 $sql_00006 = "UPDATE lista_iscrizioni SET data_fine = DATE_ADD(data_inizio, INTERVAL " . DURATA_CORSO_INGEGNERI . " DAY) 
                                                 WHERE id = " . $id_iscrizione . "";
                                 $rs_00006 = $dblink->query($sql_00006);
-                            } elseif ($controlloAbbonamento > 0 and $controlloClasse != 10) {
+                            } elseif ($controlloAbbonamento == 1 and $controlloClasse != 10) {
                                 $sql_00006 = "UPDATE lista_iscrizioni SET data_fine = data_fine_iscrizione
                                                 WHERE id = " . $id_iscrizione . "";
                                 $rs_00006 = $dblink->query($sql_00006);
