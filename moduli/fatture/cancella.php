@@ -23,7 +23,12 @@ if(isset($_GET['id'])){
 }
 
 if($tabella!=""){
-    $ok = $dblink->deleteWhere($tabella, $where, 1);
+    if($tabella == "lista_fatture"){
+        $ok = $dblink->deleteWhere($tabella."_dettaglio", "id_fattura='".$id."'");
+        $ok = $dblink->deleteWhere($tabella, $where, 1);
+    }else{
+        $ok = $dblink->deleteWhere($tabella, $where, 1);
+    }
 }else{
     $ok = true;
 }
