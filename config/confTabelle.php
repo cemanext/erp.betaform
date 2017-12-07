@@ -4703,14 +4703,29 @@ $table_listaCorsiConfigurazioni = array(
                         "etichetta" => "Titolo",
                         "readonly" => false
                     ),
-                    array(  "campo" => "messaggio",
-                        "tipo" => "htmlarea",
-                        "etichetta" => "Corpo Documento",
+                    array(  "campo" => "email_mittente",
+                        "tipo" => "input",
+                        "etichetta" => "Email Mittente",
                         "readonly" => false
                     ),
                     array(  "campo" => "firma",
                         "tipo" => "text",
                         "etichetta" => "Luogo e Data Documento",
+                        "readonly" => false
+                    ),
+                    array(  "campo" => "email_oggetto",
+                        "tipo" => "input",
+                        "etichetta" => "Oggetto E-Mail",
+                        "readonly" => false
+                    ),
+                    array(  "campo" => "messaggio",
+                        "tipo" => "htmlarea",
+                        "etichetta" => "Corpo Documento",
+                        "readonly" => false
+                    ),
+                    array(  "campo" => "email_messaggio",
+                        "tipo" => "htmlarea",
+                        "etichetta" => "Messaggio E-Mail",
                         "readonly" => false
                     ))
             );

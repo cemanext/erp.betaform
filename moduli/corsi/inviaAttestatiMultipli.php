@@ -29,9 +29,9 @@ if (isset($_POST['intervallo_data'])) {
     }
     
     if($data_in == $data_out){
-        $where_intervallo = " AND lista_fatture.data_completamento = '" . GiraDataOra($data_in) . "'";
+        $where_intervallo = " AND data_completamento = '" . GiraDataOra($data_in) . "'";
     }else{
-        $where_intervallo = " AND lista_fatture.data_completamento BETWEEN '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo = " AND data_completamento BETWEEN '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
     }
     
 } else {
@@ -40,7 +40,7 @@ if (isset($_POST['intervallo_data'])) {
     $setDataCalIn = "01-".date("m-Y");
     $setDataCalOut = date("t-m-Y");
     
-    $where_intervallo = " AND YEAR(lista_fatture.data_completamento)=YEAR(CURDATE()) AND MONTH(lista_fatture.data_completamento)=MONTH(CURDATE())";
+    $where_intervallo = " AND YEAR(data_completamento)=YEAR(CURDATE()) AND MONTH(data_completamento)=MONTH(CURDATE())";
 }
 ?>
 <!DOCTYPE html>
@@ -180,7 +180,7 @@ if (isset($_POST['intervallo_data'])) {
                 CONCAT('<span class=\"btn sbold uppercase btn-outline red\">',nome_corso,'</span>') AS nome_corso, 
                 data_completamento, stato_completamento AS Stato, 
                 (SELECT codice_ricerca FROM lista_fatture WHERE id=id_fattura) AS 'Cod. Fatt.', (SELECT stato FROM lista_fatture WHERE id=id_fattura) AS Stato_Fattura, id AS selezione
-                FROM totaleIscrizioni WHERE 1";
+                FROM totaleIscrizioni WHERE 1 $where_intervallo";
                 stampa_table_static_basic($sql_0001, '', 'Invio Attestati Multipli', '', 'fa fa-handshake-o');
                 //stampa_table_datatables_ajax($sql_0001, '#datatable_ajax', $titolo, '');
                 //stampa_table_datatables_responsive($sql_0001, $titolo, 'tabella_base');

@@ -775,39 +775,159 @@ function inviaEmailCorsoCompletato($idIscrione,$updateIscrizione) {
 function inviaEmailAttestatoDaIdIscrizione($idIscrione,$updateIscrizione) {
     global $dblink, $log;
     
+    $idIscrizione = $idIscrione;
+    
     $mitt = USER_MAIL;
+    
+    $rowIscrizione = $dblink->get_row("SELECT * FROM lista_iscrizioni WHERE id = '$idIscrizione'", true);
+    $idClasse = $rowIscrizione['id_classe'];
+    $idCorso = $rowIscrizione['id_corso'];
+    $idProfessinista = $rowIscrizione['id_professionista'];
+    $dataInizioCorso = $rowIscrizione['data_inizio'];
+    $dataCompletamento = $rowIscrizione['data_completamento'];
+    
+    $rowProfessionista = $dblink->get_row("SELECT * FROM lista_professionisti WHERE id = '$idProfessinista'", true);
+    $titolo_professionista = $rowProfessionista['titolo'];
+    $nome = $rowProfessionista['nome'];
+    $cognome = $rowProfessionista['cognome'];
+    $emailProfessionista = $rowProfessionista['email'];
+    $professione = $rowProfessionista['professione'];
+    $dataDiNascita = $rowProfessionista['data_di_nascita'];
+    $provinciaDiNascita = $rowProfessionista['provincia_di_nascita'];
+    $luogoDiNascita = $rowProfessionista['luogo_di_nascita'];
+    $codiceFiscale = $rowProfessionista['codice_fiscale'];
+    $provinciaAlbo = $rowProfessionista['provincia_albo'];
+    $numeroAlbo = $rowProfessionista['numero_albo'];
+    $attestatoClasse = $rowProfessionista['attestato_classe'];
+    
+    $htmladd = '';
+    
+    if($attestatoClasse == "No"){
+        $explodeProfessione = explode("-",$professione);
+        $explodeTitolo = explode("-",$titolo_professionista);
+        $n = 0;
+        
+        foreach ($explodeProfessione as $valoreProfessione) {
+            $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND LCASE(professione) = LCASE('$valoreProfessione') AND (((data_inizio<='$dataCompletamento' OR data_inizio='00-00-0000') AND (data_fine>='$dataCompletamento' OR data_fine='00-00-0000')) OR (data_inizio='00-00-0000' OR data_fine='00-00-0000')) ORDER BY data_fine DESC, data_inizio DESC", true);
+            if(empty($rowCostiConfig)){
+                $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND titolo LIKE 'Base' ORDER BY data_fine DESC, data_inizio DESC", true);
+            }
+            $queryLast = $dblink->get_query();
+            $crediti = $rowCostiConfig['crediti'];
+            $durata = $rowCostiConfig['durata_corso'];
+            $codiceAccreditamento = $rowCostiConfig['codice_accreditamento'];
+            $idAttestato = $rowCostiConfig['id_attestato'];
+            $oggetto = $rowCostiConfig['email_oggetto'];
+            $messaggio = $rowCostiConfig['email_messaggio'];
+            $mittente = $rowCostiConfig['email_mittente'];
 
+            if($idAttestato>0){
+                $rowAttestati = $dblink->get_row("SELECT * FROM lista_attestati WHERE id = '$idAttestato'", true);
+            }else{
+                $rowAttestati = $dblink->get_row("SELECT * FROM lista_attestati WHERE tipo_documento = 'template base'", true);
+                $messaggio = $rowAttestati['descrizione'];
+            }
+            $orientamento = $rowAttestati['orientamento'];
+            $nomeFile = $rowAttestati['nome'];
+
+            $rowCorso = $dblink->get_row("SELECT * FROM lista_corsi WHERE id = '$idCorso'", true);
+            $nomeCorso = $rowCorso['nome_prodotto'];
+            $codiceCorso = $rowCorso['codice'];
+
+            $tmp = explode(" ",GiraDataOra($dataInizioCorso));
+            $dataInizio = $tmp[0];
+            
+            $professione = $valoreProfessione;
+            $titolo_professionista = $explodeTitolo[$n];
+
+            $messaggio = str_replace('_XXX_TITOLO_XXX_', $titolo_professionista, $messaggio);
+            $messaggio = str_replace('_XXX_PROFESSIONE_XXX_', ucwords(strtolower(html_entity_decode($professione))), $messaggio);
+            $messaggio = str_replace('_XXX_COGNOME_XXX_', ucwords(strtolower(html_entity_decode($cognome))), $messaggio);
+            $messaggio = str_replace('_XXX_NOME_XXX_', ucwords(strtolower(html_entity_decode($nome))), $messaggio);
+            $messaggio = str_replace('_XXX_DATA_INIZIO_XXX_', $dataInizio, $messaggio);
+            $messaggio = str_replace('_XXX_DATA_FINE_XXX_', GiraDataOra($dataCompletamento), $messaggio);
+            $messaggio = str_replace('_XXX_DATA_NASCITA_XXX_', GiraDataOra($dataDiNascita), $messaggio);
+            $messaggio = str_replace('_XXX_PROV_NASCITA_XXX_', $provinciaDiNascita, $messaggio);
+            $messaggio = str_replace('_XXX_LUOGO_NASCITA_XXX_', ucwords(strtolower(html_entity_decode($luogoDiNascita))), $messaggio);
+            $messaggio = str_replace('_XXX_NOME_CORSO_XXX_', mb_strtoupper(html_entity_decode($nomeCorso)), $messaggio);
+            $messaggio = str_replace('_XXX_ORE_CORSO_XXX_', $durata, $messaggio);
+            $messaggio = str_replace('_XXX_CODICE_ACCREDITAMENTO_XXX_', $codiceAccreditamento, $messaggio);
+            $messaggio = str_replace('_XXX_NUMERO_CREDITI_XXX_', $crediti, $messaggio);
+            $messaggio = str_replace('_XXX_CODICE_FISCALE_XXX_', $codiceFiscale, $messaggio);
+            $messaggio = str_replace('_XXX_PROVINCIA_ALBO_XXX_', $provinciaAlbo, $messaggio);
+            $messaggio = str_replace('_XXX_NUMERO_ORDINE_XXX_', $numeroAlbo, $messaggio);
+            
+            $htmladd .= $messaggio;
+            $n++;
+        }
+        
+    }else{
+        $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND id_classe = '$idClasse' AND (((data_inizio<='$dataCompletamento' OR data_inizio='00-00-0000') AND (data_fine>='$dataCompletamento' OR data_fine='00-00-0000')) OR (data_inizio='00-00-0000' OR data_fine='00-00-0000')) ORDER BY data_fine DESC, data_inizio DESC", true);
+        if(empty($rowCostiConfig)){
+            $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND titolo LIKE 'Base' ORDER BY data_fine DESC, data_inizio DESC", true);
+        }
+        $crediti = $rowCostiConfig['crediti'];
+        $durata = $rowCostiConfig['durata_corso'];
+        $codiceAccreditamento = $rowCostiConfig['codice_accreditamento'];
+        $idAttestato = $rowCostiConfig['id_attestato'];
+        $oggetto = $rowCostiConfig['email_oggetto'];
+        $messaggio = $rowCostiConfig['email_messaggio'];
+        $mittente = $rowCostiConfig['email_mittente'];
+        
+        if($idAttestato>0){
+            $rowAttestati = $dblink->get_row("SELECT * FROM lista_attestati WHERE id = '$idAttestato'", true);
+        }else{
+            $rowAttestati = $dblink->get_row("SELECT * FROM lista_attestati WHERE tipo_documento = 'template base'", true);
+            $messaggio = $rowAttestati['descrizione'];
+        }
+        $orientamento = $rowAttestati['orientamento'];
+        $nomeFile = $rowAttestati['nome'];
+
+        $rowCorso = $dblink->get_row("SELECT * FROM lista_corsi WHERE id = '$idCorso'", true);
+        $nomeCorso = $rowCorso['nome_prodotto'];
+        $codiceCorso = $rowCorso['codice'];
+
+        $tmp = explode(" ",GiraDataOra($dataInizioCorso));
+        $dataInizio = $tmp[0];
+
+        $messaggio = str_replace('_XXX_TITOLO_XXX_', $titolo_professionista, $messaggio);
+        $messaggio = str_replace('_XXX_PROFESSIONE_XXX_', ucwords(strtolower(html_entity_decode($professione))), $messaggio);
+        $messaggio = str_replace('_XXX_COGNOME_XXX_', ucwords(strtolower(html_entity_decode($cognome))), $messaggio);
+        $messaggio = str_replace('_XXX_NOME_XXX_', ucwords(strtolower(html_entity_decode($nome))), $messaggio);
+        $messaggio = str_replace('_XXX_DATA_INIZIO_XXX_', $dataInizio, $messaggio);
+        $messaggio = str_replace('_XXX_DATA_FINE_XXX_', GiraDataOra($dataCompletamento), $messaggio);
+        $messaggio = str_replace('_XXX_DATA_NASCITA_XXX_', GiraDataOra($dataDiNascita), $messaggio);
+        $messaggio = str_replace('_XXX_PROV_NASCITA_XXX_', $provinciaDiNascita, $messaggio);
+        $messaggio = str_replace('_XXX_LUOGO_NASCITA_XXX_', ucwords(strtolower(html_entity_decode($luogoDiNascita))), $messaggio);
+        $messaggio = str_replace('_XXX_NOME_CORSO_XXX_', mb_strtoupper(html_entity_decode($nomeCorso)), $messaggio);
+        $messaggio = str_replace('_XXX_ORE_CORSO_XXX_', $durata, $messaggio);
+        $messaggio = str_replace('_XXX_CODICE_ACCREDITAMENTO_XXX_', $codiceAccreditamento, $messaggio);
+        $messaggio = str_replace('_XXX_NUMERO_CREDITI_XXX_', $crediti, $messaggio);
+        $messaggio = str_replace('_XXX_CODICE_FISCALE_XXX_', $codiceFiscale, $messaggio);
+        $messaggio = str_replace('_XXX_PROVINCIA_ALBO_XXX_', $provinciaAlbo, $messaggio);
+        $messaggio = str_replace('_XXX_NUMERO_ORDINE_XXX_', $numeroAlbo, $messaggio);
+        
+        $htmladd .= $messaggio;
+        
+    }
+    
+    $dataArray = explode("-",$dataCompletamento);
+    $anno = $dataArray[0];
+    $mese = $dataArray[1];
+    $filename = "{$cognome}-{$nome}-{$anno}-{$mese}-{$codiceCorso}.pdf";
+    
     $sql = "SELECT * FROM lista_iscrizioni WHERE id='" . $idIscrione . "'";
     $row = $dblink->get_row($sql,true);
     
-$nome_corso = $row['nome_corso'];
-$id_classe = $row['id_classe'];
-
-if($id_classe>0){
-    $template_attestato = "inviaEmailAttestato".$nomeClasse['nome'];
-}else{
-    $template_attestato = "inviaEmailAttestatoSenzaClasse";
-}
-
-$nomeClasse = $dblink->get_row("SELECT nome FROM lista_classi WHERE id = '".$id_classe."'", true);
-    $filename = "BetaFormazione_Attestato_" . $row['id'] .".pdf";
-    $allegato_1 = $filename;
-    $filename_oggetto = "Attestato " . $row['nome_corso'] ."";
-
-
-    $emailDesti = "";
-
-    if(empty($emailDesti)){
-        $emailDesti = $dblink->get_row("SELECT email, cognome, nome FROM lista_professionisti WHERE id = '".$row['id_professionista']."'", true);
-    }
-
-    $dest = $emailDesti['email'];
-    $cognome = $emailDesti['cognome'];
-    $nome = $emailDesti['nome'];
-    $ogg = 'Beta Formazione s.r.l. -  ' . $filename_oggetto;
+    $nome_corso = $nomeCorso;
+    $id_classe = $idClasse;
+    $allegato_1 = "".$codiceCorso."/".$anno."/".$mese."/" . $filename;
+    $filename_oggetto = $oggetto . $nomeCorso ."";
     
+    $dest = $emailProfessionista;
+    $ogg = $filename_oggetto;
     
-    $sql_template = "SELECT * FROM lista_template_email WHERE nome = '".$template_attestato."'";
+    /*$sql_template = "SELECT * FROM lista_template_email WHERE nome = '".$template_attestato."'";
     $rs_template = $dblink->get_results($sql_template);
     foreach ($rs_template as $row_template) {
         $mittente = $row_template['mittente'];
@@ -822,9 +942,9 @@ $nomeClasse = $dblink->get_row("SELECT nome FROM lista_classi WHERE id = '".$id_
     $messaggio_da_inviare = str_replace('_XXX_COGNOME_PROFESSIONISTA_XXX_', $cognome, $messaggio_da_inviare);
     $messaggio_da_inviare = str_replace('_XXX_NOME_PROFESSIONISTA_XXX_', $nome, $messaggio_da_inviare);
     $messaggio_da_inviare = str_replace('_NOME_DEL_CORSO_', $nome_corso, $messaggio_da_inviare);
-
+    */ 
     $mitt = $mittente;
-    $mess = $messaggio_da_inviare;
+    $mess = $htmladd;
      
     if (DISPLAY_DEBUG) {
         echo '<li>$mitt = '.$mitt.'</li>';
@@ -860,7 +980,7 @@ $nomeClasse = $dblink->get_row("SELECT nome FROM lista_classi WHERE id = '".$id_
         $messaggio->AddReplyTo($mitt);
 
 
-$dest = 'simone.crocco@cemanext.it';
+        $dest = 'simone.crocco@cemanext.it';
         if(EMAIL_DEBUG){
             if (strlen($destinatario_admin) > 5) {
                 $dest = $destinatario_admin;
@@ -918,10 +1038,10 @@ $dest = 'simone.crocco@cemanext.it';
         }
 
 
-//	echo '<li>$allegato_1 = '.$allegato_1.'</li>';
+        //echo '<li>$allegato_1 = '.$allegato_1.'</li>';
         if (strlen($allegato_1) > 3) {
-//		echo '<li>fileDoc = lista_fatture/'.$_POST['fileDoc'].'</li>';
-//echo '<li>----------> $allegato_1 = '.$allegato_1.'</li>';
+            //echo '<li>fileDoc = lista_fatture/'.$_POST['fileDoc'].'</li>';
+            //echo '<li>----------> $allegato_1 = '.$allegato_1.'</li>';
             $messaggio->AddAttachment(BASE_ROOT . "media/lista_attestati/" . $allegato_1);
             //$messaggio->AddAttachment("../media/lista_fatture/'.$allegato_1");
             //$messaggio->AddAttachment("CEMA-NEXT-BROCHURE-21X21-B.pdf");

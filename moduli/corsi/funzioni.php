@@ -103,7 +103,8 @@ function Stampa_HTML_Dettaglio_Corsi($tabella,$id){
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
             $sql_0001 = "SELECT 
             data, ora, etichetta As Tipo, oggetto, 
-            (SELECT CONCAT(cognome, ' ', nome) FROM lista_professionisti WHERE id=id_professionista) AS 'Iscritto', stato,
+            (SELECT CONCAT('<span class=\"btn sbold uppercase btn-outline blue\">',cognome, ' ', nome,'</span>') FROM lista_professionisti WHERE id=id_professionista) AS 'Iscritto', 
+            CONCAT('<span class=\"btn sbold uppercase btn-outline blue\">',stato,'</span>') AS stato,
             CONCAT('<a class=\"btn btn-circle btn-icon-only red-thunderbird btn-outline\" href=\"cancella.php?tbl=calendario_corsi&idCalendario=',id,'&idCalendarioCorso=',id_calendario_0,'&idIscrizione=',id_iscrizione,'\" title=\"DISISCRIVI DAL CORSO\" alt=\"DISISCRIVI DAL CORSO\"><i class=\"fa fa-user-times\"></i></a>') AS 'fa-user-times' 
             FROM calendario
             WHERE id_prodotto='" . $idProdotto."'
@@ -127,7 +128,8 @@ function Stampa_HTML_Dettaglio_Corsi($tabella,$id){
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
             $sql_0001 = "SELECT 
             data, ora, etichetta As Tipo, oggetto, 
-            (SELECT CONCAT(cognome, ' ', nome) FROM lista_professionisti WHERE id=id_professionista) AS 'Iscritto', stato,
+            (SELECT CONCAT('<span class=\"btn sbold uppercase btn-outline blue\">',cognome, ' ', nome,'</span>') FROM lista_professionisti WHERE id=id_professionista) AS 'Iscritto', 
+            CONCAT('<span class=\"btn sbold uppercase btn-outline blue\">',stato,'</span>') AS stato,
             CONCAT('<a class=\"btn btn-circle btn-icon-only red-thunderbird btn-outline\" href=\"cancella.php?tbl=calendario_esami&idCalendario=',id,'&idCalendarioCorso=',id_calendario_0,'&idIscrizione=',id_iscrizione,'\" title=\"DISISCRIVI DAL CORSO\" alt=\"DISISCRIVI DAL CORSO\"><i class=\"fa fa-user-times\"></i></a>') AS 'fa-user-times' 
             FROM calendario
             WHERE id_prodotto='" . $idProdotto."'
