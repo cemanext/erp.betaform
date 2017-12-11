@@ -521,12 +521,12 @@ class moodleWebService
                                     $expirydate_exists = $dblink->get_row($sql_003, true);
                                     if(!empty($expirydate_exists)) {
                                         //$object['id'] = $expirydate_exists['id'];
-                                        echo "UPDATE ".MOODLE_DB_NAME.".mdl_user_info_data SET userid = '".$moodleUser['id']."', fieldid = '".$sub['id']."', data = '".$data_fine_iscrizione."', dataformat = '0' WHERE id = '".$expirydate_exists['id']."' ";
+                                        //echo "UPDATE ".MOODLE_DB_NAME.".mdl_user_info_data SET userid = '".$moodleUser['id']."', fieldid = '".$sub['id']."', data = '".$data_fine_iscrizione."', dataformat = '0' WHERE id = '".$expirydate_exists['id']."' ";
                                         $dblink->query("UPDATE ".MOODLE_DB_NAME.".mdl_user_info_data SET userid = '".$moodleUser['id']."', fieldid = '".$sub['id']."', data = '".$data_fine_iscrizione."', dataformat = '0' WHERE id = '".$expirydate_exists['id']."' ");
                                         //$dblink->update("".MOODLE_DB_NAME.".mdl_user_info_data", $object, array("id"=>$expirydate_exists['id']));
                                         //$DB->update_record('user_info_data', $object);
                                     } else {
-                                        echo "INSERT INTO ".MOODLE_DB_NAME.".mdl_user_info_data (`userid`, `fieldid`, `data`, `dataformat`)  VALUES  ('".$moodleUser['id']."', '".$sub['id']."', '".$data_fine_iscrizione."',  '0') ";
+                                        //echo "INSERT INTO ".MOODLE_DB_NAME.".mdl_user_info_data (`userid`, `fieldid`, `data`, `dataformat`)  VALUES  ('".$moodleUser['id']."', '".$sub['id']."', '".$data_fine_iscrizione."',  '0') ";
                                         $dblink->query("INSERT INTO ".MOODLE_DB_NAME.".mdl_user_info_data (`userid`, `fieldid`, `data`, `dataformat`)  VALUES  ('".$moodleUser['id']."', '".$sub['id']."', '".$data_fine_iscrizione."',  '0') ");
                                         //$dblink->insert("".MOODLE_DB_NAME.".mdl_user_info_data",$object);
                                         //$DB->insert_record('user_info_data', $object);

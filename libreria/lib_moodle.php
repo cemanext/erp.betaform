@@ -218,7 +218,8 @@ function attivaCorsoFattura($idProfessionista, $idFattura, $idFatturaDettaglio, 
                         if ($stato_email) {
                             return true;
                         } else {
-                            return false;
+                            inviaEmailTemplate_Base($idProfessionista, 'attivaCorsoFatturaErroreMail', $idFatturaDettaglio);
+                            return true;
                         }
                     }
                 } else {
@@ -308,7 +309,8 @@ function attivaPacchettoFattura($idProfessionista, $idFattura, $idFatturaDettagl
                         if ($stato_email) {
                             return true;
                         } else {
-                            return false;
+                            inviaEmailTemplate_Base($idProfessionista, 'attivaCorsoFatturaErroreMail', $idFatturaDettaglio);
+                            return true;
                         }
                     }
                 } else {
@@ -435,8 +437,9 @@ function attivaAbbonamentoFattura($idProfessionista, $idFattura, $idFatturaDetta
                 $log->log_all_errors('attivaAbbonamentoFattura ->  Email Abbonamento Inviata Correttamente [idFatturaDettaglio = ' . $idFatturaDettaglio . ']', 'OK');
                 return true;
             } else {
+                inviaEmailTemplate_Base($idProfessionista, 'attivaAbbonamentoFatturaErroreMail', $idFatturaDettaglio);
                 $log->log_all_errors('attivaAbbonamentoFattura -> Email Abbonamento NON Inviata [idFatturaDettaglio = ' . $idFatturaDettaglio . ']', 'ERRORE');
-                return false;
+                return true;
             }
         } else {
             $log->log_all_errors('attivaAbbonamentoFattura -> sql_0000000001', 'ERRORE');

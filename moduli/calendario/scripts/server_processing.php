@@ -142,7 +142,7 @@ switch($whrStato){
                             calendario.stato, IF(calendario.id_azienda>0,CONCAT('<i class=\"fa fa-user btn btn-icon-only green-jungle btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>'),CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>')) AS 'fa-user', 
                             calendario.mittente AS 'Mittente',
                             IF(calendario.id_professionista>0,(SELECT CONCAT(lista_professionisti.cognome,' ',lista_professionisti.nome) FROM lista_professionisti WHERE lista_professionisti.id=calendario.id_professionista ),'') AS Professionista,
-                            (SELECT lista_prodotti.nome FROM lista_prodotti WHERE lista_prodotti.id=calendario.id_prodotto) AS 'Corso', data_iscrizione AS 'Data Iscrizione', lista_preventivi.imponibile AS Importo, 
+                            (SELECT lista_prodotti.nome FROM lista_prodotti WHERE lista_prodotti.id=calendario.id_prodotto) AS 'Corso', lista_preventivi.data_iscrizione AS 'Data Iscrizione', lista_preventivi.imponibile AS Importo, 
                             (SELECT nome FROM lista_tipo_marketing WHERE id = id_tipo_marketing) AS Marketing,
                             (SELECT nome FROM lista_campagne WHERE id = calendario.id_campagna) AS Campagna";
         }else{
@@ -152,7 +152,7 @@ switch($whrStato){
                             calendario.stato, IF(calendario.id_azienda>0,CONCAT('<i class=\"fa fa-user btn btn-icon-only green-jungle btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>'),CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>')) AS 'fa-user', 
                             calendario.mittente,
                             IF(calendario.id_professionista>0,(SELECT CONCAT(lista_professionisti.cognome,' ',lista_professionisti.nome) FROM lista_professionisti WHERE lista_professionisti.id=calendario.id_professionista ),'') AS Professionista,
-                            (SELECT lista_prodotti.nome FROM lista_prodotti WHERE lista_prodotti.id=calendario.id_prodotto) AS 'Corso', data_iscrizione AS 'Data Iscrizione', lista_preventivi.imponibile AS Importo, 
+                            (SELECT lista_prodotti.nome FROM lista_prodotti WHERE lista_prodotti.id=calendario.id_prodotto) AS 'Corso', lista_preventivi.data_iscrizione AS 'Data Iscrizione', lista_preventivi.imponibile AS Importo, 
                             (SELECT nome FROM lista_tipo_marketing WHERE id = id_tipo_marketing) AS Marketing,
                             (SELECT nome FROM lista_campagne WHERE id = calendario.id_campagna) AS Campagna";
         }
@@ -163,7 +163,7 @@ switch($whrStato){
                 if($campoRicerca=="iscritto") $campoRicerca = "venduto";
                 $campoRicerca = $dblink->filter($campoRicerca);
                 $where.= " AND (calendario.oggetto LIKE '%".$campoRicerca."%' OR calendario.mittente LIKE '%".$campoRicerca."%'";
-                $where.= " OR data_iscrizione LIKE '%".$campoRicerca."%' OR calendario.campo_5 LIKE '%".$campoRicerca."%'";
+                $where.= " OR lista_preventivi.data_iscrizione LIKE '%".$campoRicerca."%' OR calendario.campo_5 LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.nome LIKE '%".$campoRicerca."%' OR calendario.cognome LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.email LIKE '%".$campoRicerca."%' OR calendario.campo_9 LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.messaggio LIKE '%".$campoRicerca."%' OR lista_preventivi.cognome_nome_agente LIKE '%".$campoRicerca."%'";
@@ -187,7 +187,7 @@ switch($whrStato){
                             calendario.stato, IF(calendario.id_azienda>0,CONCAT('<i class=\"fa fa-user btn btn-icon-only green-jungle btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>'),CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>')) AS 'fa-user', 
                             calendario.mittente AS 'Mittente',
                             IF(calendario.id_professionista>0,(SELECT CONCAT(lista_professionisti.cognome,' ',lista_professionisti.nome) FROM lista_professionisti WHERE lista_professionisti.id=calendario.id_professionista ),'') AS Professionista,
-                            (SELECT lista_prodotti.nome FROM lista_prodotti WHERE lista_prodotti.id=calendario.id_prodotto) AS 'Corso', data_iscrizione AS 'Data Negativo', lista_preventivi.imponibile AS Importo, 
+                            (SELECT lista_prodotti.nome FROM lista_prodotti WHERE lista_prodotti.id=calendario.id_prodotto) AS 'Corso', lista_preventivi.data_iscrizione AS 'Data Negativo', lista_preventivi.imponibile AS Importo, 
                             (SELECT nome FROM lista_tipo_marketing WHERE id = id_tipo_marketing) AS Marketing,
                             (SELECT nome FROM lista_campagne WHERE id = calendario.id_campagna) AS Campagna";
         }else{
@@ -197,7 +197,7 @@ switch($whrStato){
                             calendario.stato, IF(calendario.id_azienda>0,CONCAT('<i class=\"fa fa-user btn btn-icon-only green-jungle btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>'),CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>')) AS 'fa-user', 
                             calendario.mittente,
                             IF(calendario.id_professionista>0,(SELECT CONCAT(lista_professionisti.cognome,' ',lista_professionisti.nome) FROM lista_professionisti WHERE lista_professionisti.id=calendario.id_professionista ),'') AS Professionista,
-                            (SELECT lista_prodotti.nome FROM lista_prodotti WHERE lista_prodotti.id=calendario.id_prodotto) AS 'Corso', data_iscrizione AS 'Data Negativo', lista_preventivi.imponibile AS Importo, 
+                            (SELECT lista_prodotti.nome FROM lista_prodotti WHERE lista_prodotti.id=calendario.id_prodotto) AS 'Corso', lista_preventivi.data_iscrizione AS 'Data Negativo', lista_preventivi.imponibile AS Importo, 
                             (SELECT nome FROM lista_tipo_marketing WHERE id = id_tipo_marketing) AS Marketing,
                             (SELECT nome FROM lista_campagne WHERE id = calendario.id_campagna) AS Campagna";
         }
@@ -208,7 +208,7 @@ switch($whrStato){
                 if($campoRicerca=="iscritto") $campoRicerca = "venduto";
                 $campoRicerca = $dblink->filter($campoRicerca);
                 $where.= " AND (calendario.oggetto LIKE '%".$campoRicerca."%' OR calendario.mittente LIKE '%".$campoRicerca."%'";
-                $where.= " OR data_iscrizione LIKE '%".$campoRicerca."%' OR calendario.campo_5 LIKE '%".$campoRicerca."%'";
+                $where.= " OR lista_preventivi.data_iscrizione LIKE '%".$campoRicerca."%' OR calendario.campo_5 LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.nome LIKE '%".$campoRicerca."%' OR calendario.cognome LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.email LIKE '%".$campoRicerca."%' OR calendario.campo_9 LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.messaggio LIKE '%".$campoRicerca."%' OR lista_preventivi.cognome_nome_agente LIKE '%".$campoRicerca."%'";
@@ -241,7 +241,7 @@ switch($whrStato){
                 if($campoRicerca=="iscritto") $campoRicerca = "venduto";
                 $campoRicerca = $dblink->filter($campoRicerca);
                 $where.= " AND (calendario.oggetto LIKE '%".$campoRicerca."%' OR calendario.mittente LIKE '%".$campoRicerca."%'";
-                $where.= " OR data_iscrizione LIKE '%".$campoRicerca."%' OR calendario.campo_5 LIKE '%".$campoRicerca."%'";
+                $where.= " OR calendario.campo_5 LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.nome LIKE '%".$campoRicerca."%' OR calendario.cognome LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.email LIKE '%".$campoRicerca."%' OR calendario.campo_9 LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.messaggio LIKE '%".$campoRicerca."%' OR lista_fatture.cognome_nome_agente LIKE '%".$campoRicerca."%'";
@@ -272,7 +272,7 @@ switch($whrStato){
                 if($campoRicerca=="iscritto") $campoRicerca = "venduto";
                 $campoRicerca = $dblink->filter($campoRicerca);
                 $where.= " AND (calendario.oggetto LIKE '%".$campoRicerca."%' OR calendario.mittente LIKE '%".$campoRicerca."%'";
-                $where.= " OR data_iscrizione LIKE '%".$campoRicerca."%' OR calendario.campo_5 LIKE '%".$campoRicerca."%'";
+                $where.= " OR lista_preventivi.data_iscrizione LIKE '%".$campoRicerca."%' OR calendario.campo_5 LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.nome LIKE '%".$campoRicerca."%' OR calendario.cognome LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.email LIKE '%".$campoRicerca."%' OR calendario.campo_9 LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.messaggio LIKE '%".$campoRicerca."%' OR lista_preventivi.cognome_nome_agente LIKE '%".$campoRicerca."%'";
@@ -321,10 +321,10 @@ calendario.stato AS 'StatoRichiesta',
                 if($campoRicerca=="iscritto") $campoRicerca = "venduto";
                 $campoRicerca = $dblink->filter($campoRicerca);
                 $where.= " AND (calendario.oggetto LIKE '%".$campoRicerca."%' OR calendario.mittente LIKE '%".$campoRicerca."%'";
-                $where.= " OR data_iscrizione LIKE '%".$campoRicerca."%' OR calendario.campo_5 LIKE '%".$campoRicerca."%'";
+                $where.= " OR calendario.campo_5 LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.nome LIKE '%".$campoRicerca."%' OR calendario.cognome LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.email LIKE '%".$campoRicerca."%' OR calendario.campo_9 LIKE '%".$campoRicerca."%'";
-                $where.= " OR calendario.messaggio LIKE '%".$campoRicerca."%' OR lista_preventivi.cognome_nome_agente LIKE '%".$campoRicerca."%'";
+                $where.= " OR calendario.messaggio LIKE '%".$campoRicerca."%' OR lista_fatture.cognome_nome_agente LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.tipo_marketing LIKE '%".$campoRicerca."%' OR calendario.telefono LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.cellulare LIKE '%".$campoRicerca."%' OR calendario.professione LIKE '%".$campoRicerca."%'";
                 $where.= " OR calendario.campo_4 LIKE '%".$campoRicerca."%' OR calendario.stato LIKE '%".$campoRicerca."%')";
