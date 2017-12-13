@@ -35,12 +35,12 @@ if (isset($_POST['intervallo_data'])) {
     }
     
 } else {
-    $titolo_intervallo = " del mese in corso";
-    $_POST['intervallo_data'] = "01-".date("m-Y")." al ".date("t-m-Y");
-    $setDataCalIn = "01-".date("m-Y");
-    $setDataCalOut = date("t-m-Y");
+    $titolo_intervallo = " oggi";
+    $_POST['intervallo_data'] = date("d-m-Y")." al ".date("d-m-Y");
+    $setDataCalIn = date("d-m-Y");
+    $setDataCalOut = date("d--m-Y");
     
-    $where_intervallo = " AND YEAR(data_completamento)=YEAR(CURDATE()) AND MONTH(data_completamento)=MONTH(CURDATE())";
+    $where_intervallo = " AND YEAR(data_completamento)=YEAR(CURDATE()) AND MONTH(data_completamento)=MONTH(CURDATE()) AND DAY(data_completamento)=DAY(CURDATE())";
 }
 ?>
 <!DOCTYPE html>
@@ -151,9 +151,6 @@ if (isset($_POST['intervallo_data'])) {
                 <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <?php
-                $dblink->update("lista_fatture", array("stato_invio"=>""), array("sezionale"=>"PA"));
-                
-                $tabella = "lista_fatture";
                 echo '<FORM action="salva.php?fn=inviaAttestatiMultipli" method="POST">';
                 //$campi_visualizzati = $table_listaFattureInvioMultiplo['index']['campi'];
                 //$where = $table_listaFattureInvioMultiplo['index']['where'];
@@ -173,7 +170,7 @@ if (isset($_POST['intervallo_data'])) {
                 ON iscrizioniCompletate.id_fattura=iscrizioniPagate.id_fattura_iscr)");
                 
                 
-                $sql_0001 = "SELECT 
+                $sql_0001 = "SELECT DISTINCT
                 CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/iscrizioni/dettaglio.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',  
                 CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"".BASE_URL."/moduli/corsi/printAttestatoPDF.php?idIscrizione=',id,'\" title=\"ATTESTATO\" alt=\"ATTESTATO\" target=\"_blank\"><i class=\"fa fa-file-pdf-o\"></i></a>') AS 'fa-file-pdf-o', dataagg, scrittore,
                 CONCAT('<span class=\"btn sbold uppercase btn-outline blue-steel\">',cognome_nome_professionista,'</span>') AS cognome_nome_professionista, 

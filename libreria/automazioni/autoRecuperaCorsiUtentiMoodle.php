@@ -170,7 +170,7 @@ foreach($rs_utente_entrato as $row_utente_entrato){
                     "id_professionista" => $idProfessionista,
                     "data_inizio_iscrizione" => $data_inizio_iscrizione_manuale,
                     "data_fine_iscrizione" => $data_fine_iscrizione_manuale,
-                     "data_inizio" =>  $idClasse==0 ? $data_inizio_iscrizione_manuale :  date("Y-m-d H:i:s", $timestart),
+                    "data_inizio" =>  $idClasse==0 ? $data_inizio_iscrizione_manuale :  date("Y-m-d H:i:s", $timestart),
                     "data_fine" => $idClasse==0 ? $data_fine_iscrizione_manuale :  $data_scadenza_corso,
                     "nome_corso" => $dblink->filter($id_corso['nome_prodotto']),
                     "nome_classe" => $dblink->filter($id_classe['nome']),

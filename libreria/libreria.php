@@ -12,4 +12,5 @@ include_once(BASE_ROOT.'libreria/lib_esporta.php');
 include_once(BASE_ROOT.'libreria/lib_moodle.php');
 include_once(BASE_ROOT.'libreria/preventivi.php');
 include_once(BASE_ROOT.'libreria/fatture.php');
+include_once(BASE_ROOT.'libreria/attestato.php');
 ?>

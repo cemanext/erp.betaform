@@ -72,12 +72,17 @@ if(isset($_POST['intervallo_data'])) {
    }
     //echo '<h1>$intervallo_data = '.$intervallo_data.'</h1>';
 } else {
-    $where_intervallo_calendario = " AND YEAR(data)=YEAR(CURDATE()) AND MONTH(data)=MONTH(CURDATE())";
+    $dataMax = $dblink->get_field("SELECT MAX(data) FROM calendario WHERE etichetta LIKE 'Calendario%'");
+    //$dataMin = $dblink->get_field("SELECT MIN(data) FROM calendario WHERE etichetta LIKE 'Calendario%' AND data_fine >= CURDATE()");
+    $dataMin = date("Y-m-d");
+    //$where_intervallo_calendario = " AND YEAR(data)=YEAR(CURDATE()) AND MONTH(data)=MONTH(CURDATE())";
+    $where_intervallo_calendario = " AND data BETWEEN '" . $dataMin . "' AND  '" . $dataMax . "'";
     
-    $titolo_intervallo = " del mese in corso";
-    $_POST['intervallo_data'] = "01-".date("m-Y")." al ".date("t-m-Y");
-    $setDataCalIn = date("d-m-Y");
-    $setDataCalOut = date("t-m-Y");
+    //$titolo_intervallo = " del mese in corso";
+    $titolo_intervallo = " dal  " . GiraDataOra($dataMin) . " al  " . GiraDataOra($dataMax) . "";
+    $_POST['intervallo_data'] = GiraDataOra($dataMin)." al ".GiraDataOra($dataMax);
+    $setDataCalIn = GiraDataOra($dataMin);
+    $setDataCalOut = GiraDataOra($dataMax);
     
     $_POST['id_corso'] = "";
     $_POST['id_docente'] = "";
@@ -196,10 +201,11 @@ if(isset($_POST['intervallo_data'])) {
                             
                             $sql_0001 = "CREATE TEMPORARY TABLE stat_corsi_elearning_tmp (SELECT
                             IF(LENGTH(codice)>=1, codice, nome_prodotto) AS sigla_corso,
-                            CONCAT('') AS data_creazione_corso,
+                            data_creazione_corso,
                             (SELECT COUNT(*) AS conteggio FROM lista_iscrizioni AS li WHERE li.id_corso = lc.id AND avanzamento_completamento >= 50) AS numero_frequentanti,
                             round(durata/60,2) AS numero_ore_corso,
-                            round((durata/60)*300,2) AS costo_didattica
+                            round((durata/60)*300,2) AS costo_didattica,
+                            nome_docente AS Docente
                             FROM lista_corsi AS lc WHERE 1 AND id_corso_moodle > 0 AND stato LIKE 'Attivo' $whereCorsoId)
                             ";
                             $dblink->query($sql_0001, true);
@@ -219,7 +225,7 @@ if(isset($_POST['intervallo_data'])) {
                             CREATE TEMPORARY TABLE stat_corsi_esami_aula_tmp (SELECT
                             (SELECT IF(LENGTH(codice)>=1, codice, nome) AS codice_corso FROM lista_prodotti AS lp WHERE lp.id = cal.id_prodotto) AS sigla_corso,
                             IF(cal.etichetta LIKE '%Corsi', cal.data, '') AS data_inizio,
-                            '' AS data_fine,
+                            data_fine,
                             IF(cal.etichetta LIKE '%Esami', cal.data, '') AS data_esame,
                             (SELECT IF(COUNT(*)>0,'SI','NO') AS risultato FROM matrice_corsi_docenti AS mcd WHERE mcd.id_calendario = cal.id AND mcd.stato LIKE 'Attivo' ) AS incarico_docente,
                             '' AS convocazione_inviata,
@@ -260,19 +266,48 @@ if(isset($_POST['intervallo_data'])) {
                                 tot_negativi,
                                 numero_ore_corso,
                                 costo_didattica,
-                                round(Fatturato*0.2, 2) AS costo_marketing,
+                                round(15*tot_richieste, 2) AS costo_marketing,
                                 round(Fatturato*0.2, 2) AS costo_personale,
                                 Fatturato AS fatturato_lordo,
                                 Fatturato_Annullato,
                                 (Fatturato-Fatturato_Annullato) AS fatturato_netto,
                                 Fatturato_Incassato,
                                 Fatturato_da_Incassare,
-                                round((Fatturato-Fatturato_Annullato) - costo_didattica - costo_del_marketing - costo_del_personale, 2) AS primo_margine
+                                round(((Fatturato-Fatturato_Annullato) - costo_didattica - round(15*tot_richieste, 2) - round(Fatturato*0.2, 2)), 2) AS primo_margine
                                 FROM stat_corsi_esami_aula_tmp);
                             ";
                             $dblink->query($sql_1002, true);
                             
-                            stampa_table_datatables_responsive("SELECT * FROM stat_corsi_esami_aula_ok;", "Analisi corsi in aula ed esami".$titolo_intervallo, "tabella_base2");
+                            $sql_1003 = "
+                                CREATE TEMPORARY TABLE stat_corsi_esami_aula_tot (SELECT
+                                '<b>TUTTI</b>' AS sigla_corso,
+                                '' AS data_inizio,
+                                '' AS data_fine,
+                                '' AS data_esame,
+                                '' AS incarico_docente,
+                                '' AS convocazione_inviata,
+                                '' AS esito_questionari_di_gradimento,
+                                CONCAT('<b>',SUM(tot_richieste_oggi),'</b>') AS tot_richieste_oggi,
+                                CONCAT('<b>',SUM(tot_iscritti_oggi),'</b>') AS tot_iscritti_oggi,
+                                CONCAT('<b>',SUM(tot_richieste),'</b>') AS tot_richieste,
+                                CONCAT('<b>',SUM(tot_iscritti),'</b>') AS tot_iscritti,
+                                CONCAT('<b>',SUM(tot_richiami),'</b>') AS tot_richiami,
+                                CONCAT('<b>',SUM(tot_negativi),'</b>') AS tot_negativi,
+                                CONCAT('<b>',SUM(numero_ore_corso),'</b>') AS numero_ore_corso,
+                                CONCAT('<b>',SUM(costo_didattica),'</b>') AS costo_didattica,
+                                CONCAT('<b>',SUM(costo_marketing),'</b>') AS costo_marketing,
+                                CONCAT('<b>',SUM(costo_personale),'</b>') AS costo_personale,
+                                CONCAT('<b>',SUM(fatturato_lordo),'</b>') AS fatturato_lordo,
+                                CONCAT('<b>',SUM(Fatturato_Annullato),'</b>') AS Fatturato_Annullato,
+                                CONCAT('<b>',SUM(fatturato_netto),'</b>') AS fatturato_netto,
+                                CONCAT('<b>',SUM(Fatturato_Incassato),'</b>') AS Fatturato_Incassato,
+                                CONCAT('<b>',SUM(Fatturato_da_Incassare),'</b>') AS Fatturato_da_Incassare,
+                                CONCAT('<b>',SUM(primo_margine),'</b>') AS primo_margine
+                                FROM stat_corsi_esami_aula_ok);
+                            ";
+                            $dblink->query($sql_1003, true);
+                            
+                            stampa_table_datatables_responsive("SELECT * FROM stat_corsi_esami_aula_ok UNION SELECT * FROM stat_corsi_esami_aula_tot;", "Analisi corsi in aula ed esami".$titolo_intervallo, "tabella_base2");
                             
                             ?>
                         </div>

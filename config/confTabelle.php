@@ -2541,6 +2541,16 @@ $table_listaCorsi = array(
                         "readonly" => false,
                         "sql" => "SELECT id AS valore, nome AS nome FROM `lista_prodotti`  WHERE LENGTH(`nome`)>1 AND  `stato` LIKE 'Attivo' ORDER BY  `nome`  ASC"
                     ),
+                    array(  "campo" => "data_creazione_corso",
+                        "tipo" => "data",
+                        "etichetta" => "Data Creazione Corso",
+                        "readonly" => false
+                    ),
+                    array(  "campo" => "nome_docente",
+                        "tipo" => "input",
+                        "etichetta" => "Docente",
+                        "readonly" => false
+                    ),
                     array(
                     "campo" => "stato",
                     "tipo" => "select_static",
@@ -3996,6 +4006,16 @@ $table_calendarioEsami = array(
                         "etichetta" => "Ora",
                         "readonly" => false
                     ),
+                array(  "campo" => "data_fine",
+                        "tipo" => "data",
+                        "etichetta" => "Data Fine",
+                        "readonly" => false
+                    ),
+                array(  "campo" => "ora_fine",
+                        "tipo" => "ora",
+                        "etichetta" => "Ora Fine",
+                        "readonly" => false
+                    ),
                 array(  "campo" => "oggetto",
                         "tipo" => "input",
                         "etichetta" => "Oggetto",
@@ -4080,6 +4100,16 @@ $table_calendarioEsamiIscrizioni = array(
                 array(  "campo" => "ora",
                         "tipo" => "ora",
                         "etichetta" => "Ora",
+                        "readonly" => true
+                    ),
+                array(  "campo" => "data_fine",
+                        "tipo" => "data",
+                        "etichetta" => "Data Fine",
+                        "readonly" => true
+                    ),
+                array(  "campo" => "ora_fine",
+                        "tipo" => "ora",
+                        "etichetta" => "Ora Fine",
                         "readonly" => true
                     ),
                 array(  "campo" => "oggetto",

@@ -570,4 +570,11 @@ function verificaEmail($emailVerifica){
     return preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i", $emailVerifica);
 }
 
+function modificaAccentate($str) {
+	$search = explode(",",
+"á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,ø,Ø,Å,Á,À,Â,Ä,È,É,Ê,Ë,Í,Î,Ï,Ì,Ò,Ó,Ô,Ö,Ú,Ù,Û,Ü,Ÿ,Ç,Æ,Œ");
+	$replace = explode(",",
+"&aacute;,&eacute;,&iacute;,&oacute;,&uacute;,&agrave;,&egrave;,&igrave;,&ograve;,&ugrave;,a,e,i,o,u,y,a,e,i,o,u,a,o,O,&Aacute;,&Agrave;,A,A,A,&Eacute;,&Egrave;,E,E,&Iacute;,I,I,&Igrave;,&Ograve;,&Oacute;,O,O,&Uacute;,&Ugrave;,U,U,Y,C,AE,OE");
+	return str_replace($search, $replace, $str);
+}
 ?>

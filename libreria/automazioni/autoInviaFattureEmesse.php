@@ -16,11 +16,12 @@ include_once(BASE_ROOT.'libreria/libreria.php');
 //AND lista_password.id_moodle_user=152
 //$moodle = new moodleWebService();
 
-echo '<li>DB_HOST = '.DB_HOST.'</li>';
-echo '<li>DB_USER = '.DB_USER.'</li>';
-//echo '<li>DB_PASS = '.DB_PASS.'</li>';
-echo '<li>DB_NAME = '.DB_NAME.'</li>';
-
+iF(DISPLAY_DEBUG){
+    echo '<li>DB_HOST = '.DB_HOST.'</li>';
+    echo '<li>DB_USER = '.DB_USER.'</li>';
+    //echo '<li>DB_PASS = '.DB_PASS.'</li>';
+    echo '<li>DB_NAME = '.DB_NAME.'</li>';
+}
 //$sqlCrocco = "SELECT IF(NOW()>'2017-08-09 12:00:00', '1', '0' ) AS result FROM lista_menu LIMIT 1";
 //$rowCrocco = $dblink->get_row($sqlCrocco);
 

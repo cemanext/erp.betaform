@@ -416,6 +416,8 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
                   echo '</center></div></div>';
             echo '</div></div>';
 
+/*          07.12.2017 CRO -> COMMENTATO PERCHE C è DA CAPIRE BENE VISTO CHE ORA ISCRIVONO AL CALENDARIO DA PREV E FATTURE E NON DA CONFIGURAZIONE
+
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
             $sql_0006 = "SELECT id FROM calendario WHERE id_corso = '".$id_corso."' AND id_professionista = '".$id_professionista."'";
             $rs_00006 = $dblink->num_rows($sql_0006);
@@ -435,8 +437,11 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
                     AND etichetta LIKE 'Calendario Esami'
                     ORDER BY data DESC, ora ASC";
                     stampa_table_static_basic($sql_0001, '', 'Esami Disponibili', 'blue-steel');
-                }
+                }                
+                
+                
             echo '</div></div>';
+*/
 
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
             $sql_0002 = "SELECT

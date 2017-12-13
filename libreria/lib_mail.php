@@ -772,7 +772,7 @@ function inviaEmailCorsoCompletato($idIscrione,$updateIscrizione) {
 }
 
 //invia attestato da iscrizione
-function inviaEmailAttestatoDaIdIscrizione($idIscrione,$updateIscrizione) {
+function inviaEmailAttestatoDaIdIscrizione($idIscrione) {
     global $dblink, $log;
     
     $idIscrizione = $idIscrione;
@@ -818,7 +818,7 @@ function inviaEmailAttestatoDaIdIscrizione($idIscrione,$updateIscrizione) {
             $codiceAccreditamento = $rowCostiConfig['codice_accreditamento'];
             $idAttestato = $rowCostiConfig['id_attestato'];
             $oggetto = $rowCostiConfig['email_oggetto'];
-            $messaggio = $rowCostiConfig['email_messaggio'];
+            $messaggio = modificaAccentate(html_entity_decode($rowCostiConfig['email_messaggio']));
             $mittente = $rowCostiConfig['email_mittente'];
 
             if($idAttestato>0){
@@ -871,7 +871,7 @@ function inviaEmailAttestatoDaIdIscrizione($idIscrione,$updateIscrizione) {
         $codiceAccreditamento = $rowCostiConfig['codice_accreditamento'];
         $idAttestato = $rowCostiConfig['id_attestato'];
         $oggetto = $rowCostiConfig['email_oggetto'];
-        $messaggio = $rowCostiConfig['email_messaggio'];
+        $messaggio = modificaAccentate(html_entity_decode($rowCostiConfig['email_messaggio']));
         $mittente = $rowCostiConfig['email_mittente'];
         
         if($idAttestato>0){
@@ -922,7 +922,7 @@ function inviaEmailAttestatoDaIdIscrizione($idIscrione,$updateIscrizione) {
     $nome_corso = $nomeCorso;
     $id_classe = $idClasse;
     $allegato_1 = "".$codiceCorso."/".$anno."/".$mese."/" . $filename;
-    $filename_oggetto = $oggetto . $nomeCorso ."";
+    $filename_oggetto = $oggetto ." ". $nomeCorso ."";
     
     $dest = $emailProfessionista;
     $ogg = $filename_oggetto;
@@ -980,7 +980,7 @@ function inviaEmailAttestatoDaIdIscrizione($idIscrione,$updateIscrizione) {
         $messaggio->AddReplyTo($mitt);
 
 
-        $dest = 'simone.crocco@cemanext.it';
+        //$dest = 'simone.crocco@cemanext.it';
         if(EMAIL_DEBUG){
             if (strlen($destinatario_admin) > 5) {
                 $dest = $destinatario_admin;
@@ -1053,6 +1053,8 @@ function inviaEmailAttestatoDaIdIscrizione($idIscrione,$updateIscrizione) {
         $messaggio->Subject = $ogg;
         $messaggio->Body = stripslashes($mess);
 
+        $return = true;
+        
         if (!$messaggio->Send()) {
             $log->log_all_errors('inviaEmailAttestatoDaIdIscrizione -> Email NON Inviata [' . $messaggio->ErrorInfo . '] -> $destinatario = ' . $dest, 'ERRORE');
         
@@ -1061,7 +1063,6 @@ function inviaEmailAttestatoDaIdIscrizione($idIscrione,$updateIscrizione) {
             $return = true;
         }
         
-        $return = true;
     }
     
     return $return;
