@@ -14,7 +14,7 @@ iF(DISPLAY_DEBUG){
     echo '<li>'.date('Y-m-d H:i:s').'</li>';
 }
 
-echo $sql_lista_iscrizioni_invia = "SELECT * FROM lista_iscrizioni WHERE stato_invio_attestato LIKE 'In Attesa di Invio' LIMIT 20";
+$sql_lista_iscrizioni_invia = "SELECT * FROM lista_iscrizioni WHERE stato_invio_attestato LIKE 'In Attesa di Invio' LIMIT 20";
 $rs_lista_iscrizioni_invia = $dblink->get_results($sql_lista_iscrizioni_invia);
 foreach ($rs_lista_iscrizioni_invia AS $row_lista_iscrizioni_invia){
         
@@ -22,9 +22,13 @@ foreach ($rs_lista_iscrizioni_invia AS $row_lista_iscrizioni_invia){
         
         creaAttestatoPDF($idIscrizione, false);
         
-        echo '<li>$idIscrizione = '.$idIscrizione.'</li>';
+        iF(DISPLAY_DEBUG){
+            echo '<li>$idIscrizione = '.$idIscrizione.'</li>';
+        }
         $ret = inviaEmailAttestatoDaIdIscrizione($idIscrizione);
-        echo '<li>$ret = '.$ret.'</li>';
+        iF(DISPLAY_DEBUG){
+            echo '<li>$ret = '.$ret.'</li>';
+        }
         
         if($ret){
             $sql_00002 = "UPDATE lista_iscrizioni
@@ -35,23 +39,30 @@ foreach ($rs_lista_iscrizioni_invia AS $row_lista_iscrizioni_invia){
             AND id=".$idIscrizione;
             $ok = $dblink->query($sql_00002);
             if($ok){
-                echo '<li style="color:green;">idIscrizione = '.$idIscrizione.' Inviata !</li>';
+                iF(DISPLAY_DEBUG){
+                    echo '<li style="color:green;">idIscrizione = '.$idIscrizione.' Inviata !</li>';
+                }
                 /*if($_SESSION['autoInviaFattureCount']>0){
                     //echo ' <meta http-equiv="refresh" content="2; url='.BASE_URL."/libreria/automazioni/autoInviaFattureEmesse.php".'"><h3>rimangono '.$_SESSION['autoInviaFattureCount'].' fatture da inviare </h3>';
                 }else{
                     unset($_SESSION['autoInviaFattureCount']);
                 }*/
             }else{
-                echo '<li style="color:red;">idIscrizione = '.$idIscrizione.' NON Inviata e NON Aggiornata !</li>';
+                iF(DISPLAY_DEBUG){
+                    echo '<li style="color:red;">idIscrizione = '.$idIscrizione.' NON Inviata e NON Aggiornata !</li>';
+                }
             }
         }
-        echo '<hr>';
+        iF(DISPLAY_DEBUG){
+            echo '<hr>';   
+        }
         //ob_flush();
         sleep(1);
     }
 /*}else{
     unset($_SESSION['autoInviaFattureCount']);
 }*/
-
-echo '<br>'.date("H:i:s");
+iF(DISPLAY_DEBUG){
+    echo '<br>'.date("H:i:s");
+}
 ?>

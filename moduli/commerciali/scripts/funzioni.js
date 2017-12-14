@@ -72,7 +72,8 @@ $(document).ready(function() {
             var posting = jQuery.post( BASE_URL_HOST+"/moduli/commerciali/salva.php?fn=associaCommerciale" , jQuery( "#idFromCommerciale" ).serializeArray() );
             posting.done(function(data) {
 
-                var res = data.split(":");
+                var str = data.replace(/^\s+|\s+$/g, '');
+                var res = str.split(":");
                 
                 if(res[0] === "OK"){
                     $("#myModalAssociaCommerciale #idCal").val('');

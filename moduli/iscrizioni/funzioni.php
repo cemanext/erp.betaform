@@ -240,6 +240,7 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
                     $id_prodotto = $row_00006['id_prodotto'];
                     $id_professionista = $row_00006['id_professionista'];
                     $NomeClasse = $row_00006['nome_classe'];
+                    $idClasse = $row_00006['id_classe'];
                     $DataFineIscrizione = GiraDataItaBarra($row_00006['data_fine_iscrizione']);
                     $data_scadenza_corso_timestamp = $row_00006['data_scadenza_corso_timestamp'];
                     $idFattura= $row_00006['id_fattura'];
@@ -276,8 +277,8 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
             FROM lista_iscrizioni
             WHERE id=" . $id." ORDER BY data_fine  ASC";
             */
-
-            $sql_0001 = "SELECT
+            
+            /*
             IF(abbonamento=1,
                 IF(stato='Configurazione',
                 IF(data_fine_iscrizione>=CURDATE(),CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"modifica.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>'),'')
@@ -287,6 +288,14 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
                 IF(data_fine_iscrizione>=CURDATE(),CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"modifica.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>'),'')
                 ,''
             )
+            ) AS 'fa-edit',
+            
+             */
+
+            $sql_0001 = "SELECT
+            IF(stato NOT LIKE '%Scadu%',
+                IF(data_fine_iscrizione>=CURDATE(),CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"modifica.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>'),'')
+                ,''
             ) AS 'fa-edit',
             IF(abbonamento=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>',
                 IF(abbonamento>1,'<span class=\"btn sbold uppercase btn-outline blue-hoki\">Pacchetto</span>',
@@ -349,29 +358,36 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
             if(($tipoAbbonamento==1 && $statoIscrizione=='Configurazione') || ($statoIscrizione!="Scaduto" && $statoIscrizione!='Completato' && $statoIscrizione!='Scaduto e Disattivato')){
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
 
-            if($tipoAbbonamento==1){
-            $sql_0001 = "SELECT
-            CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$id."&idFattura=".$idFattura."&idUtenteMoodle=".$idUtenteMoodle."&NomeClasse=".$NomeClasse."&fn=annullaAbbonamentoMoodle\"><span class=\"btn sbold uppercase btn-outline red\">Disabilita Abbonamento</span></a>') AS 'Disabilita Abbonamento',
-            CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$id."&idFattura=".$idFattura."&idUtenteMoodle=".$idUtenteMoodle."&NomeClasse=".$NomeClasse."&DataFineIscrizione=".$DataFineIscrizione."&fn=riabilitaAbbonamentoMoodle\"><span class=\"btn sbold uppercase btn-outline green-jungle\">Abilita Abbonamento</span></a>') AS 'Abilita Abbonamento',
-            CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$id."&idFattura=".$idFattura."&idUtenteMoodle=".$idUtenteMoodle."&NomeClasse=".$NomeClasse."&DataFineIscrizione=".$DataFineIscrizione."&fn=riabilitaAbbonamentoMoodle\"><span class=\"btn sbold uppercase btn-outline green\">Proroga Abbonamento</span></a>') AS 'Proroga Abbonamento'
-            FROM lista_iscrizioni WHERE id='".$id."' LIMIT 1";
-            /*
-            CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idUtenteMoodle=".$idUtenteMoodle."&fn=disabilitaUtente\"><span class=\"btn sbold uppercase btn-outline red\">Disabilita Utente</span></a>') AS 'Disabilita Utente', 
-            CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idUtenteMoodle=".$idUtenteMoodle."&fn=abilitaUtente\"><span class=\"btn sbold uppercase btn-outline green-jungle\">Abilita Utente</span></a>') AS 'Abilita Utente'
-            */
-            }else{
-            $sql_0001 = "SELECT
-            CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$id."&idUtenteMoodle=".$idUtenteMoodle."&idCorso=".$id_corso_moodle."&fn=disabilitaCorso\"><span class=\"btn sbold uppercase btn-outline red\">Disabilita Corso</span></a>') AS 'Disabilita Corso',
-            CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$id."&idUtenteMoodle=".$idUtenteMoodle."&idCorso=".$id_corso_moodle."&dataScadenza=".$data_scadenza_corso_timestamp."&fn=abilitaProrogaCorso\"><span class=\"btn sbold uppercase btn-outline green-jungle\">Abilita Corso</span></a>') AS 'Abilita Corso',
-            CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$id."&idUtenteMoodle=".$idUtenteMoodle."&idCorso=".$id_corso_moodle."&dataScadenza=".$data_scadenza_corso_timestamp."&fn=abilitaProrogaCorso\"><span class=\"btn sbold uppercase btn-outline green\">Proroga Corso</span></a>') AS 'Proroga Corso'
-            FROM lista_iscrizioni WHERE id='".$id."' LIMIT 1";
-            }
-            /*
-            CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idUtenteMoodle=".$idUtenteMoodle."&fn=disabilitaUtente\"><span class=\"btn sbold uppercase btn-outline red\">Disabilita Utente</span></a>') AS 'Disabilita Utente', 
-            CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idUtenteMoodle=".$idUtenteMoodle."&fn=abilitaUtente\"><span class=\"btn sbold uppercase btn-outline green-jungle\">Abilita Utente</span></a>') AS 'Abilita Utente'
-            */
-            stampa_table_static_basic($sql_0001, '', 'Configurazioni MOODLE', 'red');
-            echo '</div></div>';
+                if($tipoAbbonamento==1){
+                    
+                    list($idIscConfig,$idFatturaConfig,$idUtenteMoodleConfig,$DataFineIscrizioneConfig,$NomeClasseConfig) = $dblink->get_row("SELECT `lista_iscrizioni`.id, `lista_iscrizioni`.id_fattura,
+                        IF(id_professionista>0,(SELECT id_moodle_user FROM lista_professionisti WHERE id = id_professionista LIMIT 1),id_utente_moodle) AS id_utente_moodle,
+                        UNIX_TIMESTAMP(data_fine_iscrizione) AS data_scadenza_corso_timestamp,
+                        (SELECT nome FROM lista_classi WHERE id = id_classe LIMIT 1) AS 'nome_classe'
+                        FROM `lista_iscrizioni` WHERE abbonamento = '1' AND stato = 'Configurazione' AND id_professionista = '$id_professionista' AND id_classe = '$idClasse'");
+                    
+                    $sql_0001 = "SELECT
+                    CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$idIscConfig."&idFattura=".$idFatturaConfig."&idUtenteMoodle=".$idUtenteMoodleConfig."&NomeClasse=".$NomeClasseConfig."&fn=annullaAbbonamentoMoodle\"><span class=\"btn sbold uppercase btn-outline red\">Disabilita Abbonamento</span></a>') AS 'Disabilita Abbonamento',
+                    CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$idIscConfig."&idFattura=".$idFatturaConfig."&idUtenteMoodle=".$idUtenteMoodleConfig."&NomeClasse=".$NomeClasseConfig."&DataFineIscrizione=".$DataFineIscrizioneConfig."&fn=riabilitaAbbonamentoMoodle\"><span class=\"btn sbold uppercase btn-outline green-jungle\">Abilita Abbonamento</span></a>') AS 'Abilita Abbonamento',
+                    CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$idIscConfig."&idFattura=".$idFatturaConfig."&idUtenteMoodle=".$idUtenteMoodleConfig."&NomeClasse=".$NomeClasseConfig."&DataFineIscrizione=".$DataFineIscrizioneConfig."&fn=riabilitaAbbonamentoMoodle\"><span class=\"btn sbold uppercase btn-outline green\">Proroga Abbonamento</span></a>') AS 'Proroga Abbonamento'
+                    FROM lista_iscrizioni WHERE id='".$id."' LIMIT 1";
+                    /*
+                    CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idUtenteMoodle=".$idUtenteMoodle."&fn=disabilitaUtente\"><span class=\"btn sbold uppercase btn-outline red\">Disabilita Utente</span></a>') AS 'Disabilita Utente', 
+                    CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idUtenteMoodle=".$idUtenteMoodle."&fn=abilitaUtente\"><span class=\"btn sbold uppercase btn-outline green-jungle\">Abilita Utente</span></a>') AS 'Abilita Utente'
+                    */
+                }else{
+                    $sql_0001 = "SELECT
+                    CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$id."&idUtenteMoodle=".$idUtenteMoodle."&idCorso=".$id_corso_moodle."&fn=disabilitaCorso\"><span class=\"btn sbold uppercase btn-outline red\">Disabilita Corso</span></a>') AS 'Disabilita Corso',
+                    CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$id."&idUtenteMoodle=".$idUtenteMoodle."&idCorso=".$id_corso_moodle."&dataScadenza=".$data_scadenza_corso_timestamp."&fn=abilitaProrogaCorso\"><span class=\"btn sbold uppercase btn-outline green-jungle\">Abilita Corso</span></a>') AS 'Abilita Corso',
+                    CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$id."&idUtenteMoodle=".$idUtenteMoodle."&idCorso=".$id_corso_moodle."&dataScadenza=".$data_scadenza_corso_timestamp."&fn=abilitaProrogaCorso\"><span class=\"btn sbold uppercase btn-outline green\">Proroga Corso</span></a>') AS 'Proroga Corso'
+                    FROM lista_iscrizioni WHERE id='".$id."' LIMIT 1";
+                }
+                /*
+                CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idUtenteMoodle=".$idUtenteMoodle."&fn=disabilitaUtente\"><span class=\"btn sbold uppercase btn-outline red\">Disabilita Utente</span></a>') AS 'Disabilita Utente', 
+                CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idUtenteMoodle=".$idUtenteMoodle."&fn=abilitaUtente\"><span class=\"btn sbold uppercase btn-outline green-jungle\">Abilita Utente</span></a>') AS 'Abilita Utente'
+                */
+                stampa_table_static_basic($sql_0001, '', 'Configurazioni MOODLE', 'red');
+                echo '</div></div>';
             }
             echo '<div class="row"><div class="col-lg-6 col-md-6 col-sm-12" style="display:none; visibility:hidden;">';
              $sql_0001 = "SELECT

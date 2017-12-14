@@ -292,7 +292,8 @@ $(document).ready(function() {
             var posting = jQuery.post( BASE_URL_HOST+"/moduli/calendario/salva.php?fn=associaCommerciale" , jQuery( "#idFromCommercialeMultiplo" ).serializeArray() );
             posting.done(function(data) {
 
-                var res = data.split(":");
+                var str = data.replace(/^\s+|\s+$/g, '');
+                var res = str.split(":");
                 
                 if(res[0] === "OK"){
                     $("#myModalAssociaCommerciale #idCal").val('');
@@ -376,7 +377,8 @@ $(document).ready(function() {
             var posting = jQuery.post( BASE_URL_HOST+"/moduli/calendario/salva.php?fn=associaProdotti" , jQuery( "#idFromProdottoMultiplo" ).serializeArray() );
             posting.done(function(data) {
 
-                var res = data.split(":");
+                var str = data.replace(/^\s+|\s+$/g, '');
+                var res = str.split(":");
                 
                 if(res[0] === "OK"){
                     $("#myModalAssociaProdotti #idCal").val('');

@@ -172,8 +172,8 @@ $( document ).ready(function() {
         var posting = jQuery.post( BASE_URL_HOST+"/moduli/anagrafiche/salva.php?fn=CercaSalvaProfessionista" , jQuery( "#idFromCercaCodiceUtente" ).serializeArray() );
         posting.done(function(data) {
             
-            //alert(data);
-            var res = data.split(":");
+            var str = data.replace(/^\s+|\s+$/g, '');
+            var res = str.split(":");
             
             if(res[0] === "OK"){
                 $("#myModalCodiceFiscale").modal('hide');     // dismiss the dialog
@@ -233,8 +233,8 @@ $( document ).ready(function() {
         var posting = jQuery.post( BASE_URL_HOST+"/moduli/anagrafiche/salva.php?fn=aggiungiAzienda" , jQuery( "#idFromAggiungiAzienda" ).serializeArray() );
         posting.done(function(data) {
             
-            //alert(data);
-            var res = data.split(":");
+            var str = data.replace(/^\s+|\s+$/g, '');
+            var res = str.split(":");
             
             if(res[0] === "OK"){
                 $("#myModalAggiungiAzienda").modal('hide');     // dismiss the dialog
@@ -321,8 +321,8 @@ $( document ).ready(function() {
         var posting = jQuery.post( BASE_URL_HOST+"/moduli/anagrafiche/salva.php?fn=aggiungiProfessionista" , jQuery( "#idFromCercaProfessionista" ).serializeArray() );
         posting.done(function(data) {
             
-            //alert(data);
-            var res = data.split(":");
+            var str = data.replace(/^\s+|\s+$/g, '');
+            var res = str.split(":");
             
             if(res[0] === "OK"){
                 $("#myModalCercaProfessionista input#id_professionista").val('');
@@ -414,8 +414,8 @@ $( document ).ready(function() {
         var posting = jQuery.post( BASE_URL_HOST+"/moduli/anagrafiche/salva.php?fn=aggiungiAzienda" , jQuery( "#idFromCercaAzienda" ).serializeArray() );
         posting.done(function(data) {
             
-            //alert(data);
-            var res = data.split(":");
+            var str = data.replace(/^\s+|\s+$/g, '');
+            var res = str.split(":");
             
             if(res[0] === "OK"){
                 $("#myModalCercaAzienda input#id_azienda").val('');

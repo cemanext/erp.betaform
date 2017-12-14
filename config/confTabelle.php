@@ -2842,7 +2842,21 @@ $table_listaIscrizioniPartecipanti = array(
                     "tipo" => "select2",
                     "etichetta" => "Fattura Collegata",
                     "readonly" => false,
-                    "sql" => "SELECT id as valore, CONCAT(codice,'/',sezionale,' del ',DATE_FORMAT(DATE(data_creazione), '%d-%m-%Y')) AS nome FROM lista_fatture WHERE lista_fatture.id_professionista IN (SELECT lista_iscrizioni.id_professionista FROM lista_iscrizioni WHERE id = '".(isset($_GET['id']) ? $_GET['id'] : 0 )."')"
+                    "sql" => "SELECT id as valore, CONCAT(codice,'/',sezionale,' del ',DATE_FORMAT(DATE(data_creazione), '%d-%m-%Y'),' a: ',lista_fatture.cognome_nome_professionista) AS nome 
+                                FROM lista_fatture 
+                                WHERE 
+                                (
+                                    lista_fatture.id_professionista IN (SELECT lista_iscrizioni.id_professionista FROM lista_iscrizioni WHERE id = '".(isset($_GET['id']) ? $_GET['id'] : 0 )."') 
+                                )
+                                    OR (
+                                        LCASE(lista_fatture.cognome_nome_professionista) LIKE (SELECT CONCAT('%',LCASE(SUBSTRING_INDEX(lista_iscrizioni.cognome_nome_professionista,' ',1)),'%') FROM lista_iscrizioni WHERE id = '".(isset($_GET['id']) ? $_GET['id'] : 0 )."')
+                                    )"
+                ),
+                array(  "campo" => "id_classe",
+                    "tipo" => "select2",
+                    "etichetta" => "Classe",
+                    "readonly" => false,
+                    "sql" => "SELECT id as valore, nome AS nome FROM lista_classi WHERE stato = 'Attivo'"
                 ),
                 /*array(
                 "campo" => "stato",
@@ -3884,7 +3898,7 @@ $table_listaCosti = array(
                         "readonly" => true
                     ),
                 array(  "campo" => "scrittore",
-                        "tipo" => "hidden",
+                        "tipo" => "input",
                         "etichetta" => "Scrittore",
                         "readonly" => true
                     ),
@@ -3893,10 +3907,26 @@ $table_listaCosti = array(
                         "etichetta" => "Stato",
                         "readonly" => true
                     ),
+                     array(  "campo" => "data_creazione",
+                        "tipo" => "data",
+                        "etichetta" => "Data Creazione",
+                        "readonly" => false
+                    ),
+                     array(  "campo" => "data_scadenza",
+                        "tipo" => "data",
+                        "etichetta" => "Data Scadenza",
+                        "readonly" => false
+                    ),
                     array(  "campo" => "descrizione",
                         "tipo" => "text",
                         "etichetta" => "Descrizione",
                         "readonly" => false
+                    ),
+                    array(  "campo" => "id_fatture_banche",
+                        "tipo" => "select2",
+                        "etichetta" => "Banca",
+                        "readonly" => false,
+                        "sql" => "SELECT id AS valore, nome AS nome FROM `lista_fatture_banche` WHERE stato LIKE 'Attivo' ORDER BY nome ASC"
                     ),
                     array(  "campo" => "entrate",
                         "tipo" => "input",

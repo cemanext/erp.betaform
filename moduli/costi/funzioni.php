@@ -41,7 +41,7 @@ function Stampa_HTML_Modifica_Costi($tabella,$id,$titolo){
     global $table_listaCosti;
     switch ($tabella) {
         case "lista_costi":
-            stampa_bootstrap_form_horizontal($tabella,$id,$titolo);
+            stampa_bootstrap_form_horizontal($tabella,$id,$titolo, "salva.php?fn=salvaGenerale");
         break;
 
         case "lista_costi_dettaglio":

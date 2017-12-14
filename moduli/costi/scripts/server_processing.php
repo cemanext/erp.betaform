@@ -26,11 +26,11 @@ switch($tabella){
             $where = $table_listaCosti['index']['where'];
         }
         if(!empty($arrayCampoRicerca)){
-            /*foreach ($arrayCampoRicerca as $campoRicerca) {
-                $where.= " AND (`Professionista` LIKE '%".$campoRicerca."%' OR `Codice` LIKE '%".$campoRicerca."%'";
-                $where.= " OR `Creato_il` LIKE '%".$campoRicerca."%' OR `Agente` LIKE '%".$campoRicerca."%'";
-                $where.= " OR `imponibile` LIKE '%".$campoRicerca."%' OR `stato` LIKE '%".$campoRicerca."%')";
-            }*/
+            foreach ($arrayCampoRicerca as $campoRicerca) {
+                $where.= " AND (`cognome_nome_professionista` LIKE '%".$campoRicerca."%' OR `nome_banca` LIKE '%".$campoRicerca."%'";
+                $where.= " OR `ragione_sociale_azienda` LIKE '%".$campoRicerca."%' OR `data_creazione` LIKE '%".$campoRicerca."%'";
+                $where.= " OR `entrate` LIKE '%".$campoRicerca."%' OR `stato` LIKE '%".$campoRicerca."%')";
+            }
         }
         $ordine = $table_listaCosti['index']['order'];
     break;

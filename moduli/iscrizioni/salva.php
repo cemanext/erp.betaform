@@ -129,9 +129,19 @@ if(isset($_GET['fn'])){
         case "aggiornaDataScadenzaIscrizione":
             salvaGenerale();
             
-            $row = $dblink->get_row("SELECT id_utente_moodle, abbonamento FROM lista_iscrizioni WHERE id='".$_POST['id']."'", true);
+            if($_POST['txt_id'] > 0){
+                
+                $row = $dblink->get_row("SELECT id_utente_moodle, abbonamento FROM lista_iscrizioni WHERE id='".$_POST['txt_id']."'", true);
             
-            $dblink->updateWhere("lista_iscrizioni", array("data_fine_iscrizione"=>GiraDataOra($_POST['data_fine_iscrizione']), "data_fine"=>GiraDataOra($_POST['data_fine_iscrizione'])), "id_utente_moodle='".$row['id_utente_moodle']."' AND abbonamento=1 AND lista_iscrizioni.data_inizio_iscrizione <= CURDATE() AND lista_iscrizioni.data_fine_iscrizione >= CURDATE()");
+                $dblink->updateWhere("lista_iscrizioni", array("data_fine_iscrizione"=>GiraDataOra($_POST['data_fine_iscrizione']), "data_fine"=>GiraDataOra($_POST['data_fine_iscrizione'])), "id_utente_moodle='".$row['id_utente_moodle']."' AND abbonamento=1 AND lista_iscrizioni.data_inizio_iscrizione <= CURDATE() AND lista_iscrizioni.data_fine_iscrizione >= CURDATE()");
+                
+                if(!empty($_POST['id_classe'])){
+                    $id_professionista = $dblink->get_field("SELECT id_professionista FROM lista_iscrizioni WHERE id = '".$_POST['txt_id']."'");
+                    $nomeClasse = $dblink->get_field("SELECT nome FROM lista_classi WHERE id = '".$_POST['id_classe']."'");
+                    $dblink->updateWhere("lista_iscrizioni", array("nome_classe" => $nomeClasse, "id_classe" => $_POST['id_classe']), "id_professionista='".$id_professionista."' AND stato NOT LIKE '%Scadu%' AND abbonamento = '1'");
+                    //echo $dblink->get_query();
+                }
+            }
             
             $referer = $_POST['txt_referer'];
             header("Location:".$referer."");

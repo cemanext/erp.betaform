@@ -90,6 +90,8 @@ switch($tabella){
        if(isset($_GET['whr_state']) && !empty($_GET['whr_state']) && $_GET['whr_state']!="null"){
             if($_GET['whr_state']=='d24b24ffc6859354a67488859971308f'){
                 $where = " (MD5(stato_invio)=('".$_GET['whr_state']."'))".$where_lista_fatture;
+            }else if ($_GET['whr_state']=='8b7bbcc20d4857c20045195274f7d0dc'){
+                 $where = " (MD5(stato)=('".$_GET['whr_state']."') OR stato LIKE 'Pagata %')".$where_lista_fatture;
             }else{
                 $where = " (MD5(stato)=('".$_GET['whr_state']."'))".$where_lista_fatture;
                 if($_GET['whr_state'] == "01f71d0bfed57b81b522dbdf5f21d288"){

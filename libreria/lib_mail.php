@@ -1020,7 +1020,7 @@ function inviaEmailAttestatoDaIdIscrizione($idIscrione) {
 
         
         if(!EMAIL_DEBUG){
-        //$dest_bcc = 'supporto@cemanext.it,contino@betaformazione.com';
+        $dest_bcc = 'supporto@cemanext.it,cucchi@betaformazione.com';
             if (strlen($dest_bcc) > 0) {
                 //$messaggio->AddBCC($dest_bcc);
                 $dest_bcc = str_replace(' ', '', $dest_bcc);

@@ -207,8 +207,10 @@ function Stampa_HTML_Dettaglio_Anagrafica($tabella, $id) {
             stampa_table_datatables_responsive($sql_0003, 'Ordini', 'tabella_base3', 'blue', 'fa fa-edit');
 
             //AGGIUNGI NUOVO PREVENTIVO
-            echo '<CENTER><a href="' . BASE_URL . '/moduli/preventivi/salva.php?tbl=lista_preventivi&idProfessionista=' . $id . '&fn=nuovoPreventivoProfessionista" class="btn green-meadow"><i class="fa fa-plus"></i>  NUOVO ORDINE</a></CENTER><br><br>';
-
+            if($_SESSION['livello_utente'] == "betaadmin" || $_SESSION['livello_utente'] == "amministratore"){
+                echo '<CENTER><a href="' . BASE_URL . '/moduli/preventivi/salva.php?tbl=lista_preventivi&idProfessionista=' . $id . '&fn=nuovoPreventivoProfessionista" class="btn green-meadow"><i class="fa fa-plus"></i>  NUOVO ORDINE</a></CENTER><br><br>';
+            }
+            
             echo '</div></div>';
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
             $sql_0004 = "SELECT
@@ -220,9 +222,12 @@ IF(tipo LIKE 'Fattura',CONCAT('<span class=\"btn sbold uppercase btn-outline blu
 		(SELECT CONCAT(cognome, ' ', nome) FROM lista_password WHERE id = id_agente) AS 'Commerciale', stato FROM lista_fatture WHERE id_professionista = $id ORDER BY dataagg DESC";
             //stampa_table_static_basic($sql_0004, '', 'Fatture', 'green-meadow', 'fa fa-file-text');
             stampa_table_datatables_responsive($sql_0004, 'Fatture', 'tabella_base4', 'green-meadow', 'fa fa-file-text');
+            
             //AGGIUNGI NUOVO PREVENTIVO
-            echo '<CENTER><a href="' . BASE_URL . '/moduli/fatture/salva.php?tbl=lista_fatture&idProfessionista=' . $id . '&fn=nuovaFatturaProfessionista" class="btn green-meadow"><i class="fa fa-plus"></i>  NUOVA FATTURA</a></CENTER><br><br>';
-
+            if($_SESSION['livello_utente'] == "betaadmin" || $_SESSION['livello_utente'] == "amministratore"){
+                echo '<CENTER><a href="' . BASE_URL . '/moduli/fatture/salva.php?tbl=lista_fatture&idProfessionista=' . $id . '&fn=nuovaFatturaProfessionista" class="btn green-meadow"><i class="fa fa-plus"></i>  NUOVA FATTURA</a></CENTER><br><br>';
+            }
+            
             echo '</div></div>';
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
             /* (SELECT CONCAT(cognome, ' ', nome) FROM lista_professionisti WHERE id = id_professionista) AS 'Professionista', */
