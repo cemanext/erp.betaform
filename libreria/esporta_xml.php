@@ -27,7 +27,7 @@ $xml->addAttribute("AppVersion", '2');
 $xml->addAttribute("Creator", 'CEMA NEXT Srl');
 $xml->addAttribute("CreatorUrl", 'http://www.cemanext.it');
 $xml->addAttribute("xmlns:xsi", 'http://www.w3.org/2001/XMLSchema-instance');
-$xml->addAttribute("xsi:noNamespaceSchemaLocation", 'http://erp.betaformazione.com');
+$xml->addAttribute("xsi:noNamespaceSchemaLocation", ERP_DOMAIN_NAME);
 
 $company = $xml->addChild('Company');
 $company->addChild('Name', 'Beta Formazione srl');
@@ -40,7 +40,7 @@ $company->addChild('VatCode', '02322490398');
 $company->addChild('Tel', '0545 916279');
 $company->addChild('Fax', '0545 030139');
 $company->addChild('Email', 'amministrazione@betaformazione.com');
-$company->addChild('HomePage', 'www.betaformazione.com');
+$company->addChild('HomePage', WP_DOMAIN_NAME);
 
 $documents = $xml->addChild('Documents');
 

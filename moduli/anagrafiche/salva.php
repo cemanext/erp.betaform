@@ -323,7 +323,7 @@ if(isset($_GET['fn'])){
                 $ok = 0;
                 $dblink->rollback();
             }
-            header("Location:http://erp.betaformazione.com/moduli/base/modifica.php?tbl=lista_indirizzi&id=$id_indirizzo_nuovo&res=$ok");
+            header("Location:".BASE_URL."/moduli/base/modifica.php?tbl=lista_indirizzi&id=$id_indirizzo_nuovo&res=$ok");
         break;
         
         case 'inserisciProfessionista':
@@ -343,7 +343,7 @@ if(isset($_GET['fn'])){
                 $ok = 0;
                 $dblink->rollback();
             }
-            header("Location:http://erp.betaformazione.com/moduli/anagrafiche/modifica.php?tbl=lista_professionisti&id=$id_professionista_nuovo&res=$ok");
+            header("Location:".BASE_URL."/moduli/anagrafiche/modifica.php?tbl=lista_professionisti&id=$id_professionista_nuovo&res=$ok");
         break;
         
         case 'NuovaNotaProfessionista':
@@ -1121,7 +1121,7 @@ if(isset($_GET['fn'])){
             //die();
             
             //if($idProfessionista>0)
-            //    header("Location: http://erp.betaformazione.com/moduli/anagrafiche/dettaglio_tab.php?tbl=lista_professionisti&id=$idProfessionista&res=$ok");
+            //    header("Location: ".BASE_URL."/moduli/anagrafiche/dettaglio_tab.php?tbl=lista_professionisti&id=$idProfessionista&res=$ok");
             //else
             header("Location:".$referer."&res=$ok");
             

@@ -21,7 +21,7 @@ function Stampa_HTML_index_Costi($tabella){
                 
                 $sql_000001 = "UPDATE lista_costi, lista_fatture
                 SET lista_costi.id_fatture_banche = lista_fatture.id_fatture_banche
-                WHERE lista_costi.id_fattura = lista_fatture.id";
+                WHERE lista_costi.id_fattura = lista_fatture.id AND lista_costi.id_fatture_banche <= 0";
                 $rs_000001 = $dblink->query($sql_000001);
                 
                 $sql_000001 = "UPDATE lista_costi, lista_fatture_banche
