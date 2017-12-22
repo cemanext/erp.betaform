@@ -12,7 +12,7 @@ if(isset($_GET['mese']) && isset($_GET['anno'])){
     }
 }
 
-$fileName = "fatture_".$mese."_".$anno."";
+$fileName = "fatture_".$mese."_".$anno.".txt";
 
 $rowsFatture = $dblink->get_results("SELECT * FROM lista_fatture WHERE YEAR(data_creazione) = '$anno' AND MONTH(data_creazione) = '$mese'");
 

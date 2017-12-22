@@ -21,7 +21,7 @@ if (DISPLAY_DEBUG) {
     //AND lista_password.id_moodle_user=152
 }
 
-$rs_utente_entrato = $dblink->get_results("SELECT id FROM ".MOODLE_DB_NAME.".mdl_user WHERE DATE(FROM_UNIXTIME(lastaccess))=CURDATE()");
+$rs_utente_entrato = $dblink->get_results("SELECT id FROM ".MOODLE_DB_NAME.".mdl_user WHERE DATE(FROM_UNIXTIME(lastaccess))=CURDATE() AND HOUR(FROM_UNIXTIME(lastaccess)) = HOUR(NOW())");
 
 foreach($rs_utente_entrato as $row_utente_entrato){
     $id_utente_entrato = $row_utente_entrato['id'];

@@ -49,7 +49,7 @@ function Stampa_HTML_Dettaglio_Commerciali($tabella, $id) {
                 WHERE 1 $where_calendario 
                 AND etichetta LIKE 'Nuova Richiesta'
                 AND (stato LIKE 'Mai Contattato' OR stato LIKE 'Richiamare')
-                AND id_agente='".$id."'";
+                AND id_agente='".$id."' GROUP BY id_agente";
                 //echo '<li>$sql_007 = '.$sql_007.'</li>';
                 $titolo = 'Richieste da Gestire';
                 $icona = 'fa fa-building';
@@ -62,7 +62,7 @@ function Stampa_HTML_Dettaglio_Commerciali($tabella, $id) {
                 WHERE 1 $where_calendario 
                 AND YEAR(datainsert)=YEAR(CURDATE())
                 AND etichetta LIKE 'Nuova Richiesta'
-                AND id_agente='".$id."'";
+                AND id_agente='".$id."' GROUP BY id_agente";
                 $titolo = 'Nuove Richieste ANNO';
                 $icona = 'fa fa-building';
 
@@ -71,7 +71,7 @@ function Stampa_HTML_Dettaglio_Commerciali($tabella, $id) {
                 stampa_dashboard_stat_v2($sql_007, $titolo, $icona, $colore, $link);
             echo '</div>';
             echo '<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">';
-                $sql_008 = "SELECT SUM(imponibile) AS conteggio FROM lista_preventivi WHERE id_agente='".$id."' AND (stato LIKE 'Chiuso' OR stato LIKE 'Venduto') ";
+                $sql_008 = "SELECT SUM(imponibile) AS conteggio FROM lista_preventivi WHERE id_agente='".$id."' AND (stato LIKE 'Chiuso' OR stato LIKE 'Venduto') GROUP BY id_agente ";
                 $titolo = 'Tot. Ordinato';
                 $icona = 'fa fa-building';
                 $colore = 'red';
@@ -79,7 +79,7 @@ function Stampa_HTML_Dettaglio_Commerciali($tabella, $id) {
                 stampa_dashboard_stat_v2($sql_008, $titolo, $icona, $colore, $link);
             echo '</div>';
             echo '<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">';
-                $sql_009 = "SELECT SUM(imponibile) AS conteggio FROM lista_fatture WHERE id_agente='".$id."' AND (stato LIKE 'In Attesa' OR stato LIKE 'Pagata') ";
+                $sql_009 = "SELECT SUM(imponibile) AS conteggio FROM lista_fatture WHERE id_agente='".$id."' AND (stato LIKE 'In Attesa' OR stato LIKE 'Pagata') GROUP BY id_agente ";
                 $titolo = 'Tot. Fatturato';
                 $icona = 'fa fa-building';
                 $colore = 'purple';
@@ -100,7 +100,7 @@ function Stampa_HTML_Dettaglio_Commerciali($tabella, $id) {
                             FROM lista_password AS ag WHERE ag.livello='commerciale' AND ag.stato = 'Attivo' AND id='$id'";
                             stampa_table_datatables_responsive($sql_0010, "Statistiche del commerciale".$titolo_intervallo, "");
             echo '</div></div>';
-            echo '<div class="row"><div class="col-md-12 col-sm-12">';
+            /*echo '<div class="row"><div class="col-md-12 col-sm-12">';
             $sql_temp_001 = "CREATE TEMPORARY TABLE tmp_stat_preventivi SELECT DISTINCT DAY(dataagg) AS giorno, MONTH(dataagg) AS mese, YEAR(dataagg) AS anno,
                             (SELECT COUNT(*) AS conteggio_gestite FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Negativo' OR lp.stato LIKE 'Venduto' OR lp.stato LIKE 'Chiuso') AND lp.id_agente=ag.id_agente AND YEAR(lp.dataagg)=YEAR(ag.dataagg) AND MONTH(lp.dataagg)=MONTH(ag.dataagg) AND DAY(lp.dataagg)=DAY(ag.dataagg)) AS gestite,
                             (SELECT COUNT(*) AS conteggio_venduti FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Venduto' OR lp.stato LIKE 'Chiuso') AND lp.id_agente=ag.id_agente AND YEAR(lp.dataagg)=YEAR(ag.dataagg) AND MONTH(lp.dataagg)=MONTH(ag.dataagg) AND DAY(lp.dataagg)=DAY(ag.dataagg)) AS venduti,
@@ -127,6 +127,7 @@ function Stampa_HTML_Dettaglio_Commerciali($tabella, $id) {
             
             stampa_table_datatables_responsive($sql_0020, "Andamento per mese".$titolo_intervallo, "tabella_base1");
             echo '</div></div>';
+            */
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
             echo "<form enctype=\"multipart/form-data\" role=\"form\" action=\"#\" method=\"POST\">";
                 $sql_0002 = "SELECT IF(id_professionista>0,CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio_tab.php?tbl=lista_professionisti&id=',id_professionista,'\" title=\"SCHEDA\" alt=\"SCHEDA\"><i class=\"fa fa-book\"></i></a>'),

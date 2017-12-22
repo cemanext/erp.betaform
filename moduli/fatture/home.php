@@ -195,7 +195,7 @@ if (isset($_POST['intervallo_data'])) {
                             GROUP BY YEAR(data_creazione), MONTH(data_creazione), tipo
                             ORDER BY YEAR(data_creazione) DESC, MONTH(data_creazione) DESC, tipo, sezionale, stato ASC;";
 
-                            stampa_table_static_basic($sql_0004, 'tab4_fatture_home', $titolo_intervallo, '', 'fa fa-user');
+                            stampa_table_static_basic($sql_0004, 'tab4_fatture_home', "ESPORTA XML", '', 'fa fa-user');
                             ?>
 
                         </div>
@@ -208,7 +208,7 @@ if (isset($_POST['intervallo_data'])) {
                             GROUP BY YEAR(data_creazione), MONTH(data_creazione)
                             ORDER BY YEAR(data_creazione) DESC, MONTH(data_creazione) DESC;";
 
-                            stampa_table_static_basic($sql_0014, 'tab5_fatture_home', $titolo_intervallo, '', 'fa fa-user');
+                            stampa_table_static_basic($sql_0014, 'tab5_fatture_home', 'ESPORTA PER COMMERCIALISTA', '', 'fa fa-user');
                             ?>
                             <!-- ESEMPIO STAMPIA GOOGLE CHART -->
                             <!--<div class="portlet light portlet-fit bordered">

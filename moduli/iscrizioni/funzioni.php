@@ -362,9 +362,11 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
                     
                     list($idIscConfig,$idFatturaConfig,$idUtenteMoodleConfig,$DataFineIscrizioneConfig,$NomeClasseConfig) = $dblink->get_row("SELECT `lista_iscrizioni`.id, `lista_iscrizioni`.id_fattura,
                         IF(id_professionista>0,(SELECT id_moodle_user FROM lista_professionisti WHERE id = id_professionista LIMIT 1),id_utente_moodle) AS id_utente_moodle,
-                        UNIX_TIMESTAMP(data_fine_iscrizione) AS data_scadenza_corso_timestamp,
+                        data_fine_iscrizione AS data_scadenza_corso_timestamp,
                         (SELECT nome FROM lista_classi WHERE id = id_classe LIMIT 1) AS 'nome_classe'
                         FROM `lista_iscrizioni` WHERE abbonamento = '1' AND stato = 'Configurazione' AND id_professionista = '$id_professionista' AND id_classe = '$idClasse'");
+                    
+                    $DataFineIscrizioneConfig = GiraDataItaBarra($DataFineIscrizioneConfig);
                     
                     $sql_0001 = "SELECT
                     CONCAT('<a href=\"".BASE_URL."/moduli/iscrizioni/salva.php?idIscrizione=".$idIscConfig."&idFattura=".$idFatturaConfig."&idUtenteMoodle=".$idUtenteMoodleConfig."&NomeClasse=".$NomeClasseConfig."&fn=annullaAbbonamentoMoodle\"><span class=\"btn sbold uppercase btn-outline red\">Disabilita Abbonamento</span></a>') AS 'Disabilita Abbonamento',
