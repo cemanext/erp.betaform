@@ -1,6 +1,6 @@
 <?php
 
-if(isset($_POST) && !empty($_POST['referer'])){
+if(isset($_POST)){
     $_POST['referer'] = !empty($_POST['referer']) ? $_POST['referer'] : $_SERVER['HTTP_REFERER'];
     require_once $_SERVER['DOCUMENT_ROOT'].'/libreria/automazioni/salvaRichiesta.php';
 }else if(isset($_GET) && $_GET['fn']!=""){
