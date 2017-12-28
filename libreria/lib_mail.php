@@ -11,7 +11,7 @@ require BASE_ROOT.'classi/phpmailer/src/SMTP.php';
 define("SERVER_HOST_MAIL", "authsmtp.betaformazione.com");
 define("SECURE_SMTP_MAIL", "");
 define("PORT_MAIL", "25");
-define("PASS_MAIL", "p8arEtha@");
+define("PASS_MAIL", "p8arEtha@1");
 define("USER_MAIL", "smtp@betaformazione.com");
 
 /*
