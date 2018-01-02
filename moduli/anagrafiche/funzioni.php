@@ -166,6 +166,12 @@ function Stampa_HTML_Dettaglio_Anagrafica($tabella, $id) {
                     . "ON mdl_user.id = mdl_user_info_data.userid "
                     . "WHERE mdl_user.`id` = " . $rowUtente['Id Moodle'] . " AND mdl_user_info_data.fieldid='1'";
             stampa_table_static_basic($sql_0032, '', 'Stato Utente attuale su Moodle', 'green-jungle', 'fa fa-user');
+            $idUtente_per_iframe = $rowUtente['Id Moodle'];
+            //echo '--> '.$rowUtente['Id Moodle'];
+            //echo '--> '.$idUtente_per_iframe;
+           echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="http://erp.betaformazione.com/libreria/automazioni/autoRecuperaCorsiUtentiMoodle_Multiplo.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
+            echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="http://erp.betaformazione.com/libreria/automazioni/autoCorsiIniziati_Multiplo.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
+            
             echo '</div></div>';
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
             $sql_0031 = "SELECT mdl_user.`id` AS 'Id Moodle', mdl_user.`username`, mdl_user.`email`, "
