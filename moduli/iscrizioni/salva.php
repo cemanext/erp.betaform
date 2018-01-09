@@ -41,7 +41,7 @@ if(isset($_GET['fn'])){
         case 'abilitaUtente':
             $idUtenteMoodle = $_GET['idUtenteMoodle'];
             $return = $moodle->abilitaUtenteMoodle($idUtenteMoodle);
-            if($return===true){
+            if($return){
                 $dblink->update("lista_password", array("stato"=>"Attivo"), array("id_moodle_user"=>$idUtenteMoodle));
                 header("Location:$referer");
             }
@@ -50,7 +50,7 @@ if(isset($_GET['fn'])){
         case 'disabilitaUtente':
             $idUtenteMoodle = $_GET['idUtenteMoodle'];
             $return = $moodle->disabilitaUtenteMoodle($idUtenteMoodle);
-            if($return===true){
+            if($return){
                 $dblink->update("lista_password", array("stato"=>"Non Attivo"), array("id_moodle_user"=>$idUtenteMoodle));
                 header("Location:$referer");
             }
@@ -62,7 +62,7 @@ if(isset($_GET['fn'])){
                 $idCorso = $_GET['idCorso'];
                 $idIscrizione = $_GET['idIscrizione'];
                  $return = $moodle->annullaCorsoMoodle($idUtenteMoodle, $idCorso);
-                 if($return===true){
+                 if($return){
                     $dblink->update("lista_iscrizioni", array("stato"=>"Corso Disabilitato"), array("id"=>$idIscrizione));
                     header("Location:$referer");
                 }
@@ -74,7 +74,7 @@ if(isset($_GET['fn'])){
                 $idIscrizione = $_GET['idIscrizione'];
                 $dataScadenza = $_GET['dataScadenza'];
                  $return = $moodle->prorogaCorsoMoodle($idUtenteMoodle, $idCorso, $dataScadenza);
-                 if($return===true){
+                 if($return){
                     $dblink->update("lista_iscrizioni", array("stato"=>"In Attesa"), array("id"=>$idIscrizione));
                     header("Location:$referer");
                 }
@@ -99,8 +99,9 @@ if(isset($_GET['fn'])){
 
             $return = $moodle->annullaAbbonamentoMoodle($idUtenteMoodle, $NomeClasse);
             //array("id_fattura"=>$idFattura, "nome_classe" => $NomeClasse)
-            if($return===true){
+            if($return){
                 $dblink->updateWhere("lista_iscrizioni", array("stato"=>"Abbonamento Disabilitato"), " id='".$idIscrizione."' AND (stato='Configurazione') AND id_utente_moodle='".$idUtenteMoodle."' AND abbonamento=1");
+                //echo $dblink->get_query();
             }
 
             header("Location:$referer");
@@ -117,10 +118,13 @@ if(isset($_GET['fn'])){
             
             $data_fine_iscrizione = GiraDataOra(str_replace("/", "-", $DataFineIscrizione));
             
-            if($return===true){
+            if($return){
                 //$dblink->update("lista_iscrizioni", array("stato"=>"In Attesa"), array("id_fattura"=>$idFattura, "nome_classe" => $NomeClasse));
                 $dblink->updateWhere("lista_iscrizioni", array("stato"=>"Configurazione"), " id='".$idIscrizione."' AND (stato='Abbonamento Disabilitato' OR stato='Configurazione') AND id_utente_moodle='".$idUtenteMoodle."' AND abbonamento=1");
+                //echo $dblink->get_query();
+                //echo "<br>";
                 $dblink->updateWhere("lista_iscrizioni", array("data_fine_iscrizione"=>$data_fine_iscrizione, "stato"=>'In Attesa'), " id_fattura='".$idFattura."' AND (stato='In Corso' OR stato='In Attesa') AND id_utente_moodle='".$idUtenteMoodle."' AND abbonamento=1");
+                //echo $dblink->get_query();
             }
 
             header("Location:$referer");

@@ -233,6 +233,32 @@ if (isset($_GET['id'])) {
             </div>
         </div>
         <!-- FINE MODAL INVIA PREVENTIVO -->
+        
+        <div id="myModalAssociaProfessionista" class="modal fade">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                 <!-- dialog body -->
+                 <div class="modal-body">
+                   <button type="button" class="close" data-dismiss="modal">&times;</button>
+                   Cerca Professionista a cui associare i corsi selezionati
+                   <form class="form-horizontal form-bordered" enctype="multipart/form-data" method="POST" onsubmit="return false;" id="idFromAssociaProfessionista">
+                   <div class="form-body">
+                   <div class="form-group">
+                   <label></label>
+                   <div class="col-md-12">
+                       <?=print_hidden("id_calendario", $idCalendario_daPassare)?>
+                       <?=print_hidden("id_professionista", $id_professionista_presente)?>
+                       <?=print_hidden("id_azienda", $id_azienda_presente)?>
+                       <?=print_hidden("codice_fiscale", "")?>
+                       <?=print_hidden("idIscrizioni", "")?>
+                       <?=print_input("associa_professionista", "", "Cerca Professionista", false) ?>
+                   </div></div></div></form>
+                 </div>
+                 <!-- dialog buttons -->
+                 <div class="modal-footer"><button type="button" id="annullaButtonAssociaProfessionista" class="btn btn-primary red">ANNULLA</button><button type="button" id="okButtonAssociaProfessionista" class="btn btn-primary">CONFERMA</button></div>
+               </div>
+             </div>
+        </div>
     </body>
     <?php
     /*

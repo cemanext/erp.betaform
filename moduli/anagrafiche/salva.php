@@ -81,6 +81,30 @@ if(isset($_GET['fn'])){
                     }else{
                         echo '<li style="color: RED;"> KO !</li>';
                         $log->log_all_errors('stato_email -> email NON inviata = '.$email.']','ERRORE');
+                        
+                        $stato_email = inviaEmailTemplate_Password($idListaPassword, 'inviaPasswordErroreMail');
+                        if($stato_email){
+                            if(DISPLAY_DEBUG) echo '<li style="color: GREEN;"> OK !</li>';
+                            $sql_00003 = "UPDATE lista_password 
+                            SET stato = 'Attivo', 
+                            dataagg = NOW(),
+                            scrittore = 'autoInviaPasswordUtenti'
+                            WHERE id=".$idListaPassword;
+                            $rs_00003 = $dblink->query($sql_00003);
+
+                            if($rs_00003){
+                                if(DISPLAY_DEBUG) echo '<li style="color:GREEN;">idListaPassword = '.$idListaPassword.' Aggiornata !</li>';
+                                $log->log_all_errors('lista_password ->stato = ATTIVO - ERRORE MAIL  [idListaPassword = '.$idListaPassword.']','OK');
+                            }else{
+                                if(DISPLAY_DEBUG) echo '<li style="color: RED;">idListaPassword = '.$idListaPassword.' NON Aggiornata !</li>';
+                                $log->log_all_errors('lista_password ->stato = NON ATTIVO - ERRORE MAIL [idListaPassword = '.$idListaPassword.']','ERRORE');
+                            }
+
+                        }else{
+                            if(DISPLAY_DEBUG) echo '<li style="color: RED;"> KO !</li>';
+                            $log->log_all_errors('stato_email -> email di ERRORE NON inviata ad assitenza@betaformazione.com = '.$email.']','ERRORE');
+                        }
+                        
                     }
                 echo '<hr>';
                 sleep(5);
@@ -881,6 +905,55 @@ if(isset($_GET['fn'])){
             
         break;
         
+        case 'cambiaProfessionistaIscrizione':
+            $ok = true;
+            $dblink->begin();
+            
+            $richiesta_id_professionista = $_POST['id_professionista'];
+            $richiesta_idIscrizioni = $_POST['idIscrizioni'];
+            $richiesta_id_azienda = $_POST['id_azienda'];
+            
+            $arrayIscrizioniId = explode(":",$richiesta_idIscrizioni);
+            
+            if(is_array($arrayIscrizioniId)){
+                foreach ($arrayIscrizioniId as $idIscrizione) {
+                    $updateIscrizione = array(
+                        "id_professionista" => $richiesta_id_professionista,
+                        "dataagg" => date("Y-m-d H:i:s"),
+                        "scrittore" => $dblink->filter($_SESSION['cognome_nome_utente'])
+                    );
+                    
+                    $whereIscrizione = array(
+                        "id" => $idIscrizione
+                    );
+                    $ok = $ok && $dblink->update("lista_iscrizioni", $updateIscrizione, $whereIscrizione);
+                }
+            }else{
+                $updateIscrizione = array(
+                    "id_professionista" => $richiesta_id_professionista,
+                    "dataagg" => date("Y-m-d H:i:s"),
+                    "scrittore" => $dblink->filter($_SESSION['cognome_nome_utente'])
+                );
+
+                $whereIscrizione = array(
+                    "id" => $richiesta_idIscrizioni
+                );
+                $ok = $ok && $dblink->update("lista_iscrizioni", $updateIscrizione, $whereIscrizione);
+            }
+            
+            if($ok===true){
+                $dblink->commit();
+                $ok="OK:OK";
+            }
+            
+            if($ok===false){
+                $dblink->rollback();
+                $ok="KO:KO";
+            }
+            
+            echo "$ok";
+        break;
+        
         case 'cercaProfessionista':
             $ok = true;
             
@@ -890,7 +963,7 @@ if(isset($_GET['fn'])){
                 $key=$_GET['key_search'];
             }
             $array = array();
-            $sql_01 = "SELECT id, CONCAT(nome, ' ', cognome) AS ragione_sociale, codice_fiscale, telefono FROM lista_professionisti WHERE 1 ";
+            $sql_01 = "SELECT id, CONCAT(nome, ' ', cognome) AS ragione_sociale, codice_fiscale, telefono, codice FROM lista_professionisti WHERE stato NOT LIKE 'In Attesa di Eliminazione' ";
             if(is_array($key)){
                 $where = "";
                 foreach ($key as $value) {
@@ -905,7 +978,7 @@ if(isset($_GET['fn'])){
             foreach ($result as $row) {
                 $array[] = array(
                     "id_professionista" => $row['id'],
-                    "ragione_sociale" => $row['ragione_sociale']." - C.F.: ".$row['codice_fiscale']." - Tel: ".$row['telefono'],
+                    "ragione_sociale" => $row['ragione_sociale']." (".$row['codice'].") - C.F.: ".$row['codice_fiscale']." - Tel: ".$row['telefono'],
                     "codice_fiscale" => $row['codice_fiscale']
                     );
             }

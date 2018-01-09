@@ -364,7 +364,7 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
                         IF(id_professionista>0,(SELECT id_moodle_user FROM lista_professionisti WHERE id = id_professionista LIMIT 1),id_utente_moodle) AS id_utente_moodle,
                         data_fine_iscrizione AS data_scadenza_corso_timestamp,
                         (SELECT nome FROM lista_classi WHERE id = id_classe LIMIT 1) AS 'nome_classe'
-                        FROM `lista_iscrizioni` WHERE abbonamento = '1' AND stato = 'Configurazione' AND id_professionista = '$id_professionista' AND id_classe = '$idClasse'");
+                        FROM `lista_iscrizioni` WHERE abbonamento = '1' AND (stato = 'Configurazione' OR stato = 'Abbonamento Disabilitato') AND id_professionista = '$id_professionista' AND id_classe = '$idClasse'");
                     
                     $DataFineIscrizioneConfig = GiraDataItaBarra($DataFineIscrizioneConfig);
                     

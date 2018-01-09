@@ -169,8 +169,8 @@ function Stampa_HTML_Dettaglio_Anagrafica($tabella, $id) {
             $idUtente_per_iframe = $rowUtente['Id Moodle'];
             //echo '--> '.$rowUtente['Id Moodle'];
             //echo '--> '.$idUtente_per_iframe;
-           echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="http://erp.betaformazione.com/libreria/automazioni/autoRecuperaCorsiUtentiMoodle_Multiplo.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
-            echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="http://erp.betaformazione.com/libreria/automazioni/autoCorsiIniziati_Multiplo.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
+           echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="'.BASE_URL.'/libreria/automazioni/autoRecuperaCorsiUtentiMoodle_Multiplo.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
+            echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="'.BASE_URL.'/libreria/automazioni/autoCorsiIniziati_Multiplo.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
             
             echo '</div></div>';
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
@@ -244,11 +244,16 @@ IF(tipo LIKE 'Fattura',CONCAT('<span class=\"btn sbold uppercase btn-outline blu
             data_inizio_iscrizione, data_fine_iscrizione,
             DATE(data_inizio) AS 'Data Inizio', 
             IF(data_completamento LIKE '000%',DATE(data_fine), DATE(data_completamento)) AS 'Data Fine', 
-            stato, avanzamento_completamento AS 'Perc.'
-            FROM lista_iscrizioni WHERE id_professionista = $id ORDER BY dataagg DESC";
+            stato, avanzamento_completamento AS 'Perc.',
+            id AS 'selezione'
+            FROM lista_iscrizioni WHERE id_professionista = '$id' ORDER BY dataagg DESC";
             //stampa_table_static_basic($sql_0005, '', 'Iscrizioni Corsi', 'green-meadow', 'fa fa-university');
             stampa_table_datatables_responsive($sql_0005, 'Iscrizioni Corsi', 'tabella_base5', 'green-meadow', 'fa fa-university');
-            echo '</div></div>';
+            echo '</div>'
+                .'<div style="text-align: center; margin-bottom: 15px;"> 
+                    <button id="associaProfessionista" type="button" class="btn btn-icon purple-studio" alt="CAMBIA PROFESSIONISTA" title="CAMBIA PROFESSIONISTA"><i class="fa fa-sign-in"></i> Cambia Proprietario del Corso</a></button>
+                </div>'
+            . '</div>';
 
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
             $sql_0006 = "SELECT

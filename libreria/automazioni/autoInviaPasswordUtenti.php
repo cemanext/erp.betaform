@@ -69,6 +69,30 @@ if (DISPLAY_DEBUG) {
             }else{
                 if(DISPLAY_DEBUG) echo '<li style="color: RED;"> KO !</li>';
                 $log->log_all_errors('stato_email -> email NON inviata = '.$email.']','ERRORE');
+                
+                $stato_email = inviaEmailTemplate_Password($idListaPassword, 'inviaPasswordErroreMail');
+                if($stato_email){
+                    if(DISPLAY_DEBUG) echo '<li style="color: GREEN;"> OK !</li>';
+                    $sql_00003 = "UPDATE lista_password 
+                    SET stato = 'Attivo', 
+                    dataagg = NOW(),
+                    scrittore = 'autoInviaPasswordUtenti'
+                    WHERE id=".$idListaPassword;
+                    $rs_00003 = $dblink->query($sql_00003);
+                    
+                    if($rs_00003){
+                        if(DISPLAY_DEBUG) echo '<li style="color:GREEN;">idListaPassword = '.$idListaPassword.' Aggiornata !</li>';
+                        $log->log_all_errors('lista_password ->stato = ATTIVO - ERRORE MAIL  [idListaPassword = '.$idListaPassword.']','OK');
+                    }else{
+                        if(DISPLAY_DEBUG) echo '<li style="color: RED;">idListaPassword = '.$idListaPassword.' NON Aggiornata !</li>';
+                        $log->log_all_errors('lista_password ->stato = NON ATTIVO - ERRORE MAIL [idListaPassword = '.$idListaPassword.']','ERRORE');
+                    }
+                    
+                }else{
+                    if(DISPLAY_DEBUG) echo '<li style="color: RED;"> KO !</li>';
+                    $log->log_all_errors('stato_email -> email di ERRORE NON inviata ad assitenza@betaformazione.com = '.$email.']','ERRORE');
+                }
+                
             }
         }
         if(DISPLAY_DEBUG) echo '<hr>';

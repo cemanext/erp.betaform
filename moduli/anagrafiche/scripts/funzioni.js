@@ -521,6 +521,123 @@ $( document ).ready(function() {
         $("#myModalPrendiInCarico").modal('hide');     // dismiss the dialog
     });
     
+    $('#myModalAssociaProfessionista').on('shown.bs.modal', function () {
+        $('#idFromAssociaProfessionista #associa_professionista').focus();
+    });
+    
+    $("#associaProfessionista").on( "click", function(event) {
+        
+        event.preventDefault();
+        
+        $("#myModalAssociaProfessionista").modal({   // wire up the actual modal functionality and show the dialog
+            "backdrop"  : "static",
+            "keyboard"  : true,
+            "show"      : true                     // ensure the modal is shown immediately
+        });
+        
+    });
+    
+    var cercaProfessionista = new Bloodhound({
+        datumTokenizer: function(d) { return d.tokens; },
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        remote: {
+            url: BASE_URL_HOST+'/moduli/anagrafiche/salva.php?fn=cercaProfessionista&key_search=%QUERY',
+            wildcard: '%QUERY'
+          }
+      });
+      
+      cercaProfessionista.initialize();
+
+      $('input#associa_professionista').typeahead(null, {
+        name: 'associa_professionista',
+        displayKey: function(data) {
+            return data.ragione_sociale;        
+        },
+        limit : 100,
+        source: cercaProfessionista.ttAdapter()
+      }).bind('typeahead:select', function(ev, data) {
+            $("#myModalAssociaProfessionista input#id_professionista").val(data.id_professionista);
+            $("#myModalAssociaProfessionista input#codice_fiscale").val(data.codice_fiscale);
+            //alert('Selection: ' + data.ragione_sociale);
+          
+            var saveId = "";
+            var numCheck = ($('input:checkbox').length-1);
+            for (i = 0; i < numCheck; i++) { 
+                if ($('#txt_checkbox_'+i+'').is(':checked')) {
+                    if(saveId.length > 0){
+                        saveId = saveId+":"+$('#txt_checkbox_'+i+'').val();
+                    }else{
+                        saveId = saveId+$('#txt_checkbox_'+i+'').val();
+                    }
+                }
+            }
+            
+            //alert('SaveId: '+saveId);
+
+            $("#myModalAssociaProfessionista input#idIscrizioni").val(saveId);
+          
+      });
+    
+    $("#myModalAssociaProfessionista #okButtonAssociaProfessionista").on( "click", function(event) {
+        
+        //event.preventDefault();
+        
+        
+        
+        var posting = jQuery.post( BASE_URL_HOST+"/moduli/anagrafiche/salva.php?fn=cambiaProfessionistaIscrizione" , jQuery( "#idFromAssociaProfessionista" ).serializeArray() );
+        posting.done(function(data) {
+            
+            var str = data.replace(/^\s+|\s+$/g, '');
+            var res = str.split(":");
+            
+            if(res[0] === "OK"){
+                $("#myModalAssociaProfessionista input#id_professionista").val('');
+                $("#myModalAssociaProfessionista input#codice_fiscale").val('');
+                $("#myModalAssociaProfessionista input#cerca_professionista").val('');
+                $("#myModalAssociaProfessionista input#idIscrizioni").val('');
+                $("#myModalAssociaProfessionista").modal('hide');     // dismiss the dialog
+                location.href = urlReferer + "&res=1#tab_prof";
+            }else{
+                //alert("Non è stata torvata nessuna azienda corrispondente alla Partita IVA inserita.\n\nUna nuova azienda è stata creata, terminare la compilazione dei dati.");
+                $("#myModalAssociaProfessionista input#id_professionista").val('');
+                $("#myModalAssociaProfessionista input#codice_fiscale").val('');
+                $("#myModalAssociaProfessionista input#cerca_professionista").val('');
+                $("#myModalAssociaProfessionista input#idIscrizioni").val('');
+                $("#myModalAssociaProfessionista").modal('hide');     // dismiss the dialog
+                location.href = urlReferer + "&res=0#tab_prof";
+            }
+            //alert( "Data Loaded: " + data );
+        }).fail(function() {
+            //alert("Errore nella ricerca del Codice Cliente o Codice Fiscale.");
+            $("#myModalAssociaProfessionista input#id_professionista").val('');
+            $("#myModalAssociaProfessionista input#codice_fiscale").val('');
+            $("#myModalAssociaProfessionista input#cerca_professionista").val('');
+            $("#myModalAssociaProfessionista input#idIscrizioni").val('');
+            $("#myModalAssociaProfessionista").modal('hide'); 
+            location.href = urlReferer + "&res=0#tab_prof";
+        });
+
+    });
+    
+    $("#myModalAssociaProfessionista #annullaButtonAssociaProfessionista").on( "click", function(event) {
+        event.preventDefault();
+        $("#myModalAssociaProfessionista input#id_professionista").val('');
+        $("#myModalAssociaProfessionista input#codice_fiscale").val('');
+        $("#myModalAssociaProfessionista input#idIscrizioni").val('');
+        $("#myModalAssociaProfessionista").modal('hide');     // dismiss the dialog
+    });
+    
+    $('#txt_checkbox_all').change(function(){
+        var numCheck = ($('input:checkbox').length-1);
+        for (i = 0; i < numCheck; i++) { 
+            if ($('#txt_checkbox_'+i+'').is(':checked')) {
+                $('#txt_checkbox_'+i+'').prop('checked',false);
+            } else {
+                $('#txt_checkbox_'+i+'').prop('checked',true);
+            }
+        }
+    });
+    
     ComponentsSelectProvAblo.init();
     ComponentsSelectProv.init();
     ComponentsSelectProfessione.init();

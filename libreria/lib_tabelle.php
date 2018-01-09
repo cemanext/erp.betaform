@@ -33,6 +33,7 @@ function stampa_table_datatables_responsive($query, $titolo = '', $stile = '', $
     }
     echo "<thead><tr>$headTable</tr></thead>";
     $rowTable = "";
+    $r = 0;
     foreach ($rows as $row) {
         $rowTable .= "<tr>\n";
         $c = 0; //resetto numero colonna a ogni nuova riga
@@ -135,6 +136,7 @@ function stampa_table_datatables_responsive($query, $titolo = '', $stile = '', $
             $c++; //incremento numero colonna
         }
         $rowTable .= "</tr>\n";
+        $r++;
     }
     echo '<tbody>' . $rowTable . '</tbody>';
     echo '</table></div></div>';

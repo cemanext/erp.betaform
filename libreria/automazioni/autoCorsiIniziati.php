@@ -34,10 +34,9 @@ $rs_aggiorna_corsi_dettaglio = $dblink->query($sql_aggiorna_corsi_dettaglio);
 
 $rs_utente_entrato = $dblink->get_results("SELECT id FROM " . MOODLE_DB_NAME . ".mdl_user WHERE DATE(FROM_UNIXTIME(lastaccess))=CURDATE()");
 
-//$rs_utente_entrato = $dblink->get_results("SELECT id FROM " . MOODLE_DB_NAME . ".mdl_user WHERE id=7996");
 foreach ($rs_utente_entrato as $row_utente_entrato) {
     $id_utente_entrato = $row_utente_entrato['id'];
-ECHO '<li>$id_utente_entrato = '.$id_utente_entrato.'</li>';
+    
     if(DISPLAY_DEBUG){ echo '<h1>$id_utente_entrato = ' . $id_utente_entrato . '</h1>';}
 
     $sql_iscritti = "SELECT id_utente_moodle, id_corso_moodle, id_modulo, instance 

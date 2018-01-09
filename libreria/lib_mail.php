@@ -1020,7 +1020,7 @@ function inviaEmailAttestatoDaIdIscrizione($idIscrione) {
 
         
         if(!EMAIL_DEBUG){
-        $dest_bcc = 'supporto@cemanext.it,cucchi@betaformazione.com';
+        $dest_bcc = 'cucchi@betaformazione.com';
             if (strlen($dest_bcc) > 0) {
                 //$messaggio->AddBCC($dest_bcc);
                 $dest_bcc = str_replace(' ', '', $dest_bcc);
@@ -1378,19 +1378,21 @@ function inviaEmailTemplate_Password($idListaPassword, $nome_tamplate) {
         ";
         $destinatario = $row_password['email'];
     //}
+    
+        
+    $messaggio_da_inviare = str_replace('_XXX_EMAIL_XXX_', $destinatario, $messaggio_da_inviare);
+    $messaggio_da_inviare = str_replace('_XXX_', $cognome_nome_professionista, $messaggio_da_inviare);
+    $messaggio_da_inviare = str_replace('_CREDENZIALI_', $dati_credenziali, $messaggio_da_inviare);
+    //$messaggio_da_inviare = str_replace('_NOME_DEL_CORSO_', $nome_del_corso, $messaggio_da_inviare);
+    //$messaggio_da_inviare = str_replace('_NOME_ABBONAMENTO_', $nome_del_corso, $messaggio_da_inviare);
 
-    if(EMAIL_DEBUG){
+    if(EMAIL_DEBUG || $nome_tamplate == 'inviaPasswordErroreMail'){
         if (strlen($destinatario_admin) > 5) {
             $destinatario = $destinatario_admin;
         }else{
             $destinatario = trim(EMAIL_TO_SEND_DEBUG);
         }
     }
-
-    $messaggio_da_inviare = str_replace('_XXX_', $cognome_nome_professionista, $messaggio_da_inviare);
-    $messaggio_da_inviare = str_replace('_CREDENZIALI_', $dati_credenziali, $messaggio_da_inviare);
-    //$messaggio_da_inviare = str_replace('_NOME_DEL_CORSO_', $nome_del_corso, $messaggio_da_inviare);
-    //$messaggio_da_inviare = str_replace('_NOME_ABBONAMENTO_', $nome_del_corso, $messaggio_da_inviare);
 
     //intestazioni e corpo dell'email
     $messaggio->From = $mittente;

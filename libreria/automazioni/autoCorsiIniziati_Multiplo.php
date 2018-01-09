@@ -32,22 +32,23 @@ SET lista_corsi_dettaglio.id_corso_moodle = lista_corsi.id_corso_moodle
 WHERE lista_corsi_dettaglio.id_corso = lista_corsi.id AND lista_corsi_dettaglio.id_corso_moodle<=0";
 $rs_aggiorna_corsi_dettaglio = $dblink->query($sql_aggiorna_corsi_dettaglio);
 
-$rs_utente_entrato = $dblink->get_results("SELECT id FROM " . MOODLE_DB_NAME . ".mdl_user WHERE DATE(FROM_UNIXTIME(lastaccess))=CURDATE()");
+//$rs_utente_entrato = $dblink->get_results("SELECT id FROM " . MOODLE_DB_NAME . ".mdl_user WHERE DATE(FROM_UNIXTIME(lastaccess))=CURDATE()");
 
 if(isset($_GET['idUtente'])){
     $idUtente = $_GET['idUtente'];
-    echo '<li style="color:green;">$idUtente = '.$idUtente.'</li>';
+    if(DISPLAY_DEBUG) echo '<li style="color:green;">$idUtente = '.$idUtente.'</li>';
+    
     $rs_utente_entrato = $dblink->get_results("SELECT * FROM lista_iscrizioni WHERE id_utente_moodle = '".$idUtente."'");
 }else{
     $rs_utente_entrato = $dblink->get_results("SELECT * FROM lista_iscrizioni WHERE stato LIKE 'In Attesa' ORDER BY RAND() LIMIT 200");
 }
 //$rs_utente_entrato = $dblink->get_results("SELECT * FROM lista_iscrizioni WHERE id='192805'");
-echo '<ol>';
+if(DISPLAY_DEBUG) echo '<ol>';
 //$rs_utente_entrato = $dblink->get_results("SELECT id FROM " . MOODLE_DB_NAME . ".mdl_user WHERE id=7996");
 foreach ($rs_utente_entrato as $row_utente_entrato) {
     //$id_utente_entrato = $row_utente_entrato['id'];
     $id_utente_entrato = $row_utente_entrato['id_utente_moodle'];
-    echo '<li>$id_utente_entrato = '.$id_utente_entrato.'</li>';
+    if(DISPLAY_DEBUG) echo '<li>$id_utente_entrato = '.$id_utente_entrato.'</li>';
 
     if(DISPLAY_DEBUG){ echo '<h1>$id_utente_entrato = ' . $id_utente_entrato . '</h1>';}
 
@@ -265,6 +266,7 @@ foreach ($rs_utente_entrato as $row_utente_entrato) {
         }
     }
 }
-echo '</ol>';
+if(DISPLAY_DEBUG) echo '</ol>';
+
 if(DISPLAY_DEBUG){ echo date("H:i:s"); }
 ?>
