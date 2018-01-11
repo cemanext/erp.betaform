@@ -177,7 +177,7 @@ foreach ($rs_utente_entrato as $row_utente_entrato) {
                                 $rs_00006 = $dblink->query($sql_00006);
                             } else {
                                 $sql_00006 = "UPDATE lista_iscrizioni SET data_fine_iscrizione = DATE_ADD(data_inizio, INTERVAL " . DURATA_CORSO . " DAY) 
-                                                WHERE id = " . $id_iscrizione . "";
+                                                WHERE id = " . $id_iscrizione . " AND data_inizio_iscrizione <= DATE_ADD(data_inizio, INTERVAL " . DURATA_CORSO . " DAY)";
                                 $rs_00006 = $dblink->query($sql_00006);
 
                                 if ($rs_00006) {
@@ -242,7 +242,7 @@ foreach ($rs_utente_entrato as $row_utente_entrato) {
                                 $rs_00006 = $dblink->query($sql_00006);
                             } else {
                                 $sql_00006 = "UPDATE lista_iscrizioni SET data_fine_iscrizione = DATE_ADD(data_inizio, INTERVAL " . DURATA_CORSO . " DAY) 
-                                                WHERE id = " . $id_iscrizione . "";
+                                                WHERE id = " . $id_iscrizione . " AND data_inizio_iscrizione <= DATE_ADD(data_inizio, INTERVAL " . DURATA_CORSO . " DAY)";
                                 $rs_00006 = $dblink->query($sql_00006);
 
                                 if ($rs_00006) {

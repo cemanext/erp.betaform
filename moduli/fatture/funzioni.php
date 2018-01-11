@@ -72,10 +72,10 @@ function Stampa_HTML_index_Fatture($tabella){
             CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio.php?tbl=lista_professionisti&id=',id_professionista,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-user',
             CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/modifica.php?tbl=lista_professionisti&id=',id_professionista,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>') AS 'fa-edit',
             id_professionista AS 'idProfessionista',
-            (SELECT DISTINCT CONCAT('<h3>',cognome,' ',nome,'</h3>') FROM lista_professionisti WHERE id = id_professionista) AS 'Professionista',
-            (SELECT DISTINCT id_classe FROM lista_professionisti WHERE id = id_professionista) AS 'idClasse',
-            (SELECT DISTINCT CONCAT('<h5>',email,'</h5>') FROM lista_professionisti WHERE id = id_professionista) AS 'Email', 
-            (SELECT DISTINCT id FROM lista_password WHERE lista_password.id_professionista = lista_fatture_dettaglio.id_professionista) AS 'idPassword',
+            (SELECT DISTINCT CONCAT('<h3>',cognome,' ',nome,'</h3>') FROM lista_professionisti WHERE id = id_professionista LIMIT 1) AS 'Professionista',
+            (SELECT DISTINCT id_classe FROM lista_professionisti WHERE id = id_professionista LIMIT 1) AS 'idClasse',
+            (SELECT DISTINCT CONCAT('<h5>',email,'</h5>') FROM lista_professionisti WHERE id = id_professionista LIMIT 1) AS 'Email', 
+            (SELECT DISTINCT id FROM lista_password WHERE lista_password.id_professionista = lista_fatture_dettaglio.id_professionista LIMIT 1) AS 'idPassword',
             CONCAT('<center><a href=\"".BASE_URL."/moduli/fatture/salva.php?idProfessionista=',id_professionista,'&fn=creaUtenteTotale\" class=\"btn btn-icon btn-outline blue-ebonyclay\"><i class=\"fa fa-users\"></i> CREA UTENTE </a></center>') AS 'fa-password'
             FROM lista_fatture_dettaglio
             WHERE ( stato LIKE 'In Attesa di Emissione' OR  stato LIKE 'In Attesa') AND lista_fatture_dettaglio.id_professionista > 0
