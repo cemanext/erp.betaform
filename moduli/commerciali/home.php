@@ -414,6 +414,7 @@ if (isset($_POST['intervallo_data'])) {
                             (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato LIKE 'Mai Contattato' OR ca.stato LIKE 'Richiamare') AND ca.id_agente=ag.id) AS Richiami,
                             (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato NOT LIKE 'Fatto' AND ca.stato NOT LIKE 'Chiusa%') AND ca.id_agente=ag.id $where_intervallo_cal_richiami) AS Richieste_Attribuite,
                             (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato LIKE 'Mai Contattato' OR ca.stato LIKE 'Richiamare') AND ca.id_agente=ag.id $where_intervallo_cal_richiami) AS Tel_Richiami,
+                            (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND ca.id_agente=ag.id $where_intervallo_cal) AS telgestite,
                             (SELECT COUNT(*) AS conteggio_gestite FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Negativo') AND lp.id_agente=ag.id $where_intervallo_negativo_all) AS Negativo,
                             (SELECT COUNT(*) AS conteggio_venduti FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Venduto' OR lp.stato LIKE 'Chiuso') AND lp.id_agente=ag.id $where_intervallo_all) AS Iscritti,
                             (SELECT IF(SUM(lp.imponibile)>0, SUM(lp.imponibile), 0) AS conteggio_preventivi FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Venduto' OR lp.stato LIKE 'Chiuso') AND lp.id_agente=ag.id $where_intervallo_all) AS Iscritto_Lordo,
@@ -424,13 +425,13 @@ if (isset($_POST['intervallo_data'])) {
                             FROM lista_password AS ag WHERE ag.livello='commerciale' AND ag.stato = 'Attivo');";
                             $dblink->query($sql_0020, true);
                             
-                            $sql_0021 = "CREATE TEMPORARY TABLE stat_commerciali_home_totale (SELECT Commerciale, Richiami, Richieste_Attribuite, Tel_Richiami+Negativo+Iscritti AS 'Tel_Gestite',"
+                            $sql_0021 = "CREATE TEMPORARY TABLE stat_commerciali_home_totale (SELECT Commerciale, Richiami, Richieste_Attribuite, telgestite AS 'Tel_Gestite',"
                                     . " Iscritti, Iscritto_Lordo, Iscritto_Annulato, (Iscritto_Netto-Iscritto_Annulato) AS Iscritto_Netto, IF(Iscritti>0,ROUND((Richieste_Attribuite)/Iscritti, 2),0) AS Realizzato,"
                                     . " IF(Iscritto_Netto>0, ROUND(Iscritto_Netto/(Iscritti),2), 0) AS Media_part_su_Fattura, Incassato, Da_Incassare"
                                     . " FROM stat_commerciali_home_2);";
                             $dblink->query($sql_0021, true);
                             
-                            $sql_0022 = "CREATE TEMPORARY TABLE stat_commerciali_home_totale_tot_tmp (SELECT 'TOTALE', SUM(Richiami) AS Richiami, SUM(Richieste_Attribuite) AS Richieste_Attribuite, SUM(Tel_Richiami+Negativo+Iscritti) AS 'Tel_Gestite', SUM(Iscritti) AS Iscritti,"
+                            $sql_0022 = "CREATE TEMPORARY TABLE stat_commerciali_home_totale_tot_tmp (SELECT 'TOTALE', SUM(Richiami) AS Richiami, SUM(Richieste_Attribuite) AS Richieste_Attribuite, SUM(telgestite) AS 'Tel_Gestite', SUM(Iscritti) AS Iscritti,"
                                     . " SUM(Iscritto_Lordo) AS Iscritto_Lordo, SUM(Iscritto_Annulato) AS Iscritto_Annulato,  SUM(Iscritto_Netto)-SUM(Iscritto_Annulato) AS Iscritto_Netto, 0 AS Realizzato,"
                                     . " 0 AS Media_part_su_Fattura, SUM(Incassato) AS Incassato, SUM(Da_Incassare) AS Da_Incassare FROM stat_commerciali_home_2);";
                             $dblink->query($sql_0022, true);

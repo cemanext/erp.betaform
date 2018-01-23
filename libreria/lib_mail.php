@@ -1071,7 +1071,7 @@ function inviaEmailAttestatoDaIdIscrizione($idIscrione) {
 }
 
 //INVIO EMAIL BASE DA TEMPLATE
-function inviaEmailTemplate_Base($idProfessionista, $nome_tamplate, $idFatturaDettaglio = 0){
+function inviaEmailTemplate_Base($idProfessionista, $nome_tamplate, $idFatturaDettaglio = 0, $idOrdine = 0){
     global $dblink, $moodle, $log;
     //require_once BASE_ROOT . "classi/phpmailer/class.phpmailer.php";
     $messaggio = new PHPmailer();
@@ -1129,9 +1129,25 @@ function inviaEmailTemplate_Base($idProfessionista, $nome_tamplate, $idFatturaDe
             $nome_del_corso.= $row_nome_corso['nome_prodotto'] . ' [' . $row_nome_corso['codice_prodotto'] . ']<br>';
         }
     }
+    
+    if ($idOrdine > 0) {
+        $sql_ordine = "SELECT * FROM lista_ordini WHERE id = '" . $idOrdine . "'";
+        $rs_ordine = $dblink->get_results($sql_ordine);
+        $nome_del_corso = "";
+        foreach ($rs_ordine as $row_ordine) {
+            $importoOrdine = $row_ordine['importo'];
+            $dataCreazione = GiraDataOra($row_ordine['data_iscrizione']);
+            $nome_del_corso.= $row_nome_corso['nome_prodotto'] . ' [' . $row_nome_corso['codice_prodotto'] . ']<br>';
+            $ordine_testo = "Numero Ordine: <b>$idOrdine/01 del $dataCreazione</b><br>Totale Ordine: <b>$importoOrdine € (Iva Inclusa)</b>";
+        }
+    }else{
+        $ordine_testo = "";
+    }
 
     
+    $messaggio_da_inviare = str_replace('_XXX_RIEPILOGO_ACQUISTO_XXX_', $ordine_testo, $messaggio_da_inviare);
     $messaggio_da_inviare = str_replace('_XXX_EMAIL_XXX_', $destinatario, $messaggio_da_inviare);
+    $messaggio_da_inviare = str_replace('_XXX_NOME_CLIENTE_XXX_', $cognome_nome_professionista, $messaggio_da_inviare);
     $messaggio_da_inviare = str_replace('_XXX_', $cognome_nome_professionista, $messaggio_da_inviare);
     $messaggio_da_inviare = str_replace('_CREDENZIALI_', $dati_credenziali, $messaggio_da_inviare);
     $messaggio_da_inviare = str_replace('_NOME_DEL_CORSO_', $nome_del_corso, $messaggio_da_inviare);

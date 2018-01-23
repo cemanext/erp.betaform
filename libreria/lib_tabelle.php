@@ -4,7 +4,7 @@
   Link: http://keenthemes.com/preview/metronic/theme/admin_1/table_datatables_responsive.html
  */
 
-function stampa_table_datatables_responsive($query, $titolo = '', $stile = '', $colore_tabella = COLORE_PRIMARIO) {
+function stampa_table_datatables_responsive($query, $titolo = '', $stile = '', $colore_tabella = COLORE_PRIMARIO, $showTotal = false) {
     global $dblink;
 
     $colore_tabella = strlen($colore_tabella) > 0 ? $colore_tabella : COLORE_PRIMARIO;
@@ -32,6 +32,21 @@ function stampa_table_datatables_responsive($query, $titolo = '', $stile = '', $
             $headTable .= "<td scope=\"col\" style=\"text-transform:uppercase; text-align:center;\">" . pulisciCampoEtichetta($field->name) . "</td>\n";
     }
     echo "<thead><tr>$headTable</tr></thead>";
+    
+    if($showTotal){
+        
+        echo "<tfoot>
+            <tr>";
+            $n = 0;
+            foreach ($fields as $field) {
+                echo "<th id=\"colTot".$n."\" style=\"text-align:center;\"></th>";
+                $n++;
+            }
+        echo "</tr>
+        </tfoot>";
+        
+    }
+    
     $rowTable = "";
     $r = 0;
     foreach ($rows as $row) {

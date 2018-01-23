@@ -20,6 +20,10 @@ if(isset($_POST)){
         $rowCampagna = $dblink->get_row("SELECT id_tipo_marketing, nome, id_prodotto FROM lista_campagne WHERE id = '".$_POST['id_campagna']."'", true);
         $rowMarketing = $dblink->get_row("SELECT nome FROM lista_tipo_marketing WHERE id = '".$rowCampagna['id_tipo_marketing']."'", true);
 
+        if(!empty($_POST['id_prodotto'])){
+            $rowCampagna['id_prodotto'] = $_POST['id_prodotto']; // SE ID PRODOTTO NON E' VUOTO LO SOVRASCRIVO ALLA CAMPAGNA
+        }
+        
         $insert = array(
             "dataagg" => date("Y-m-d H:i:s"),
             "scrittore" => $dblink->filter($_POST['cognome'])." ".$dblink->filter($_POST['nome']),

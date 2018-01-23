@@ -414,6 +414,47 @@ var TabelleCommerciali = function () {
           // setup uses scrollable div(table-scrollable) with overflow:auto to enable vertical scroll(see: assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js).
           // So when dropdowns used the scrollable div should be removed.
           //"dom": "<'row' <'col-md-12'T>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
+          
+          "footerCallback": function ( row, data, start, end, display ) {
+                var api = this.api(), data;
+
+                // Remove the formatting to get integer data for summation
+                var intVal = function ( i ) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '')*1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                
+                // Update footer
+                $( api.column( 0 ).footer() ).html(
+                    'TOTALE'
+                );
+
+                for (i = 1; i < 13; i++) { 
+                    // Total over all pages
+                    /*total = api
+                        .column( i )
+                        .data()
+                        .reduce( function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0 );*/
+
+                    // Total over this page
+                    pageTotal = api
+                        .column( i, { page: 'current'} )
+                        .data()
+                        .reduce( function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0 );
+
+
+                    /* +' ('+ total +')'*/
+                    $( api.column( i ).footer() ).html(
+                        pageTotal
+                    );
+                }
+            }
       });
   }
   

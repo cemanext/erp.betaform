@@ -413,6 +413,9 @@ if(isset($_GET['fn'])){
                 }
                 
                 $dblink->commit();
+                
+                inviaEmailTemplate_Base($id_utente, "ordineWebBonificoConferma", 0, $idOrdine);
+                
                 header('Location:'.WP_DOMAIN_NAME.'/carrello/bonifico-bancario/?betaOrdId='.$idOrdine);
             }else{
                 $dblink->rollback();

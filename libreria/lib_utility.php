@@ -477,8 +477,31 @@ function generaPassword( $length = 9, $count = 0 ) {
         }
 
     }
+    
+    $passCheck = true;
+    
+    if (!preg_match('/([0-9]{1,})/', $password)) {
+        $passCheck = false;
+    }
+    
+    if (!preg_match('/([a-z]{1,})/', $password)) {
+        $passCheck = false;
+    }
 
-    if(preg_match("((?=.*[0-9])(?=.*[a-z])(?=.*[?!%$#@])(?=.*[A-Z]).{9,})", $password)){
+    if (!preg_match('/([A-Z]{1,})/', $password)) {
+        $passCheck = false;
+    }
+
+    if (!preg_match('/([?!%$#@]{1,})/', $password)) {
+        $passCheck = false;
+    }
+
+    if (strlen($password) < 9) {
+        $passCheck = false;
+    }
+
+    //if(preg_match("((?=.*[0-9])(?=.*[a-z])(?=.*[?!%$#@])(?=.*[A-Z]).{9,})", $password)){
+    if($passCheck){
         //echo "PASSWORD: ".$password."<br>";
     }else if($count > 20){
         //echo "OLTRE IL COUNT DI 20 CICLI<br>";

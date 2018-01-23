@@ -421,7 +421,7 @@ if(isset($_GET['fn'])){
                 
                 $sql_41 = "INSERT INTO `lista_fatture` (`id`, `id_area`, `id_sezionale`, `sezionale`, `dataagg`, `data_preventivo`, `data_creazione`, `data_scadenza`, `id_contatto`,`id_professionista`, `id_azienda`, `id_preventivo`, `codice_preventivo`, `gestore`, `codice`, `barcode`, `causale`, `pagamento`, `importo`, `imponibile`, `sconto`, `iva`, `note`, `scrittore`, `tipo`, `stato`, `id_agente`)
                 SELECT '', `id_area`, `id_sezionale`, `sezionale`, NOW(), CURDATE(), '', '', `id_contatto` , `id_professionista`, `id_azienda`, id, codice, gestore, 'xxx', '', campo_1, 'Bonifico Bancario', `importo`, `imponibile`, `sconto`, `iva`,  `note`, `scrittore`, 'Fattura', 'In Attesa di Emissione', `id_agente`
-                FROM lista_preventivi WHERE id='".$idPreventivoFirmato."' AND sezionale='".$codSezionale."' LIMIT 1";
+                FROM lista_preventivi WHERE id='".$idPreventivoFirmato."' LIMIT 1";
                 $ok = $ok && $dblink->query($sql_41);
                 
                 $id_fattura_sql_41 = $dblink->lastid();
