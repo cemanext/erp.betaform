@@ -82,7 +82,7 @@ foreach ($rs_utente_entrato as $row_utente_entrato) {
                 echo '<br>id_instance_moodle = ' . $id_instance_moodle = $row_0['scormid'];
                 echo '<br>id_corso_moodle = ' . $id_corso_moodle = $row_0['id_corso_moodle'];
             }else{
-                $id_utente_moodle = $row_0['track_id'];
+                $track_id = $row_0['track_id'];
                 $id_utente_moodle = $row_0['id_utente_moodle'];
                 $data_inizio_corso = $row_0['data_inizio'];
                 $data_ora_inizio_corso = $row_0['data_ora_inizio'];
@@ -113,6 +113,14 @@ foreach ($rs_utente_entrato as $row_utente_entrato) {
 
             $percentuale_corso_utente = recupero_percentuale_avanzamento_corso_utente($id_utente_moodle, $id_corso_moodle, true);
             if (DISPLAY_DEBUG){ echo '<li>$percentuale_corso_utente = ' . $percentuale_corso_utente . '</li>'; }
+            
+            
+            $sql_dati_configurazione = "SELECT id, id_fattura, id_fattura_dettaglio FROM lista_iscrizioni 
+            WHERE id_utente_moodle = '".$id_utente_moodle."'
+            AND data_fine_iscrizione>=CURDATE() AND stato LIKE 'Configurazione'";
+
+            $datiConfigurazione = $dblink->get_row($sql_dati_configurazione, true); 
+            
             if ($id_professionista_nostro > 0) {
                 /*
                   $sql_00004 = "SELECT * FROM lista_iscrizioni
@@ -142,7 +150,9 @@ foreach ($rs_utente_entrato as $row_utente_entrato) {
                             scrittore = 'autoCorsiIniziati',
                             stato='In Corso',
                             `avanzamento_completamento` = '" . $percentuale_corso_utente . "',
-                            data_inizio = '" . $data_ora_inizio_corso . "'
+                            data_inizio = '" . $data_ora_inizio_corso . "',
+                            id_fattura = '".$datiConfigurazione['id_fattura']."',
+                            id_fattura_dettaglio = '".$datiConfigurazione['id_fattura_dettaglio']."'
                             WHERE id = " . $id_iscrizione . "
                             AND id_corso = " . $id_corso_nostro . " 
                             AND id_professionista = " . $id_professionista_nostro . "
@@ -207,7 +217,9 @@ foreach ($rs_utente_entrato as $row_utente_entrato) {
                                     scrittore = 'autoCorsiIniziati',
                                     stato='In Corso',
                                      `avanzamento_completamento` = '" . $percentuale_corso_utente . "',
-                                    data_inizio = '" . $data_ora_inizio_corso . "'
+                                    data_inizio = '" . $data_ora_inizio_corso . "',
+                                    id_fattura = '".$datiConfigurazione['id_fattura']."',
+                                    id_fattura_dettaglio = '".$datiConfigurazione['id_fattura_dettaglio']."'
                                     WHERE id = " . $id_iscrizione . "
                                     AND id_corso = " . $id_corso_nostro . " 
                                     AND id_utente_moodle = " . $id_utente_moodle . "

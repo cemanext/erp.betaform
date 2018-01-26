@@ -140,11 +140,11 @@ var TableDatatablesResponsive = function () {
           ],
 
           "lengthMenu": [
-              [10, 25, 30, 50, -1],
-              [10, 25, 30, 50, "Tutti"] // change per page values here
-          ],
-          // set the initial value
-          "pageLength": 25,
+                [10, 25, 30, 50, 100, 250, -1],
+                [10, 25, 30, 50, 100, 250, 'Tutti'] // change per page values here
+            ],
+            // set the initial value
+            "pageLength": 50,
 
           "columnDefs": [
                 {"className": "dt-center", "targets": "_all"},
@@ -218,11 +218,11 @@ var TableDatatablesAjaxCarrello = function () {
             ],
 
             "lengthMenu": [
-                [10, 25, 30, 50],
-                [10, 25, 30, 50] // change per page values here
+                [10, 25, 30, 50, 100, 250, -1],
+                [10, 25, 30, 50, 100, 250, 'Tutti'] // change per page values here
             ],
             // set the initial value
-            "pageLength": 30,
+            "pageLength": 50,
             
             "columnDefs": [
                 {"className": "dt-center", "targets": "_all"},

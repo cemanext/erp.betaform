@@ -16,12 +16,22 @@ $sql_0001 = "UPDATE lista_costi, lista_professionisti SET "
         . "AND lista_costi.cognome_nome_professionista = '' ";
 $dblink->query($sql_0001);
 
+$sql_0021 = "UPDATE lista_professionisti SET "
+        . " codice_fiscale = UPPER(codice_fiscale) "
+        . " WHERE 1 ";
+$dblink->query($sql_0021);
+
 // AGGIORNO RAGIONE SOCIALE AZIENDA
 $sql_0002 = "UPDATE lista_costi, lista_aziende SET "
         . "lista_costi.ragione_sociale_azienda = CONCAT(lista_aziende.ragione_sociale,' ',lista_aziende.forma_giuridica) "
         . "WHERE lista_costi.id_azienda = lista_aziende.id "
         . "AND lista_costi.ragione_sociale_azienda = '' ";
 $dblink->query($sql_0002);
+
+$sql_0022 = "UPDATE lista_aziende SET "
+        . " codice_fiscale = UPPER(codice_fiscale) "
+        . " WHERE 1 ";
+$dblink->query($sql_0022);
 
 /* AGGIORNAMENTI LISTA PASSWORD */
 

@@ -208,9 +208,11 @@ foreach ($rs_0001 as $row) {
                     break;
 
                 default:
+                    if(strlen($fields[$c]->orgname)>0) $nomeCampo = strtolower($fields[$c]->orgname);
+                    else $nomeCampo = strtolower($fields[$c]->name);
                     if(strtolower($fields[$c]->name)=="selezione"){
                         $records["data"][$r][] = '<label class="mt-checkbox mt-checkbox-outline"><input name="txt_checkbox_' . $r . '" id="txt_checkbox_' . $r . '" type="checkbox"  value="' . $column . '"><span></span></label>'; 
-                    }else if (strtolower($fields[$c]->name) == "data") {
+                    }else if (strtolower($nomeCampo) == "data" || strtolower($nomeCampo) == "data_iscrizione" || strtolower($nomeCampo) == "data_creazione" || strtolower($nomeCampo) == "creato_il") {
                         $records["data"][$r][] = '' . GiraDataOra($column) . '';
                     }else{
                         $records["data"][$r][] = '' . $column . '';

@@ -193,7 +193,7 @@ $conteggio_ticket_lavorazione_terminata = $row_11['conto'];
                 ?>
                 <li class="dropdown dropdown-user">
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-                        <img alt="" class="img-circle" src="<?= BASE_URL ?>/media/users/<?php echo $_SESSION['avatar']; ?>.jpg" width="29px" height="29px" />
+                        <img alt="" class="img-circle" src="<?= BASE_URL ?>/media/users/<?php echo $_SESSION['avatar']; ?>" width="29px" height="29px" />
                         <span class="username username-hide-on-mobile"><?php echo $_SESSION['cognome_nome_utente']; ?></span>
                         <i class="fa fa-angle-down"></i>
                     </a>

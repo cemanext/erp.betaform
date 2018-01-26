@@ -240,11 +240,11 @@ var TableDatatablesFattureResponsive = function () {
           ],
 
           "lengthMenu": [
-              [10, 25, 30, 50],
-              [10, 25, 30, 50] // change per page values here
-          ],
-          // set the initial value
-          "pageLength": 25,
+                [10, 25, 30, 50, 100, 250, -1],
+                [10, 25, 30, 50, 100, 250, 'Tutti'] // change per page values here
+            ],
+            // set the initial value
+            "pageLength": 50,
 
           "dom": "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
 
@@ -289,35 +289,58 @@ var TableDatatablesAjaxFatture = function () {
 
             // setup buttons extentension: http://datatables.net/extensions/buttons/
             buttons: [
-              { extend: 'print', className: 'btn white btn-outline' },
-              { extend: 'copy', className: 'btn white btn-outline' },
-              { extend: 'pdf', className: 'btn white btn-outline' },
-              { extend: 'excel', className: 'btn white btn-outline ' },
-              { extend: 'csv', className: 'btn white btn-outline ' }
+              { extend: 'print', className: 'btn white btn-outline', exportOptions:{
+                    columns: ':visible'
+              } },
+              { extend: 'copy', className: 'btn white btn-outline', exportOptions:{
+                    columns: ':visible'
+              }  },
+              { extend: 'pdf', className: 'btn white btn-outline', exportOptions:{
+                    columns: ':visible'
+              }  },
+              { extend: 'excel', className: 'btn white btn-outline ', exportOptions:{
+                    columns: ':visible'
+              }  },
+              { extend: 'csv', className: 'btn white btn-outline ', exportOptions:{
+                    columns: ':visible'
+              }  }
             ],
 
             // setup responsive extension: http://datatables.net/extensions/responsive/
             responsive: false,
+            "stateSave": true,
 
             "ajax": {
                 "url": BASE_URL_HOST+"/moduli/fatture/scripts/server_processing.php?tbl="+$.urlParam('tbl')+"&whr_state="+$.urlParam('whr_state'), // ajax source
             },
 
-            "ordering": true,
+            /*"ordering": true,*/
+            "orderMulti": true,
             "order": [
-                [5, 'asc']
+                [5, 'asc'],
+                [2, 'asc']
             ],
 
             "lengthMenu": [
-                [10, 25, 30, 50],
-                [10, 25, 30, 50] // change per page values here
+                [10, 25, 30, 50, 100, 250, -1],
+                [10, 25, 30, 50, 100, 250, 'Tutti'] // change per page values here
             ],
             // set the initial value
-            "pageLength": 30,
+            "pageLength": 50,
             
             "columnDefs": [
                 {"className": "dt-center", "targets": "_all"},
-                {"orderable": false, "targets": [ 0, 1],}
+                {"orderable": false, "targets": [ 0, 1],},
+                {
+                // Sort column 5 (last_update) using data from column 6 (date_sort).
+                    targets: [5],
+                    orderData: [6]
+                },
+                {
+                    targets: [6],
+                    visible: false,
+                    searchable: false
+                }
             ],
 
             "dom": "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
@@ -473,6 +496,14 @@ $( document ).ready(function() {
                 $('#txt_checkbox_'+i+'').prop('checked',true);
             }
         }
+    });
+    
+    $("#cancellaRicarcaTabella").on( "click", function(event) {
+        event.preventDefault(); 
+        var table = $('#datatable_ajax').DataTable();
+        table.state.clear();
+        table.destroy();
+        TableDatatablesAjaxFatture.init();
     });
     
     ComponentsDateSelect.init();

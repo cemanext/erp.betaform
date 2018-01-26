@@ -58,9 +58,44 @@ switch($whrStato){
                             <div style=\"text-align:left; padding:10px;\">',REPLACE(IF(LENGTH(messaggio)>0, messaggio, ''), '\n', '<br />'),'</div>
                             <div style=\"text-align:right;\"><small>',DATE_FORMAT(DATE(datainsert), '%d-%m-%Y'),' | ',stato,'</small></div>') as 'Messaggio',
                             (SELECT nome FROM lista_tipo_marketing WHERE id = id_tipo_marketing) AS Marketing,
-                            DATE_FORMAT(DATE(datainsert), '%d-%m-%Y') AS 'Data Inserimento', orainsert AS 'Ora Inserimento', 
+                            datainsert AS 'Data_Inserimento', orainsert AS 'Ora Inserimento', 
                             CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"cancella.php?tbl=calendario&id=',id,'\" title=\"ELIMINA\" alt=\"ELIMINA\"><i class=\"fa fa-trash\"></i></a>') AS 'fa-trash'";
         
+        /*
+        $campi_visualizzati = "datainsert AS 'Data', orainsert AS 'Ora', oggetto AS 'Origine / Tipo marketing', mittente AS 'Nominativo', campo_4 AS 'Tel.', campo_5 AS 'Email', 
+        CONCAT('<span class=\"bg-green-jungle  bg-font-green-jungle font-lg sbold\">Si o No</div>') AS 'Cliente',
+        CONCAT('<span class=\"label label-sm label-warning\">',stato,'</div>') AS 'Stato'";
+        */
+        //$where = $table_calendario['index']['where'];
+        $where = " MD5(stato)='".$_GET['whrStato']."' $where_calendario $where_data_calendario";
+        if(!empty($arrayCampoRicerca)){
+            foreach ($arrayCampoRicerca as $campoRicerca) {
+                if($campoRicerca=="iscritto") $campoRicerca = "venduto";
+                $campoRicerca = $dblink->filter($campoRicerca);
+                $where.= " AND (oggetto LIKE '%".$campoRicerca."%' OR mittente LIKE '%".$campoRicerca."%'";
+                $where.= " OR dataagg LIKE '%".$campoRicerca."%' OR campo_5 LIKE '%".$campoRicerca."%'";
+                $where.= " OR nome LIKE '%".$campoRicerca."%' OR cognome LIKE '%".$campoRicerca."%'";
+                $where.= " OR email LIKE '%".$campoRicerca."%' OR campo_9 LIKE '%".$campoRicerca."%'";
+                $where.= " OR messaggio LIKE '%".$campoRicerca."%'";
+                $where.= " OR tipo_marketing LIKE '%".$campoRicerca."%' OR telefono LIKE '%".$campoRicerca."%'";
+                $where.= " OR cellulare LIKE '%".$campoRicerca."%' OR professione LIKE '%".$campoRicerca."%'";
+                $where.= " OR campo_4 LIKE '%".$campoRicerca."%' OR stato LIKE '%".$campoRicerca."%')";
+            }
+        }
+        //$ordine = $table_calendario['index']['order'];
+        $ordine = " ORDER BY datainsert DESC, orainsert ASC";
+    break;
+    
+    case MD5('Chiusa In Attesa di Controllo'):
+        //oggetto AS 'Oggetto', mittente AS 'Mittente', dataagg AS 'Data', campo_5 AS 'E-Mail', campo_4 AS 'Telefono', stato,
+        $campi_visualizzati = "id AS 'selezione', CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio_tab.php?tbl=calendario&id=',id,'\" title=\"SCHEDA\" alt=\"SCHEDA\"><i class=\"fa fa-book\"></i></a>') AS 'fa-book',
+                            (SELECT CONCAT(lista_password.nome,' ',lista_password.cognome) FROM lista_password WHERE lista_password.id=calendario.id_agente LIMIT 1) AS 'Commerciale',
+                            IF(id_azienda>0,CONCAT('<i class=\"fa fa-user btn btn-icon-only green-jungle btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>'),CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>')) AS 'fa-user',
+                            CONCAT('<div style=\"text-align:right;\"><small>Mittente: <b>',mittente,'</b> | Prodotto: <b>',IF(id_prodotto>0,(SELECT lista_prodotti.nome FROM lista_prodotti WHERE lista_prodotti.id=calendario.id_prodotto),'<span style=\"color: red;\">Non Specificato</span>'),'</b></small></div>
+                            <div style=\"text-align:left; padding:10px;\">',REPLACE(IF(LENGTH(messaggio)>0, messaggio, ''), '\n', '<br />'),'</div>
+                            <div style=\"text-align:right;\"><small>',DATE_FORMAT(DATE(dataagg), '%d-%m-%Y'),' | ',stato,'</small></div>') as 'Messaggio',
+                            CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-blue\" href=\"".BASE_URL."/moduli/calendario/salva.php?idPrev=',(SELECT lista_preventivi.id FROM lista_preventivi WHERE lista_preventivi.id_calendario = calendario.id LIMIT 1),'&id=',id,'&fn=chiudiRichiestaConferma\" title=\"CHIUDI\" alt=\"CHIUDI\"><i class=\"fa fa-check\"></i></a>') AS 'fa-check',
+                            datainsert AS 'Data_Inserimento', orainsert AS 'Ora Inserimento'";
         /*
         $campi_visualizzati = "datainsert AS 'Data', orainsert AS 'Ora', oggetto AS 'Origine / Tipo marketing', mittente AS 'Nominativo', campo_4 AS 'Tel.', campo_5 AS 'Email', 
         CONCAT('<span class=\"bg-green-jungle  bg-font-green-jungle font-lg sbold\">Si o No</div>') AS 'Cliente',
@@ -184,7 +219,8 @@ switch($whrStato){
                             '',
                             CONCAT('<a class=\"btn btn-circle btn-icon-only purple-seance btn-outline\" onclick=\"associaCommercialeARichesta(',calendario.id,',',calendario.id_professionista,');\" title=\"PRENDI IN CARICO\" alt=\"PRENDI IN CARICO\"><i class=\"fa fa-sign-in\"></i></a>')) AS 'Ass. Comm.',
                             (SELECT CONCAT(lista_password.nome,' ',lista_password.cognome) FROM lista_password WHERE lista_password.id=calendario.id_agente) AS 'Commerciale', 
-                            calendario.stato, IF(calendario.id_azienda>0,CONCAT('<i class=\"fa fa-user btn btn-icon-only green-jungle btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>'),CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>')) AS 'fa-user', 
+                            calendario.nome_obiezione, 
+                            IF(calendario.id_azienda>0,CONCAT('<i class=\"fa fa-user btn btn-icon-only green-jungle btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>'),CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>')) AS 'fa-user', 
                             calendario.mittente AS 'Mittente',
                             IF(calendario.id_professionista>0,(SELECT CONCAT(lista_professionisti.cognome,' ',lista_professionisti.nome) FROM lista_professionisti WHERE lista_professionisti.id=calendario.id_professionista ),'') AS Professionista,
                             (SELECT lista_prodotti.nome FROM lista_prodotti WHERE lista_prodotti.id=calendario.id_prodotto) AS 'Corso', lista_preventivi.data_iscrizione AS 'Data Negativo', lista_preventivi.imponibile AS Importo, 
@@ -194,7 +230,8 @@ switch($whrStato){
             //oggetto AS 'Oggetto', mittente AS 'Mittente', dataagg AS 'Data', campo_5 AS 'E-Mail', campo_4 AS 'Telefono', stato,
             $campi_visualizzati = "CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio_tab.php?tbl=calendario&id=',calendario.id,'\" title=\"SCHEDA\" alt=\"SCHEDA\"><i class=\"fa fa-book\"></i></a>') AS 'fa-book',
                             (SELECT CONCAT(lista_password.nome,' ',lista_password.cognome) FROM lista_password WHERE lista_password.id=calendario.id_agente) AS 'Commerciale', 
-                            calendario.stato, IF(calendario.id_azienda>0,CONCAT('<i class=\"fa fa-user btn btn-icon-only green-jungle btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>'),CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>')) AS 'fa-user', 
+                            calendario.nome_obiezione, 
+                            IF(calendario.id_azienda>0,CONCAT('<i class=\"fa fa-user btn btn-icon-only green-jungle btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>'),CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>')) AS 'fa-user', 
                             calendario.mittente,
                             IF(calendario.id_professionista>0,(SELECT CONCAT(lista_professionisti.cognome,' ',lista_professionisti.nome) FROM lista_professionisti WHERE lista_professionisti.id=calendario.id_professionista ),'') AS Professionista,
                             (SELECT lista_prodotti.nome FROM lista_prodotti WHERE lista_prodotti.id=calendario.id_prodotto) AS 'Corso', lista_preventivi.data_iscrizione AS 'Data Negativo', lista_preventivi.imponibile AS Importo, 
@@ -376,41 +413,6 @@ orainsert as ora_richiesta";
         $ordine = " ORDER BY datainsert ASC, orainsert ASC";
     break;
 
-    case MD5('Chiusa In Attesa di Controllo'):
-        //oggetto AS 'Oggetto', mittente AS 'Mittente', dataagg AS 'Data', campo_5 AS 'E-Mail', campo_4 AS 'Telefono', stato,
-        $campi_visualizzati = "id AS 'selezione', CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio_tab.php?tbl=calendario&id=',id,'\" title=\"SCHEDA\" alt=\"SCHEDA\"><i class=\"fa fa-book\"></i></a>') AS 'fa-book',
-                            (SELECT CONCAT(lista_password.nome,' ',lista_password.cognome) FROM lista_password WHERE lista_password.id=calendario.id_agente) AS 'Commerciale',
-                            IF(id_azienda>0,CONCAT('<i class=\"fa fa-user btn btn-icon-only green-jungle btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>'),CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>')) AS 'fa-user',
-                            CONCAT('<div style=\"text-align:right;\"><small>Mittente: <b>',mittente,'</b> | Prodotto: <b>',IF(id_prodotto>0,(SELECT lista_prodotti.nome FROM lista_prodotti WHERE lista_prodotti.id=calendario.id_prodotto),'<span style=\"color: red;\">Non Specificato</span>'),'</b></small></div>
-                            <div style=\"text-align:left; padding:10px;\">',REPLACE(IF(LENGTH(messaggio)>0, messaggio, ''), '\n', '<br />'),'</div>
-                            <div style=\"text-align:right;\"><small>',DATE_FORMAT(DATE(dataagg), '%d-%m-%Y'),' | ',stato,'</small></div>') as 'Messaggio',
-                            CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-blue\" href=\"".BASE_URL."/moduli/calendario/salva.php?idPrev=',(SELECT lista_preventivi.id FROM lista_preventivi WHERE lista_preventivi.id_calendario = calendario.id),'&id=',id,'&fn=chiudiRichiestaConferma\" title=\"CHIUDI\" alt=\"CHIUDI\"><i class=\"fa fa-check\"></i></a>') AS 'fa-check',
-                            DATE_FORMAT(DATE(datainsert), '%d-%m-%Y') AS 'Data Inserimento', orainsert AS 'Ora Inserimento'";
-        /*
-        $campi_visualizzati = "datainsert AS 'Data', orainsert AS 'Ora', oggetto AS 'Origine / Tipo marketing', mittente AS 'Nominativo', campo_4 AS 'Tel.', campo_5 AS 'Email', 
-        CONCAT('<span class=\"bg-green-jungle  bg-font-green-jungle font-lg sbold\">Si o No</div>') AS 'Cliente',
-        CONCAT('<span class=\"label label-sm label-warning\">',stato,'</div>') AS 'Stato'";
-        */
-        //$where = $table_calendario['index']['where'];
-        $where = " MD5(stato)='".$_GET['whrStato']."' $where_calendario $where_data_calendario";
-        if(!empty($arrayCampoRicerca)){
-            foreach ($arrayCampoRicerca as $campoRicerca) {
-                if($campoRicerca=="iscritto") $campoRicerca = "venduto";
-                $campoRicerca = $dblink->filter($campoRicerca);
-                $where.= " AND (oggetto LIKE '%".$campoRicerca."%' OR mittente LIKE '%".$campoRicerca."%'";
-                $where.= " OR dataagg LIKE '%".$campoRicerca."%' OR campo_5 LIKE '%".$campoRicerca."%'";
-                $where.= " OR nome LIKE '%".$campoRicerca."%' OR cognome LIKE '%".$campoRicerca."%'";
-                $where.= " OR email LIKE '%".$campoRicerca."%' OR campo_9 LIKE '%".$campoRicerca."%'";
-                $where.= " OR messaggio LIKE '%".$campoRicerca."%'";
-                $where.= " OR tipo_marketing LIKE '%".$campoRicerca."%' OR telefono LIKE '%".$campoRicerca."%'";
-                $where.= " OR cellulare LIKE '%".$campoRicerca."%' OR professione LIKE '%".$campoRicerca."%'";
-                $where.= " OR campo_4 LIKE '%".$campoRicerca."%' OR stato LIKE '%".$campoRicerca."%')";
-            }
-        }
-        //$ordine = $table_calendario['index']['order'];
-        $ordine = " ORDER BY datainsert DESC, orainsert ASC";
-    break;
-
     default:
         if($_SESSION['livello_utente']=="commerciale"){
             $campi_visualizzati = "IF(stato LIKE 'In Attesa di Controllo', '',
@@ -555,7 +557,7 @@ foreach ($rs_0002 as $row) {
                     else $nomeCampo = strtolower($fields[$c]->name);
                     if(strtolower($fields[$c]->name)=="selezione"){
                         $records["data"][$r][] = '<label class="mt-checkbox mt-checkbox-outline"><input name="txt_checkbox_' . $r . '" id="txt_checkbox_' . $r . '" type="checkbox"  value="' . $column . '"><span></span></label>'; 
-                    }else if (strtolower($nomeCampo) == "data") {
+                    }else if (strtolower($nomeCampo) == "data" || strtolower($nomeCampo) == "data_creazione" || strtolower($nomeCampo) == "data_iscrizione" || strtolower($nomeCampo) == "datainsert") {
                         $records["data"][$r][] = '' . GiraDataOra($column) . '';
                     }else{
                         $records["data"][$r][] = '' . $column . '';

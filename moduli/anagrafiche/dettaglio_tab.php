@@ -387,7 +387,7 @@ if($richiestaReadonly===false){
                                                         <div class="portlet-title">
                                                             <div class="caption caption-lg">
                                                                 <i class="fa fa-user theme-font"></i>
-                                                                <span class="caption-subject bold uppercase" style="font-size:24px;"><?php echo $row_00001['cognome'] . '  ' . $row_00001['nome']; ?> <?php if($id_professionista_presente>0){ echo "(".$row_00001['codice'].")"; if(!$livelloCommerciale){ echo "&nbsp;<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_professionisti&id=".$id_professionista_presente."\" title=\"DETTAGLIO PROFESSIONISTA\" alt=\"DETTAGLIO PROFESSIONISTA\"><i class=\"fa fa-search\"></i></a>"; }  } ?></span>
+                                                                <span class="caption-subject bold uppercase" style="font-size:24px;"><?php echo $row_00001['cognome'] . '  ' . $row_00001['nome']; ?> <?php if($id_professionista_presente>0){ echo "(".$row_00001['codice'].")"; /*if(!$livelloCommerciale){ */echo "&nbsp;<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_professionisti&id=".$id_professionista_presente."\" title=\"DETTAGLIO PROFESSIONISTA\" alt=\"DETTAGLIO PROFESSIONISTA\"><i class=\"fa fa-search\"></i></a>"; /*}*/  } ?></span>
                                                                 <!--<h1 class="bold uppercase"><i class="fa fa-user theme-font"></i> <?php echo $row_00001['cognome'] . '  ' . $row_00001['nome']; ?></h1>-->
                                                                 <br><span class="caption-helper" style="display:inline; margin-top:6px;"> Data Inserimento: <strong class="font-blue-chambray"><?php echo GiraDataOra($row_00003['datainsert']); ?></strong> - Ora Inserimento: <strong class="font-blue-chambray"><?=GiraDataOra($row_00003['orainsert']);?></strong> <?php if($livelloAdmin) { ?>ID Prodotto: <?=$row_00003['id_prodotto'];?></span><?php } ?>
                                                                 <br><span class="caption-helper" style="display:inline; margin-top:6px;"> Data Agg.: <strong class="font-blue-chambray"><?php echo ordinaDataAgg($row_00003['dataagg']); ?></strong> - Assegnato a: <strong class="font-blue-chambray"><?=getNomeAgente($row_00003['id_agente'])?></strong></span>
@@ -523,6 +523,8 @@ if($richiestaReadonly===false){
                                                                         <hr>
                                                                         <?php
                                                                         
+                                                                        $idPreventivo_daPassare = $row_0006['id'];
+                                                                        
                                                                         $sql_0022 = "SELECT id_prodotto
                                                                         FROM lista_preventivi_dettaglio
                                                                         WHERE id_calendario= '" . $idCalendario_daPassare . "'  AND id_preventivo= '" . $row_0006['id'] . "' AND id_prodotto!='0' ORDER BY dataagg DESC";
@@ -556,7 +558,7 @@ if($richiestaReadonly===false){
                                                                             <?php }
                                                                             if((($id_professionista_presente>=0 && $livelloCommerciale) OR ($id_professionista_presente>=0 && !$livelloCommerciale)) && (($row_0022['id_prodotto']>0 && $livelloCommerciale) OR ($row_0022['id_prodotto']>0 && !$livelloCommerciale)) && !$richiestaReadonly){?>
                                                                             <a href="salva.php?idPreventivo=<?=$row_0006['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoVenduto" class="btn btn-icon blue-steel" alt="ISCRITTO" title="ISCRITTO" style="margin-right: 10px"><i class="fa fa-check"></i> ISCRITTO</a>
-                                                                            <a href="salva.php?idPreventivo=<?=$row_0006['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoNegativo" class="btn btn-icon red-intense" alt="NEGATIVO" title="NEGATIVO"><i class="fa fa-close"></i> NEGATIVO</a>
+                                                                            <a href="salva.php?idPreventivo=<?=$row_0006['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoNegativo" class="btn btn-icon red-intense"  id='richiestaNegativa2' alt="NEGATIVO" title="NEGATIVO"><i class="fa fa-close"></i> NEGATIVO</a>
                                                                             <?php } ?>
                                                                             <hr>
                                                                         <?php
@@ -894,7 +896,7 @@ if($richiestaReadonly===false){
                                             
                                             <?php if($_SESSION['livello_utente']!='assistenza' && (($id_professionista_presente>=0 && $livelloCommerciale && !$richiestaReadonlyCommerciale) OR ($id_professionista_presente>=0 && !$livelloCommerciale)) && (($row_0021['id_prodotto']>0 && $livelloCommerciale && !$richiestaReadonlyCommerciale) OR ($row_0021['id_prodotto']>0 && !$livelloCommerciale)) && ($statoAttuale=="Richiamare" || $statoAttuale=="Mai Contattato")){ ?>
                                             <a href="salva.php?idPreventivo=<?=$row_0019['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoVenduto" class="btn btn-icon blue-steel" alt="ISCRITTO" title="ISCRITTO" style="margin-right: 10px"><i class="fa fa-check"></i> ISCRITTO</a>
-                                            <a href="salva.php?idPreventivo=<?=$row_0019['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoNegativo" class="btn btn-icon red-intense" alt="NEGATIVO" title="NEGATIVO"><i class="fa fa-close"></i> NEGATIVO</a>
+                                            <a href="salva.php?idPreventivo=<?=$row_0019['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoNegativo" id='richiestaNegativa1' class="btn btn-icon red-intense" alt="NEGATIVO" title="NEGATIVO"><i class="fa fa-close"></i> NEGATIVO</a>
                                             <hr>
                                                 <?php if($id_professionista_presente>0){ ?>
                                                     <a href="salva.php?idCalendario=<?=$idCalendario_daPassare?>&fn=ripristinaContatto" class="btn btn-icon grey-mint" alt="RIPORTA A CONTATTO" title="RIPORTA A CONTATTO"><i class="fa fa-exclamation-circle"></i> RIPORTA A CONTATTO</a>
@@ -1172,6 +1174,33 @@ if($richiestaReadonly===false){
             </div>
         </div>
         <!-- FINE MODAL INVIA PREVENTIVO -->
+        
+        <div id="myModalRichiestaNegativa" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- dialog body -->
+                    <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        Indicare la motivazione per la quale si dichiara che l'offerta è negativa!
+                        <form class="form-horizontal form-bordered" enctype="multipart/form-data" id="idFromRichiestaNegativa">
+                            <div class="form-body">
+                                <div class="form-group">
+                                    <label></label>
+                                    <div class="col-md-12">
+                                        <?php print_hidden("idCalendario", "$idCalendario_daPassare");?>
+                                        <?php print_hidden("idPreventivo", "$idPreventivo_daPassare");?>
+                                        <?=print_select2("SELECT id as valore, nome as nome FROM lista_obiezioni WHERE stato='Attivo' ORDER BY nome ASC", "idObiezione", "", "", false, 'tooltips select_obiezione', 'data-container="body" data-placement="top" data-original-title="SELEZIONA OBIEZIONE"') ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- dialog buttons -->
+                    <div class="modal-footer"><button type="button" id="annullaButtonRichiestaNegativa" class="btn btn-primary red">ANNULLA</button><button type="button" id="okButtonRichiestaNegativa" class="btn btn-primary">CONFERMA</button></div>
+                </div>
+            </div>
+        </div>
+        
     </body>
 <?php
 /*

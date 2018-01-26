@@ -225,6 +225,8 @@ if(isset($_GET['whrStato']) && $_GET['whrStato']!="0e902aba617fb11d469e1b90f57fd
         <script src="<?= BASE_URL ?>/assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/scripts/datatable.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
+        <script src="<?= BASE_URL ?>/assets/global/plugins/datatables/plugins/moment.min.js" type="text/javascript"></script>
+        <script src="<?= BASE_URL ?>/assets/global/plugins/datatables/plugins/datetime-moment.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/plugins/bootstrap-toastr/toastr.min.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/plugins/typeahead/typeahead.bundle.min.js" type="text/javascript"></script>

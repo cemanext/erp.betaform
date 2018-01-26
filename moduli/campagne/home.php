@@ -204,6 +204,18 @@ if(isset($_POST['escludi_FREE']) && $_POST['escludi_FREE'] == "0"){
     $whereSezionaleFREEfattAll = " AND lf.sezionale NOT LIKE 'FREE'";
 }
 
+if(isset($_POST['escludi_DISATTIVE']) && $_POST['escludi_DISATTIVE'] == "0"){
+    $whereCampagneDisattive = "";
+    $whereCampagneDisattiveAll = "";
+    /*$whereCampagneDisattiveFatt = "";
+    $whereCampagneDisattiveFattAll = "";*/
+}else{
+    $whereCampagneDisattive = " AND (ag.stato NOT LIKE '%Terminata%' OR ag.stato NOT LIKE '%Non Attiva%')";
+    $whereCampagneDisattiveAll = " AND ag.id IN (SELECT id_tipo_marketing FROM lista_campagne WHERE ag.stato NOT LIKE '%Terminata%' OR ag.stato NOT LIKE '%Non Attiva%')";
+    /*$whereCampagneDisattiveFatt = " AND lista_fatture.sezionale NOT LIKE 'FREE'";
+    $whereCampagneDisattiveFattAll = " AND lf.sezionale NOT LIKE 'FREE'";*/
+}
+
 if(isset($_POST['intervallo_data'])) {
     $intervallo_data = $_POST['intervallo_data'];
     $data_in = before(' al ', $intervallo_data);
@@ -271,6 +283,7 @@ if(isset($_POST['intervallo_data'])) {
     $_POST['id_tipo_marketing'] = "";
     $_POST['id_agente'] = "";
     $_POST['escludi_FREE'] = "1";
+    $_POST['escludi_DISATTIVE'] = "1";
 }
 ?>
 <!DOCTYPE html>
@@ -345,6 +358,8 @@ if(isset($_POST['intervallo_data'])) {
 
                     <!-- END THEME PANEL -->
                     <!-- BEGIN PAGE BAR -->
+                    <?php include(BASE_ROOT . '/assets/page_bar.php'); ?>
+                    <!-- END PAGE BAR -->
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <form action="?idMenu=<?=$_GET['idMenu']?>" class="form-horizontal form-bordered" method="POST" id="formIntervallo" name="formIntervallo">
@@ -375,11 +390,13 @@ if(isset($_POST['intervallo_data'])) {
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <?=print_multi_select("SELECT id AS valore, nome AS nome FROM lista_tipo_marketing WHERE 1 ORDER BY nome ASC", "id_tipo_marketing[]", $id_tipo_marketing_post, "", false, 'mt-multiselect', 'data-none-selected="Seleziona Tipo Marketing"') ?>
                                         </div>
-                                        <div class="col-md-6">
-                                            <label class="control-label col-md-9">Escludi Sezionale FREE</label>
+                                        <div class="col-md-8">
+                                            <label class="control-label col-md-3" style="padding: 0px;">Escludi Campagne Disattive</label>
+                                            <div class="col-md-3"><?=print_select_static(array("1"=>"SI", "0" => "NO"), "escludi_DISATTIVE", $_POST['escludi_DISATTIVE']); ?></div>
+                                            <label class="control-label col-md-3" style="padding: 0px;">Escludi Sezionale FREE</label>
                                             <div class="col-md-3"><?=print_select_static(array("1"=>"SI", "0" => "NO"), "escludi_FREE", $_POST['escludi_FREE']); ?></div>
                                         </div>
                                     </div>
@@ -497,7 +514,7 @@ if(isset($_POST['intervallo_data'])) {
                             SUM((SELECT IF(SUM(lp.imponibile)>0, SUM(lp.imponibile), 0) AS conteggio_preventivi FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Chiuso') AND lp.id_campagna IN (SELECT ac.id FROM lista_campagne AS ac WHERE ac.id_tipo_marketing = ag.id) $where_intervallo_all)) AS Ordinato_Lordo,
                             SUM((SELECT IF(SUM(ABS(lf.imponibile))>0, SUM(ABS(lf.imponibile)), 0) AS conteggio_annullate FROM lista_fatture AS lf WHERE (lf.stato LIKE 'Nota di Credito%') AND lf.tipo LIKE 'Nota di Credito%' AND lf.id_campagna IN (SELECT ac.id FROM lista_campagne AS ac WHERE ac.id_tipo_marketing = ag.id) $where_intervallo_fatture_all)) AS Fatture_Annullate,
                             SUM((SELECT IF(SUM(ABS(lf.imponibile))>0, SUM(ABS(lf.imponibile)), 0) AS conteggio_annullate FROM lista_fatture AS lf WHERE (lf.stato LIKE 'In Attesa' OR lf.stato LIKE 'Pagata%') AND lf.tipo LIKE 'Fattura%' AND lf.id_campagna IN (SELECT ac.id FROM lista_campagne AS ac WHERE ac.id_tipo_marketing = ag.id) $where_intervallo_fatture_all)) AS Fatturato
-                            FROM lista_tipo_marketing AS ag WHERE 1 $whereCampagnaIdTipoMK $whereTipoMarketingId GROUP BY ag.id);";
+                            FROM lista_tipo_marketing AS ag WHERE 1 $whereCampagnaIdTipoMK $whereTipoMarketingId $whereCampagneDisattiveAll GROUP BY ag.id);";
                             $dblink->query($sql_0028, true);
                             //echo $dblink->get_query();
                             
@@ -576,7 +593,7 @@ if(isset($_POST['intervallo_data'])) {
                             (SELECT IF(SUM(lp.imponibile)>0, SUM(lp.imponibile), 0) AS conteggio_preventivi FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Chiuso') AND lp.id_campagna=ag.id $where_intervallo_all) AS Ordinato_Lordo,
                             (SELECT IF(SUM(ABS(lf.imponibile))>0, SUM(ABS(lf.imponibile)), 0) AS conteggio_annullate FROM lista_fatture AS lf WHERE (lf.stato LIKE 'Nota di Credito%') AND lf.tipo LIKE 'Nota di Credito%' AND lf.id_campagna=ag.id $where_intervallo_fatture_all) AS Fatture_Annullate,
                             (SELECT IF(SUM(ABS(lf.imponibile))>0, SUM(ABS(lf.imponibile)), 0) AS conteggio_annullate FROM lista_fatture AS lf WHERE (lf.stato LIKE 'In Attesa' OR lf.stato LIKE 'Pagata%') AND lf.tipo LIKE 'Fattura%' AND lf.id_campagna=ag.id $where_intervallo_fatture_all) AS Fatturato
-                            FROM lista_campagne AS ag WHERE 1 $whereCampagnaId $whereTipoMarketing);";
+                            FROM lista_campagne AS ag WHERE 1 $whereCampagnaId $whereTipoMarketing $whereCampagneDisattive);";
                             $dblink->query($sql_0024, true);
                             
                             $sql_0025 = "CREATE TEMPORARY TABLE stat_campagna_home_totale_tmp (SELECT Nome_Campagna, tipo_marketing, Richiami, Tutte_Richieste, Tel_Richiami+Negativo+Confermati AS 'Tel_Gestite',"
@@ -633,7 +650,7 @@ if(isset($_POST['intervallo_data'])) {
                             $dblink->query($sql_0033, true);
                             
                             
-                            stampa_table_datatables_responsive("SELECT * FROM stat_campagna_home_no_id UNION SELECT * FROM stat_campagna_home_totale UNION SELECT * FROM stat_campagna_home_totale_tot;", "Statistiche per CAMPAGNA".$titolo_intervallo, "tabella_base_home");
+                            stampa_table_datatables_responsive("SELECT * FROM stat_campagna_home_no_id UNION SELECT * FROM stat_campagna_home_totale;", "Statistiche per CAMPAGNA".$titolo_intervallo, "tabella_base_home", COLORE_PRIMARIO, true);
                            ?>
                         </div>
                     </div>
@@ -727,7 +744,7 @@ if(isset($_POST['intervallo_data'])) {
                 document.formIntervallo.submit();
             }); 
             
-            $('#id_agente, #id_prodotto, #id_campagna, #id_tipo_marketing, #escludi_FREE').on('change', function(ev, picker) {
+            $('#id_agente, #id_prodotto, #id_campagna, #id_tipo_marketing, #escludi_FREE, #escludi_DISATTIVE').on('change', function(ev, picker) {
                 document.formIntervallo.submit();
             });
             

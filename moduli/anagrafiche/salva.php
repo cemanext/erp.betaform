@@ -521,8 +521,11 @@ if(isset($_GET['fn'])){
         case "preventivoNegativo":
             $ok = true;
             $dblink->begin();
-            $id_calendario = $_GET['idCalendario'];
-            $id_preventivo = $_GET['idPreventivo'];
+            $id_calendario = $_POST['idCalendario'];
+            $id_preventivo = $_POST['idPreventivo'];
+            $id_obiezione = $_POST['idObiezione'];
+            
+            $nomeObiezione = $dblink->get_field("SELECT nome FROM lista_obiezioni WHERE id = '$id_obiezione'");
             
             $rowCalendario = $dblink->get_row("SELECT id_professionista, id_azienda, id_agente, id_campagna FROM calendario WHERE id='$id_calendario'", true);
             
@@ -538,7 +541,9 @@ if(isset($_GET['fn'])){
             $updateCalendario = array(
                 "dataagg" => date("Y-m-d H:i:s"),
                 "scrittore" => $dblink->filter($_SESSION['cognome_nome_utente']),
-                "stato" => "Negativo"
+                "stato" => "Negativo",
+                "id_obiezione" => "$id_obiezione",
+                "nome_obiezione" => $dblink->filter($nomeObiezione)
             );
             
             $ok = $ok && $dblink->update("calendario", $updateCalendario, array("id"=>$id_calendario));
@@ -555,7 +560,9 @@ if(isset($_GET['fn'])){
                 "id_agente" => $rowCalendario['id_agente'],
                 "cognome_nome_agente" => getNomeAgente($rowCalendario['id_agente']),
                 "id_sezionale" => $idSezionale,
-                "sezionale" => $sezionale
+                "sezionale" => $sezionale,
+                "id_obiezione" => "$id_obiezione",
+                "nome_obiezione" => $dblink->filter($nomeObiezione)
             );
             
             $ok = $ok && $dblink->update("lista_preventivi", $updatePreventivo, array("id"=>$id_preventivo));
@@ -573,8 +580,8 @@ if(isset($_GET['fn'])){
             
             $ok = $ok && $dblink->update("lista_preventivi_dettaglio", $updatePreventivoDettaglio, array("id_preventivo"=>$id_preventivo));
             
-            $sql_000001 = "INSERT INTO calendario (`id`, `dataagg`, `scrittore`, `datainsert`, `orainsert`, id_agente, id_campagna, id_contatto, id_professionista, id_azienda, id_preventivo, id_commessa, `data`, `ora`, `etichetta`, `oggetto`, `messaggio`, `mittente`, `destinatario`, `priorita`, `stato`) 
-            SELECT '', NOW(), '".$dblink->filter($_SESSION['cognome_nome_utente'])."', NOW(), NOW(), id_agente, id_campagna, id_contatto, id_professionista, id_azienda, '".$id_preventivo."', '', CURDATE(), TIME(NOW()), 'Ordini', CONCAT('Ordine n ', id ,''), CONCAT('Ordine n ', id ,': Negativo il ',NOW(),''), '".$dblink->filter($_SESSION['cognome_nome_utente'])."', '', 'Normale', 'Fatto' FROM lista_preventivi WHERE id='".$id_preventivo."'";
+            $sql_000001 = "INSERT INTO calendario (`id`, `dataagg`, `scrittore`, `datainsert`, `orainsert`, id_agente, id_campagna, id_contatto, id_professionista, id_azienda, id_preventivo, id_commessa, `data`, `ora`, `etichetta`, `oggetto`, `messaggio`, `mittente`, `destinatario`, `priorita`, `stato`, `id_obiezione`, `nome_obiezione`) 
+            SELECT '', NOW(), '".$dblink->filter($_SESSION['cognome_nome_utente'])."', NOW(), NOW(), id_agente, id_campagna, id_contatto, id_professionista, id_azienda, '".$id_preventivo."', '', CURDATE(), TIME(NOW()), 'Ordini', CONCAT('Ordine n ', id ,''), CONCAT('Ordine n ', id ,': Negativo il ',NOW(),''), '".$dblink->filter($_SESSION['cognome_nome_utente'])."', '', 'Normale', 'Fatto', id_obiezione, nome_obiezione FROM lista_preventivi WHERE id='".$id_preventivo."'";
             $ok = $ok && $dblink->query($sql_000001);
             
             if($ok){

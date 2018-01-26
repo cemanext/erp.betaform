@@ -121,29 +121,29 @@ if (isset($_POST['intervallo_data'])) {
     $data_out = after(' al ', $intervallo_data);
     
     if($_POST['escludi_rinnovi'] == "0"){
-        $whereTmkRinnovi = "";
-        $whereTmkRinnoviAll = "";
+        $whereTmkRinnoviFatt = "";
+        $whereTmkRinnoviFattAll = "";
     }else{
-        $whereTmkRinnovi = " AND lista_fatture.id_campagna != 166";
-        $whereTmkRinnoviAll = " AND lf.id_campagna != 166";
+        $whereTmkRinnoviFatt = " AND lista_fatture.id_campagna != 166";
+        $whereTmkRinnoviFattAll = " AND lf.id_campagna != 166";
     }
     
     if($_POST['escludi_tmk_negativi'] == "0"){
-        $whereTmkNegativi = "";
-        $whereTmkNegativiAll = "";
+        $whereTmkNegativiFatt = "";
+        $whereTmkNegativiFattAll = "";
     }else{
-        $whereTmkNegativi = " AND lista_fatture.id_campagna != 181 ";
-        $whereTmkNegativiAll = " AND lf.id_campagna != 181 ";
+        $whereTmkNegativiFatt = " AND lista_fatture.id_campagna != 181 ";
+        $whereTmkNegativiAllFatt = " AND lf.id_campagna != 181 ";
     }
     
     if($data_in == $data_out){
-        $where_intervallo_fatture = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND DATE(lista_fatture.data_creazione) = '" . GiraDataOra($data_in) . "'";
-        $where_intervallo_fatture_all = " $whereCommercialeFattAll $whereTmkRinnoviAll $whereTmkNegativiAll AND DATE(lf.data_creazione)  =  '" . GiraDataOra($data_in) . "'";
-        $where_intervallo_fatture_pagamento_all = " $whereCommercialeFattAll $whereTmkRinnoviAll $whereTmkNegativiAll AND DATE(lf.data_pagamento)  =  '" . GiraDataOra($data_in) . "'";
+        $where_intervallo_fatture = " $whereCommerciale $whereTmkRinnoviFatt $whereTmkNegativi AND DATE(lista_fatture.data_creazione) = '" . GiraDataOra($data_in) . "'";
+        $where_intervallo_fatture_all = " $whereCommercialeFattAll $whereTmkRinnoviFattAll $whereTmkNegativiAll AND DATE(lf.data_creazione)  =  '" . GiraDataOra($data_in) . "'";
+        $where_intervallo_fatture_pagamento_all = " $whereCommercialeFattAll $whereTmkRinnoviFattAll $whereTmkNegativiAll AND DATE(lf.data_pagamento)  =  '" . GiraDataOra($data_in) . "'";
     }else{
-        $where_intervallo_fatture = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND lista_fatture.data_creazione BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
-        $where_intervallo_fatture_all = " $whereCommercialeFattAll $whereTmkRinnoviAll $whereTmkNegativiAll AND lf.data_creazione BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
-        $where_intervallo_fatture_pagamento_all = " $whereCommercialeFattAll $whereTmkRinnoviAll $whereTmkNegativiAll AND lf.data_pagamento BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo_fatture = " $whereCommerciale $whereTmkRinnoviFatt $whereTmkNegativi AND lista_fatture.data_creazione BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo_fatture_all = " $whereCommercialeFattAll $whereTmkRinnoviFattAll $whereTmkNegativiAll AND lf.data_creazione BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo_fatture_pagamento_all = " $whereCommercialeFattAll $whereTmkRinnoviFattAll $whereTmkNegativiAll AND lf.data_pagamento BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
     }
     
     if("01-".date("m-Y")." al ".date("t-m-Y") == $intervallo_data){
@@ -226,6 +226,9 @@ if (isset($_POST['intervallo_data'])) {
                     <!-- BEGIN THEME PANEL TODO DA CANCELLARE -->
 
                     <!-- END THEME PANEL -->
+                    <!-- BEGIN PAGE BAR -->
+                    <?php include(BASE_ROOT . '/assets/page_bar.php'); ?>
+                    <!-- END PAGE BAR -->
                     <!-- BEGIN PAGE BAR
                     <div class="page-bar">
                         <ul class="page-breadcrumb">
@@ -411,7 +414,7 @@ if (isset($_POST['intervallo_data'])) {
                             <?php
                             
                             $sql_0020 = "CREATE TEMPORARY TABLE stat_commerciali_home_2 (SELECT CONCAT(ag.cognome,' ',ag.nome) as Commerciale, 
-                            (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato LIKE 'Mai Contattato' OR ca.stato LIKE 'Richiamare') AND ca.id_agente=ag.id) AS Richiami,
+                            (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato LIKE 'Mai Contattato' OR ca.stato LIKE 'Richiamare') AND ca.id_agente=ag.id $whereTmkRinnovi) AS Richiami,
                             (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato NOT LIKE 'Fatto' AND ca.stato NOT LIKE 'Chiusa%') AND ca.id_agente=ag.id $where_intervallo_cal_richiami) AS Richieste_Attribuite,
                             (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato LIKE 'Mai Contattato' OR ca.stato LIKE 'Richiamare') AND ca.id_agente=ag.id $where_intervallo_cal_richiami) AS Tel_Richiami,
                             (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND ca.id_agente=ag.id $where_intervallo_cal) AS telgestite,
@@ -431,7 +434,7 @@ if (isset($_POST['intervallo_data'])) {
                                     . " FROM stat_commerciali_home_2);";
                             $dblink->query($sql_0021, true);
                             
-                            $sql_0022 = "CREATE TEMPORARY TABLE stat_commerciali_home_totale_tot_tmp (SELECT 'TOTALE', SUM(Richiami) AS Richiami, SUM(Richieste_Attribuite) AS Richieste_Attribuite, SUM(telgestite) AS 'Tel_Gestite', SUM(Iscritti) AS Iscritti,"
+                            /*$sql_0022 = "CREATE TEMPORARY TABLE stat_commerciali_home_totale_tot_tmp (SELECT 'TOTALE', SUM(Richiami) AS Richiami, SUM(Richieste_Attribuite) AS Richieste_Attribuite, SUM(telgestite) AS 'Tel_Gestite', SUM(Iscritti) AS Iscritti,"
                                     . " SUM(Iscritto_Lordo) AS Iscritto_Lordo, SUM(Iscritto_Annulato) AS Iscritto_Annulato,  SUM(Iscritto_Netto)-SUM(Iscritto_Annulato) AS Iscritto_Netto, 0 AS Realizzato,"
                                     . " 0 AS Media_part_su_Fattura, SUM(Incassato) AS Incassato, SUM(Da_Incassare) AS Da_Incassare FROM stat_commerciali_home_2);";
                             $dblink->query($sql_0022, true);
@@ -440,9 +443,9 @@ if (isset($_POST['intervallo_data'])) {
                                     . " Iscritti, Iscritto_Lordo, Iscritto_Annulato, Iscritto_Netto, ROUND(Richieste_Attribuite/Iscritti, 2) AS Realizzato,"
                                     . " IF(Iscritto_Netto>0, ROUND(Iscritto_Netto/Iscritti,2), 0) AS Media_part_su_Fattura, Incassato, Da_Incassare"
                                     . " FROM stat_commerciali_home_totale_tot_tmp);";
-                            $dblink->query($sql_0023, true);
+                            $dblink->query($sql_0023, true);*/
                             
-                            stampa_table_datatables_responsive("SELECT * FROM stat_commerciali_home_totale UNION SELECT * FROM stat_commerciali_home_totale_tot;", "Statistiche per commerciale".$titolo_intervallo, "tabella_base_home");
+                            stampa_table_datatables_responsive("SELECT * FROM stat_commerciali_home_totale;", "Statistiche per commerciale".$titolo_intervallo, "tabella_base_home", COLORE_PRIMARIO, true);
                             
                             ?>
                         </div>

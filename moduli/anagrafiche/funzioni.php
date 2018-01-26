@@ -5,7 +5,7 @@ $anagrafiche_default = "lista_aziende";
 /** FUNZIONI DI CROCCO */
 function Stampa_HTML_index_Anagrafica($tabella) {
     global $table_listaAziende, $table_listaProfessionisti, $table_listaProfessioni,
-    $table_listaAlbiProfessionali;
+    $table_listaAlbiProfessionali, $dblink;
     switch ($tabella) {
 
         default:
@@ -63,6 +63,32 @@ function Stampa_HTML_index_Anagrafica($tabella) {
             $sql_0001 = "SELECT " . $campi_visualizzati . " FROM " . $tabella . " WHERE $where $ordine $limite";
             stampa_table_datatables_responsive($sql_0001, $titolo);
             break;
+        
+        case 'verifica_codice_fiscale':
+            $tabella = "lista_professionisti";
+            
+            $allProf = $dblink->get_results("SELECT * FROM $tabella WHERE LENGTH(codice_fiscale)=16 AND codice_fiscale NOT LIKE '%@%' AND campo_3!='@'");
+            foreach ($allProf as $checkProf) {
+                if(!controlloCodiceFiscale($checkProf['codice_fiscale'])){
+                    $dblink->query("UPDATE $tabella SET campo_3 = '@' WHERE id = '".$checkProf['id']."'");
+                }
+            }
+            
+            $campi_visualizzati = $table_listaProfessionisti['index']['campi'];
+
+            $campi_visualizzati = "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_professionisti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
+                                        CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"modifica.php?tbl=lista_professionisti&id=',id,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>') AS 'fa-edit',
+                                        CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"dettaglio_tab.php?tbl=lista_professionisti&id=',id,'\" title=\"RICHIESTA\" alt=\"RICHIESTA\"><i class=\"fa fa-book\"></i></a>') AS 'fa-book',
+                                        CONCAT('<b>',`cognome`,' ',`nome`,'</b>') AS 'professionista', codice_fiscale AS 'codice fiscale', 
+                                        CONCAT('Cel: ',cellulare,'<br>Tel: ', telefono) AS Telefono, email";
+            $where = " 1 AND (LENGTH(codice_fiscale)<16 OR LENGTH(codice_fiscale)>16 OR codice_fiscale LIKE '%@%' OR campo_3 = '@') ";
+            $ordine = $table_listaProfessionisti['index']['order'];
+            $titolo = 'Elenco Professionisti con Codice Fiscale Errato!';
+            $limite = ' ';
+            $sql_0001 = "SELECT " . $campi_visualizzati . " FROM " . $tabella . " WHERE $where $ordine $limite";
+            
+            stampa_table_datatables_responsive($sql_0001, $titolo, 'tabella_base', 'red-intense');
+        break;
     }
 }
 

@@ -161,6 +161,13 @@ foreach($rs_utente_entrato as $row_utente_entrato){
 
 
             }else{
+                
+                $sql_dati_configurazione = "SELECT id, id_fattura, id_fattura_dettaglio FROM lista_iscrizioni 
+                WHERE id_utente_moodle = '".$id_utente_moodle."'
+                AND data_fine_iscrizione>=CURDATE() AND stato LIKE 'Configurazione'";
+
+                $datiConfigurazione = $dblink->get_row($sql_dati_configurazione, true); 
+                
                 //insert
                 $insert = array(
                     "dataagg" => date("Y-m-d H:i:s"),
@@ -178,6 +185,8 @@ foreach($rs_utente_entrato as $row_utente_entrato){
                     "id_utente_moodle" => $id_utente_moodle,
                     "id_user_enrolments" => $id_user_enrolments,
                     "stato" => "In Attesa",
+                    "id_fattura" => $datiConfigurazione['id_fattura'],
+                    "id_fattura_dettaglio" => $datiConfigurazione['id_fattura_dettaglio'],
                 );
 
                 $ok = $dblink->insert(DB_NAME.".lista_iscrizioni", $insert);

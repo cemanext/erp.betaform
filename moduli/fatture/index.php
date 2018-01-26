@@ -187,6 +187,11 @@ $rs_007 = $dblink->query($sql_007);
                     ?>
                     <!-- END PAGE TITLE -->
                     <!-- END PAGE HEADER-->
+                    
+                    <div style="text-align: right; margin-top: -50px; margin-bottom: 15px;"> 
+                        <button id="cancellaRicarcaTabella" type="button" class="btn btn-icon btn-outline green-steel" alt="CANCELLA RICERCA" title="CANCELLA RICERCA"><i class="fa fa-eraser"></i> Cancella Ricerca</button>
+                    </div>
+                    
                     <?php 
                     //echo '<li>$tabella = '.$tabella.'</li>';
                     //echo '<li>$id = '.$id.'</li>';
@@ -229,7 +234,6 @@ $rs_007 = $dblink->query($sql_007);
         <script src="<?= BASE_URL ?>/assets/global/scripts/datatable.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
-        
         <script src="<?= BASE_URL ?>/assets/global/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js" type="text/javascript"></script>
 

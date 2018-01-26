@@ -638,6 +638,43 @@ $( document ).ready(function() {
         }
     });
     
+    $("#richiestaNegativa1, #richiestaNegativa2").on( "click", function(event) {
+        
+        event.preventDefault();
+        
+        $("#myModalRichiestaNegativa").modal({          // wire up the actual modal functionality and show the dialog
+            "backdrop"  : "static",
+            "keyboard"  : true,
+            "show"      : true                     // ensure the modal is shown immediately
+        });
+        
+    }); 
+    
+    $("#myModalRichiestaNegativa #okButtonRichiestaNegativa").on( "click", function(event) {
+        
+        event.preventDefault();
+        var posting = jQuery.post( BASE_URL_HOST+"/moduli/anagrafiche/salva.php?fn=preventivoNegativo" , jQuery( "#idFromRichiestaNegativa" ).serializeArray() );
+        posting.done(function(data) {
+            var tmp = data.split(':');
+            $("#myModalRichiestaNegativa").modal('hide');     // dismiss the dialog
+            location.href = urlReferer + "&res=1";
+            //alert( "Data Loaded: " + data );
+        }).fail(function() {
+            toastr.alert("Impossibile trasferire la richiesta!", "Errore");
+            $("#myModalRichiestaNegativa").modal('hide'); 
+        });
+    });
+    
+    $("#myModalRichiestaNegativa #annullaButtonRichiestaNegativa").on( "click", function(event) {
+        event.preventDefault(); 
+        $("#myModalRichiestaNegativa #idCal").val('');
+        $("#myModalRichiestaNegativa").modal('hide');     // dismiss the dialog
+    });
+    
+    $('#myModalRichiestaNegativa').on('shown.bs.modal', function () {
+        $('#idFromRichiestaNegativa #idObiezione').focus();
+    });
+    
     ComponentsSelectProvAblo.init();
     ComponentsSelectProv.init();
     ComponentsSelectProfessione.init();
@@ -1239,11 +1276,11 @@ var TableDatatablesAjaxProff = function () {
             ],
 
             "lengthMenu": [
-                [10, 25, 30, 50],
-                [10, 25, 30, 50] // change per page values here
+                [10, 25, 30, 50, 100, 250, -1],
+                [10, 25, 30, 50, 100, 250, 'Tutti'] // change per page values here
             ],
             // set the initial value
-            "pageLength": 30,
+            "pageLength": 50,
 
             "dom": "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
 
@@ -1297,11 +1334,11 @@ var TableDatatablesAjaxProff = function () {
             ],
 
             "lengthMenu": [
-                [10, 25, 30, 50],
-                [10, 25, 30, 50] // change per page values here
+                [10, 25, 30, 50, 100, 250, -1],
+                [10, 25, 30, 50, 100, 250, 'Tutti'] // change per page values here
             ],
             // set the initial value
-            "pageLength": 30,
+            "pageLength": 50,
 
             "dom": "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
 
@@ -1361,11 +1398,11 @@ var TabelleAnagrafiche = function () {
           ],
 
           "lengthMenu": [
-              [10, 25, 30, 50],
-              [10, 25, 30, 50] // change per page values here
-          ],
-          // set the initial value
-          "pageLength": 30,
+                [10, 25, 30, 50, 100, 250, -1],
+                [10, 25, 30, 50, 100, 250, 'Tutti'] // change per page values here
+            ],
+            // set the initial value
+            "pageLength": 50,
 
           "dom": "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
 

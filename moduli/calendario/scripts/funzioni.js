@@ -456,6 +456,9 @@ function prendiInCaricoRichesta(idCalendario, idProfessionista, idAgenteOld, idA
 var TableDatatablesAjaxCalendario = function () {
 
         var initTableAjax1 = function () {
+            
+            //$.fn.dataTable.moment('DD-MM-YYYY');
+            
             var table = $('#datatable_ajax');
 
             if($.urlParam('whrStato') == "a7d7ab5bee5f267d23e0ff28a162bafb" || $.urlParam('whrStato') == "c41dc3146e903da07fcdf8a00dd9d446"){
@@ -501,17 +504,16 @@ var TableDatatablesAjaxCalendario = function () {
                 ],
 
                 "lengthMenu": [
-                    [10, 25, 30, 50, -1],
-                    [10, 25, 30, 50, "Tutti"] // change per page values here
+                    [10, 25, 30, 50, 100, 250, -1],
+                    [10, 25, 30, 50, 100, 250, 'Tutti'] // change per page values here
                 ],
                 // set the initial value
-                "pageLength": 30,
+                "pageLength": 50,
 
                 "dom": "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
 
                 "columnDefs": [
                     {"className": "dt-center", "targets": "_all"},
-                    {"orderable": true, "targets": [ 1, 2, 3, 4, 5, 6, 7 ],},
                     {"orderable": false, "targets": [ 0],}
                 ],
 
