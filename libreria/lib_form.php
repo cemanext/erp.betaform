@@ -852,7 +852,7 @@ function print_select2($sql,$nomeSelect,$valoreSelezionato="",$ajaxFunction = ""
 
 function print_multi_select($sql,$nomeSelect,$valoreSelezionato="",$ajaxFunction = "", $echo = true, $classi="mt-multiselect", $extra_data=""){
     global $dblink;
-    $select= '<select class="form-control '.$classi.'" multiple="multiple" data-label="left" data-select-all="true" data-width="100%"  data-height="300" data-filter="true" data-action-dropdownhide="true" '.$extra_data.' id="'.$nomeSelect.'" name="'.$nomeSelect.'" '.($ajaxFunction!="" ? "onchange=\"".$ajaxFunction."(this);\"" : "").'>';
+    $select= '<select class="form-control '.$classi.'" multiple="multiple" data-label="left" data-select-all="true" data-width="100%"  data-height="300" data-filter="true" data-action-dropdownhide="true" '.$extra_data.' id="'.str_replace("[]", "", $nomeSelect).'" name="'.$nomeSelect.'" '.($ajaxFunction!="" ? "onchange=\"".$ajaxFunction."(this);\"" : "").'>';
     $res = $dblink->get_results($sql);
     $i = 0;
     //if($valoreSelezionato==="") {

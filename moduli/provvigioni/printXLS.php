@@ -19,7 +19,29 @@ if(isset($_GET['mese']) && isset($_GET['anno']) && isset($_GET['id_provvigione']
     }
 }
 
-$sql_0001 = "SELECT
+if(isset($_GET['iscritti'])){
+    $groupby = "GROUP BY id_professionista";
+    $sql_0001 = "SELECT
+            (SELECT codice FROM lista_provvigioni WHERE id = '$id_provvigione') AS codice_partner,
+            cognome_nome_professionista,
+            nome_classe,
+            data_inizio_iscrizione AS data_attivazione,
+            data_fine_iscrizione AS data_scadenza,
+            email AS email_professionista,
+            cellulare AS cellulare_professionista,
+            provincia_di_nascita AS provincia,
+            professione,
+            provincia_albo,
+            numero_albo
+            FROM lista_iscrizioni INNER JOIN lista_professionisti ON (lista_iscrizioni.id_professionista = lista_professionisti.id) 
+            WHERE 
+            lista_iscrizioni.stato NOT LIKE '%Scadut%'
+            AND id_fattura_dettaglio IN (SELECT id FROM lista_fatture_dettaglio WHERE id_provvigione = '$id_provvigione')
+            AND id_fattura IN (SELECT id FROM lista_fatture WHERE MONTH(data_creazione) = '$mese' AND YEAR(data_creazione) = '$anno' AND sezionale NOT LIKE '%CN%')
+            $groupby
+        ";
+}else{
+    $sql_0001 = "SELECT
             (SELECT codice FROM lista_provvigioni WHERE id = '$id_provvigione') AS codice_partner,
             nome_corso AS corso,
             cognome_nome_professionista,
@@ -43,6 +65,9 @@ $sql_0001 = "SELECT
             AND id_fattura_dettaglio IN (SELECT id FROM lista_fatture_dettaglio WHERE id_provvigione = '$id_provvigione')
             AND id_fattura IN (SELECT id FROM lista_fatture WHERE MONTH(data_creazione) = '$mese' AND YEAR(data_creazione) = '$anno' AND sezionale NOT LIKE '%CN%')
         ";
+}
+
+
 
 //$sql_0001 = creaSQLesporta();
 /*$sql_0001 = "SELECT IF(tipo='Fattura', 'Fatt. Imm.', 'N. C.') AS 'Tipo doc.', sezionale AS 'Sz.', codice AS 'Nr.doc.', DATE_FORMAT(DATE(data_creazione), '%d/%m/%Y') AS 'Data Doc.',

@@ -1087,6 +1087,23 @@
                                         else if (filterCandidate.indexOf(this.query) > -1) {
                                             showElement = true;
                                         }
+                                        
+                                        if(this.query.indexOf(" ") > -1){
+                                            showElement = true;
+                                            
+                                            var ricerca = this.query.split(" ");
+                                            var ricercaLen = ricerca.length;
+                                            
+                                            for (i = 0; i < ricercaLen; i++) {
+                                                var match = filterCandidate.indexOf(ricerca[i]) > -1;
+                                                if(match){
+                                                    showElement = showElement && true;
+                                                }else{
+                                                    showElement = showElement && false;
+                                                }
+
+                                            }
+                                        }
 
                                         // Toggle current element (group or group item) according to showElement boolean.
                                         $(element).toggle(showElement)

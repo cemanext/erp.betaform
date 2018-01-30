@@ -9,6 +9,11 @@ if(isset($_GET['idMenu'])){
 }else{
     $idMenu = "";
 }
+
+if(!isset($_GET['escludiDisattive'])){
+    $_GET['escludiDisattive'] = 1;
+}
+
 /* 	fine post ricerca sinistra	 */
 
 if (isset($_GET['tbl'])) {
@@ -101,6 +106,23 @@ $tabella = 'lista_campagne';
                     get_pagina_titolo($idMenu, $where_lista_menu);
                     ?>
                     <!-- END PAGE TITLE -->
+                    
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <form action="?idMenu=<?=$_GET['idMenu']?>" class="form-horizontal form-bordered" method="GET" id="formIntervallo" name="formIntervallo">
+                                <div class="form-body">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <div class="col-md-6"><?=print_hidden("idMenu", $_GET['idMenu'])?></div>
+                                            <label class="control-label col-md-3" style="padding: 0px;">Escludi Campagne Disattive</label>
+                                            <div class="col-md-3"><?=print_select_static(array("1"=>"SI", "0" => "NO"), "escludiDisattive", $_GET['escludiDisattive']); ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
                     <!-- END PAGE HEADER-->
                     <?php Stampa_HTML_index_Campagne($tabella); ?>
                     <div class="form-actions right">
@@ -164,5 +186,13 @@ $tabella = 'lista_campagne';
         <script src="<?= BASE_URL ?>/assets/layouts/global/scripts/quick-sidebar.min.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/moduli/campagne/scripts/funzioni.js" type="text/javascript"></script>
         <!-- END THEME LAYOUT SCRIPTS -->
+        
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#escludiDisattive').on('change', function(ev, picker) {
+                    document.formIntervallo.submit();
+                });
+            });
+        </script>
     </body>
 </html>

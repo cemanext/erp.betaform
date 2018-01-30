@@ -336,7 +336,7 @@ var TableDatatablesAjaxCampagne = function () {
             responsive: false,
 
             "ajax": {
-                "url": BASE_URL_HOST+"/moduli/campagne/scripts/server_processing.php?tbl=lista_campagne", // ajax source
+                "url": BASE_URL_HOST+"/moduli/campagne/scripts/server_processing.php?tbl=lista_campagne&escludiDisattive="+$.urlParam('escludiDisattive'), // ajax source
             },
 
             "ordering": true,

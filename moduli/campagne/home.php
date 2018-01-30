@@ -4,6 +4,7 @@ include_once(BASE_ROOT . 'config/confAccesso.php');
 require_once(BASE_ROOT.'config/confPermessi.php');
 
 //RECUPERO LA VARIABILE POST DAL FORM defaultrange
+$togliVuote = true;
 
 if(isset($_POST['id_agente']) && count($_POST['id_agente'])>0){
     $whereCommerciale = "AND (";
@@ -48,7 +49,7 @@ if(isset($_POST['id_agente']) && count($_POST['id_agente'])>0){
 }
 
 if(isset($_POST['id_campagna']) && count($_POST['id_campagna'])>0){
-    
+    $togliVuote = false;
     $whereCampagnaIdTipoMK = "AND ag.id IN (SELECT ac.id_tipo_marketing FROM lista_campagne AS ac WHERE (";
     $whereCampagnaId = "AND (";
     $whereCampagna = "AND (";
@@ -378,7 +379,7 @@ if(isset($_POST['intervallo_data'])) {
                                             <center><small>Risultati <?= $titolo_intervallo; ?></small></center>
                                         </div>
                                         <div class="col-md-6">
-                                            <?=print_multi_select("SELECT id AS valore, nome FROM lista_campagne WHERE 1 ORDER BY nome ASC", "id_campagna[]", $id_campagna_post, "", false, 'mt-multiselect', 'data-none-selected="Seleziona Campagna"') ?>
+                                            <?=print_multi_select("SELECT id AS valore, nome as nome FROM lista_campagne WHERE 1 ORDER BY nome ASC", "id_campagna[]", $id_campagna_post, "", false, 'mt-multiselect', 'data-none-selected="Seleziona Campagna"') ?>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -386,7 +387,7 @@ if(isset($_POST['intervallo_data'])) {
                                             <?=print_multi_select("SELECT id_prodotto AS valore, nome_prodotto AS nome FROM lista_preventivi_dettaglio WHERE id_prodotto > 0 GROUP BY id_prodotto ORDER BY nome_prodotto ASC", "id_prodotto[]", $id_prodotto_post, "", false, 'mt-multiselect', 'data-none-selected="Seleziona Prodotto"') ?>
                                         </div>
                                         <div class="col-md-6">
-                                            <?=print_multi_select("SELECT id as valore, CONCAT(cognome,' ', nome) as nome FROM lista_password WHERE stato='Attivo' AND livello LIKE 'commerciale' ORDER BY cognome, nome ASC", "id_agente[]", $id_agente_post, "", false, 'mt-multiselect', 'data-none-selected="Seleziona Commerciale"') ?>
+                                            <?=print_multi_select("SELECT id as valore, (CONCAT(cognome,' ', nome)) as nome FROM lista_password WHERE stato='Attivo' AND livello LIKE 'commerciale' ORDER BY cognome, nome ASC", "id_agente[]", $id_agente_post, "", false, 'mt-multiselect', 'data-none-selected="Seleziona Commerciale"') ?>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -568,7 +569,7 @@ if(isset($_POST['intervallo_data'])) {
                                     . " Confermati, Negativo, Ordinato_Lordo, Fatture_Annullate, Ordinato_Netto, "
                                     . " Fatturato_Lordo, Fatturato_Netto, Realizzato,"
                                     . " Media_part_su_Ordinato"
-                                    . " FROM stat_marketing_home_totale_tmp WHERE elimina_vuote > 0);";
+                                    . " FROM stat_marketing_home_totale_tmp WHERE elimina_vuote ".($togliVuote ? ">" : ">=")." 0);";
                             $dblink->query($sql_0032, true);
                             
                             stampa_table_datatables_responsive("SELECT * FROM stat_marketing_home_no_id UNION SELECT * FROM stat_marketing_home_totale", "Statistiche per TIPO MARKETING".$titolo_intervallo, "tabella_base1", COLORE_PRIMARIO, true);
@@ -646,7 +647,7 @@ if(isset($_POST['intervallo_data'])) {
                                     . " Confermati, Negativo, Ordinato_Lordo, Fatture_Annullate, Ordinato_Netto, "
                                     . " Fatturato_Lordo, Fatturato_Netto, Realizzato,"
                                     . " Media_part_su_Ordinato"
-                                    . " FROM stat_campagna_home_totale_tmp WHERE elimina_vuote > 0);";
+                                    . " FROM stat_campagna_home_totale_tmp WHERE elimina_vuote ".($togliVuote ? ">" : ">=")." 0);";
                             $dblink->query($sql_0033, true);
                             
                             
@@ -754,6 +755,56 @@ if(isset($_POST['intervallo_data'])) {
             
             ComponentsMultiselectCampagneHome.init(); 
             
+            /*$('.multiselect-search').on('input', function(ev) {
+                
+                ev.preventDefault();
+                ev.stopPropagation();
+                ev.stopImmediatePropagation();
+                
+                console.clear();
+                
+                var target = $(this);
+                var search = target.val().toLowerCase();
+                
+                if(!search){
+                    $('.multiselect-container li').show();
+                    return false;
+                }
+                
+                if(search.indexOf(" ") > -1){
+                    var ricerca = search.split(" ");
+                    var ricercaLen = ricerca.length;
+
+                    $('.multiselect-container li').not('.multiselect-filter, .multiselect-all').each(function() {
+                        
+                        var text = $(this).text().toLowerCase();
+                        var trovato = true;
+                        for (i = 0; i < ricercaLen; i++) {
+                            var match = text.indexOf(ricerca[i]) > -1;
+                            if(match){
+                                trovato = trovato && true;
+                            }else{
+                                trovato = trovato && false;
+                            }
+                            
+                        }
+                        if(trovato){
+                            console.log(text);
+                            $(this).show().removeClass('multiselect-filter-hidden');
+                        }
+                    });
+                }else{
+                    $('.multiselect-container li').not('.multiselect-filter, .multiselect-all').each(function() {
+                        
+                        var text = $(this).text().toLowerCase();
+                        var match = text.indexOf(search) > -1;
+                        $(this).toggle(match);
+                        $(this).show().removeClass('multiselect-filter-hidden');
+                    });
+                }
+                
+            });*/
+            
         });
         
         var ComponentsMultiselectCampagneHome = function () {
@@ -803,6 +854,8 @@ if(isset($_POST['intervallo_data'])) {
                                         enableClickableOptGroups: clickable_groups,
                                         enableCollapsibleOptGroups: collapse_groups,
                                         disableIfEmpty: true,
+                                        enableCaseInsensitiveFiltering: true,
+                                        enableFullValueFiltering: false,
                                         enableFiltering: filter,
                                         includeSelectAllOption: select_all,
                                         dropRight: drop_right,

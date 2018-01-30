@@ -37,6 +37,23 @@ switch($tabella){
             $ordine = $table_documentiAttestati['index']['order'];
         break;
         
+        case 'attestati_inviati':
+            $tabella = "lista_iscrizioni";
+            $campi_visualizzati = $table_listaIscrizioniPartecipanti['index']['campi'];
+            $campi_visualizzati = str_replace("data_inizio,", "data_completamento,data_invio_attestato,", $campi_visualizzati);
+            $where = "stato_invio_attestato LIKE 'Inviata'";
+            
+            if(!empty($arrayCampoRicerca)){
+                foreach ($arrayCampoRicerca as $campoRicerca) {
+                    $campoRicerca = $dblink->filter($campoRicerca);
+                    $where.= " AND ( nome_cognome_professionista LIKE '%".$campoRicerca."%' OR nome_corso LIKE '%".$campoRicerca."%'";
+                    $where.= " OR data_completamento LIKE '%".$campoRicerca."%' OR data_invio_attestato LIKE '%".$campoRicerca."%')";
+                }
+            }
+            
+            $ordine = $table_documentiAttestati['index']['order'];
+        break;
+        
         case 'calendario_esami':
             $tabella = "calendario";
             $campi_visualizzati = $table_calendarioEsami['index']['campi'];
@@ -127,14 +144,21 @@ if($_SESSION['livello_utente']=='amministratore'){
 
 $rs_0001 = $dblink->get_results($sql_0001);
 //$numRow = $dblink->num_rows($sql_0001);
-//$fields = $dblink->list_fields($sql_0001);
+$fields = $dblink->list_fields($sql_0001);
 
 $r = 0;
 
 foreach ($rs_0001 as $row) {
     $c = 0;
     foreach ($row as $column) {
-        $records["data"][$r][] = '' . $column . '';
+        if(strtolower($fields[$c]->name)=="selezione"){
+            $records["data"][$r][] = '<label class="mt-checkbox mt-checkbox-outline"><input name="txt_checkbox_' . $r . '" id="txt_checkbox_' . $r . '" type="checkbox"  value="' . $column . '"><span></span></label>'; 
+        }else if (strpos(strtolower($fields[$c]->name), "data") !== false) {
+            $records["data"][$r][] = '' . GiraDataOra($column) . '';
+        }else{
+            $records["data"][$r][] = '' . $column . '';
+        }
+        //$records["data"][$r][] = '' . $column . '';
         /*if (strtolower($fields[$c]->name) == "stato") {
             //echo $column;
             if (strpos($column, "|") !== false) {

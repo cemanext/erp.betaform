@@ -7,6 +7,12 @@ if (isset($_GET['tbl'])) {
     $tabella = $_GET['tbl'];
 }
 
+if(isset($_GET['escludiDisattive']) && $_GET['escludiDisattive'] == "0"){
+    $whereCampagneDisattive = "";
+}else{
+    $whereCampagneDisattive = " AND stato NOT LIKE '%Terminata%' AND stato NOT LIKE '%Non Attiva%'";
+}
+
 $orderColumn = $_REQUEST['order']; //numero colonna
 
 $arrayCampoRicerca = array();
@@ -27,6 +33,8 @@ switch($tabella){
         }else{
             $where = $table_listaCampagne['index']['where'];
         }
+        
+        $where = $where . $whereCampagneDisattive;
 
         if(!empty($arrayCampoRicerca)){
             foreach ($arrayCampoRicerca as $campoRicerca) {

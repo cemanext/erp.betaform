@@ -807,6 +807,11 @@ if(isset($_GET['fn'])){
                     $ok = "KO2:KO2";
                     $continue = false;
                 }
+                
+                if(!controlloCodiceFiscale(trim($codice_fiscale))){
+                    $ok = "KO2:KO2";
+                    $continue = false;
+                }
                 $where = "codice_fiscale LIKE '$codice_fiscale'";
             }
             if((strlen($codice_fiscale)==16 || $richiesta_id_professionista>0) && $continue){
