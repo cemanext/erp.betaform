@@ -141,7 +141,7 @@ if(isset($_POST['intervallo_data'])) {
 
     <body class="page-header-fixed page-sidebar-closed-hide-logo page-content-white page-sidebar-fixed">
         <!-- BEGIN HEADER -->
-        <?php include(BASE_ROOT . '/assets/header_risultatiRicerca.php'); ?>
+        <?php include(BASE_ROOT . '/assets/header.php'); ?>
         <!-- END HEADER -->
         <!-- BEGIN HEADER & CONTENT DIVIDER -->
         <div class="clearfix"> </div>
@@ -160,6 +160,8 @@ if(isset($_POST['intervallo_data'])) {
 
                     <!-- END THEME PANEL -->
                     <!-- BEGIN PAGE BAR -->
+                    <?php include(BASE_ROOT . '/assets/page_bar.php'); ?>
+                    <!-- END PAGE BAR -->
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <form action="?idMenu=<?=$_GET['idMenu']?>" class="form-horizontal form-bordered" method="POST" id="formIntervallo" name="formIntervallo">
@@ -461,6 +463,8 @@ if(isset($_POST['intervallo_data'])) {
                                         enableClickableOptGroups: clickable_groups,
                                         enableCollapsibleOptGroups: collapse_groups,
                                         disableIfEmpty: true,
+                                        enableCaseInsensitiveFiltering: true,
+                                        enableFullValueFiltering: false,
                                         enableFiltering: filter,
                                         includeSelectAllOption: select_all,
                                         dropRight: drop_right,

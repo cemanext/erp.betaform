@@ -1093,7 +1093,7 @@
                                             
                                             var ricerca = this.query.split(" ");
                                             var ricercaLen = ricerca.length;
-                                            
+                                            var i = 0;
                                             for (i = 0; i < ricercaLen; i++) {
                                                 var match = filterCandidate.indexOf(ricerca[i]) > -1;
                                                 if(match){

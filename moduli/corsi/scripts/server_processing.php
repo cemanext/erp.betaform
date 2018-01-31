@@ -41,6 +41,7 @@ switch($tabella){
             $tabella = "lista_iscrizioni";
             $campi_visualizzati = $table_listaIscrizioniPartecipanti['index']['campi'];
             $campi_visualizzati = str_replace("data_inizio,", "data_completamento,data_invio_attestato,", $campi_visualizzati);
+            $campi_visualizzati.= ", CONCAT('<a class=\"btn btn-circle btn-icon-only red-intense btn-outline\" href=\"".BASE_URL."/moduli/corsi/printAttestatoPDF.php?idIscrizione=',id,'\" target=\"_blank\" title=\"STAMPA ATTESTATO\" alt=\"STAMPA ATTESTATO\"><i class=\"fa fa-file-pdf-o\"></i></a>') AS 'fa-file-pdf-o'";
             $where = "stato_invio_attestato LIKE 'Inviata'";
             
             if(!empty($arrayCampoRicerca)){

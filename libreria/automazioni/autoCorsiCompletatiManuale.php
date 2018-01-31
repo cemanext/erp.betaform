@@ -28,7 +28,7 @@ $sql_004 = "SELECT lista_iscrizioni.id, lista_iscrizioni.id_professionista, list
         lista_corsi.id_corso_moodle, lista_iscrizioni.id_corso, lista_iscrizioni.id_classe 
         FROM lista_iscrizioni  INNER JOIN lista_corsi
         ON lista_corsi.id=lista_iscrizioni.id_corso
-        WHERE lista_iscrizioni.stato = 'In Corso' OR (avanzamento_completamento >= '80' AND lista_iscrizioni.stato NOT LIKE '%Configurazione%' AND lista_iscrizioni.stato NOT LIKE '%Completato%') ";
+        WHERE lista_iscrizioni.stato = 'In Corso' OR (avanzamento_completamento >= '80' AND lista_iscrizioni.stato NOT LIKE '%Configurazione%' AND lista_iscrizioni.stato NOT LIKE '%Completato%' AND lista_iscrizioni.stato NOT LIKE '%Scaduto%') ORDER BY RAND() LIMIT 100 ";
 $rowsIscrizioni = $dblink->get_results($sql_004);
 
 foreach ($rowsIscrizioni as $rowIscrizione) {
@@ -82,6 +82,26 @@ foreach ($rowsIscrizioni as $rowIscrizione) {
                 if (DISPLAY_DEBUG) echo '<li style="color: RED;"> KO ! -> ID ISCRIZIONE : '.$rowIscrizione['id'].'</li>';
                 $log->log_all_errors('autoCorsiCompletati.php -> corso NON completato [id_corso_moodle = '.$rowIscrizione['id_corso_moodle'].']','ERRORE');
             }
+        }else{
+            $rowConfig = $dblink->get_row("SELECT id_fattura, id_fattura_dettaglio FROM lista_iscrizioni WHERE data_fine_iscrizione >= '".date("Y-m-d")."' AND data_inizio_iscrizione <= '".date("Y-m-d")."' AND abbonamento = '1' AND id_professionista = '".$rowIscrizione['id_professionista']."' AND id_classe = '".$rowIscrizione['id_classe']."' AND stato LIKE 'Configurazione' AND id_fattura > 0 AND id_fattura_dettaglio > 0 ", true);
+            
+            if(!empty($rowConfig)){
+                if (DISPLAY_DEBUG) echo '<li>CONFIGURAZIONE: '.$dblink->get_query()."</li>";
+                $percentuale_corso_utente = recupero_percentuale_avanzamento_corso_utente($rowIscrizione['id_utente_moodle'], $rowIscrizione['id_corso_moodle'], true);
+                if (DISPLAY_DEBUG){ 
+                    echo '<li>$id_utente_moodle = ' . $rowIscrizione['id_utente_moodle'] . '</li>'; 
+                    echo '<li>$id_corso_moodle = ' . $rowIscrizione['id_corso_moodle'] . '</li>'; 
+                    echo '<li>$percentuale_corso_utente = ' . $percentuale_corso_utente . '</li>'; 
+                }
+                
+                $updateIscrizione['avanzamento_completamento'] = $percentuale_corso_utente;
+                $updateIscrizione['id_fattura'] = $rowConfig['id_fattura'];
+                $updateIscrizione['id_fattura_dettaglio'] = $rowConfig['id_fattura_dettaglio'];
+                
+                $ok = $dblink->update("lista_iscrizioni", $updateIscrizione, array("id"=>$rowIscrizione['id']));
+                if (DISPLAY_DEBUG) echo '<li>UPDATE: '.$dblink->get_query()."</li><hr>";
+            }
+            
         }
     }
 }

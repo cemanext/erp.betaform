@@ -195,7 +195,7 @@ function Stampa_HTML_Dettaglio_Anagrafica($tabella, $id) {
             $idUtente_per_iframe = $rowUtente['Id Moodle'];
             //echo '--> '.$rowUtente['Id Moodle'];
             //echo '--> '.$idUtente_per_iframe;
-           echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="'.BASE_URL.'/libreria/automazioni/autoRecuperaCorsiUtentiMoodle_Multiplo.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
+            echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="'.BASE_URL.'/libreria/automazioni/autoRecuperaCorsiUtentiMoodle_Multiplo.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
             echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="'.BASE_URL.'/libreria/automazioni/autoCorsiIniziati_Multiplo.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
             
             echo '</div></div>';

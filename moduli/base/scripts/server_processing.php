@@ -20,6 +20,37 @@ if(strpos($campoRicerca," ")!==false){
 }
 
 switch($tabella){
+    
+    case 'lista_iscritti':
+        $tabella = "lista_iscrizioni";
+        $campi_visualizzati = "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio.php?tbl=lista_professionisti&id=',id_professionista,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') as 'fa-search',
+                               IF(abbonamento = 1, 'Abbonamento', 'Corso') as tipo,
+                               data_fine_iscrizione,
+                               cognome_nome_professionista,
+                               nome_classe,
+                               (SELECT email FROM lista_professionisti WHERE id = id_professionista LIMIT 1) as email,
+                               (SELECT if(cellulare > 0, cellulare, telefono) as numero FROM lista_professionisti WHERE id = id_professionista LIMIT 1) as telefono
+                                ";
+        $where = "stato NOT LIKE '%Scadu%' AND stato NOT LIKE '%Disat%' AND data_fine_iscrizione > CURDATE()";
+        $gruppo = "GROUP BY id_professionista";
+        $ordine = "ORDER BY stato ASC, data_fine_iscrizione DESC";
+    break;
+
+    case 'lista_disattivi':
+        $tabella = "lista_iscrizioni";
+        $campi_visualizzati = "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio.php?tbl=lista_professionisti&id=',id_professionista,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') as 'fa-search',
+                               IF(abbonamento = 1, 'Abbonamento', 'Corso') as tipo,
+                               data_fine_iscrizione,
+                               cognome_nome_professionista,
+                               nome_classe,
+                               (SELECT email FROM lista_professionisti WHERE id = id_professionista LIMIT 1) as email,
+                               (SELECT if(cellulare > 0, cellulare, telefono) as numero FROM lista_professionisti WHERE id = id_professionista LIMIT 1) as telefono
+                                ";
+        $where = "(stato LIKE '%Scadu%' OR stato LIKE '%Disat%') AND id_professionista NOT IN (SELECT id_professionista FROM $tabella WHERE data_fine_iscrizione > CURDATE() AND stato NOT LIKE '%Scadu%' AND stato NOT LIKE '%Disat%')";
+        $gruppo = "GROUP BY id_professionista";
+        $ordine = "ORDER BY stato ASC, data_fine_iscrizione DESC";
+    break;
+    
     case "lista_password":
         $campi_visualizzati = $table_listaPassword['index']['campi'];
         $where = $table_listaPassword['index']['where'];
@@ -32,6 +63,7 @@ switch($tabella){
                 $where.= " OR data_scadenza LIKE '%".$campoRicerca."%' OR stato LIKE '%".$campoRicerca."%')";
             }
         }
+        $gruppo = "";
         $ordine = $table_listaPassword['index']['order'];
     break;
     
@@ -49,6 +81,7 @@ switch($tabella){
                 $where.= " OR data_scadenza LIKE '%".$campoRicerca."%' OR stato LIKE '%".$campoRicerca."%')";
             }
         }
+        $gruppo = "";
         $ordine = $table_listaPasswordUtenti['index']['order'];
     break;
 
@@ -80,13 +113,19 @@ switch($tabella){
                 $where.= ")";
             }
         }
+        $gruppo = "";
         $ordine = " ORDER BY id DESC";
     break;
 }
 
-$sql_0001 = "SELECT COUNT(id) AS conto FROM ".$tabella." WHERE $where $ordine";
+if($_GET['tbl'] == "lista_iscritti" || $_GET['tbl'] == "lista_disattivi"){
+    $sql_0001 = "SELECT ".$campi_visualizzati." FROM ".$tabella." WHERE $where $gruppo $ordine";
+    $numRow = $dblink->num_rows($sql_0001);
+}else{
+    $sql_0001 = "SELECT COUNT(*) AS conto FROM ".$tabella." WHERE $where $ordine";
 
-$numRow = $dblink->get_field($sql_0001);
+    $numRow = $dblink->get_field($sql_0001);
+}
 
 if(!empty($orderColumn)){
     $ordine = "ORDER BY ";
@@ -109,7 +148,7 @@ $end = $iDisplayStart + $iDisplayLength;
 $end = $end > $iTotalRecords ? $iTotalRecords : $end;
 
 $limite = ' LIMIT '.$iDisplayStart.','.$iDisplayLength;
-$sql_0001 = "SELECT ".$campi_visualizzati." FROM ".$tabella." WHERE $where $ordine $limite";
+$sql_0001 = "SELECT ".$campi_visualizzati." FROM ".$tabella." WHERE $where $gruppo $ordine $limite";
 
 $rs_0001 = $dblink->get_results($sql_0001);
 $fields = $dblink->list_fields($sql_0001);

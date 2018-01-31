@@ -402,9 +402,21 @@ function inviaEmail_Base($mittente, $destinatario, $oggetto_da_inviare, $messagg
     $messaggio->ConfirmReadingTo = $destinatario;
     $messaggio->AddReplyTo($mittente);
     if(EMAIL_DEBUG){
-        $messaggio->AddAddress(trim(EMAIL_TO_SEND_DEBUG));
+        $dest = trim(EMAIL_TO_SEND_DEBUG);
     }else{
-        $messaggio->AddAddress(trim($destinatario));
+        $dest = trim($destinatario);
+    }
+    
+    $dest = str_replace(' ', '', $dest);
+    $dest = str_replace(';', ',', $dest);
+    $string = trim($dest);
+    /* Use tab and newline as tokenizing characters as well  */
+    $tok = strtok($string, ",");
+
+    while ($tok !== false) {
+        //echo "Word=$tok<br />";
+        $messaggio->AddAddress(trim($tok));
+        $tok = strtok(",");
     }
 
     $messaggio->Subject = $oggetto_da_inviare;
@@ -1416,7 +1428,7 @@ function inviaEmailTemplate_Password($idListaPassword, $nome_tamplate) {
     $messaggio->ConfirmReadingTo = $destinatario;
     $messaggio->AddReplyTo($reply);
     
-    $messaggio->AddAddress(trim($destinatario));
+    //$messaggio->AddAddress(trim($destinatario));
 
     if (strlen($destinatario) > 0) {
         $destinatario = str_replace(' ', '', $destinatario);

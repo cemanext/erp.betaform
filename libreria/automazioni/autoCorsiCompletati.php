@@ -82,7 +82,7 @@ foreach ($rowsIscrizioni as $rowIscrizione) {
                 if (DISPLAY_DEBUG) echo '<li style="color: RED;"> KO ! -> ID ISCRIZIONE : '.$rowIscrizione['id'].'</li>';
                 $log->log_all_errors('autoCorsiCompletati.php -> corso NON completato [id_corso_moodle = '.$rowIscrizione['id_corso_moodle'].']','ERRORE');
             }
-        }else{
+        }/*else{
             $rowConfig = $dblink->get_row("SELECT id_fattura, id_fattura_dettaglio FROM lista_iscrizioni WHERE data_fine_iscrizione >= '".date("Y-m-d")."' AND data_inizio_iscrizione <= '".date("Y-m-d")."' AND abbonamento = '1' AND id_professionista = '".$rowIscrizione['id_professionista']."' AND id_classe = '".$rowIscrizione['id_classe']."' AND stato LIKE 'Configurazione' AND id_fattura > 0 AND id_fattura_dettaglio > 0 ", true);
             
             if(!empty($rowConfig)){
@@ -102,7 +102,7 @@ foreach ($rowsIscrizioni as $rowIscrizione) {
                 if (DISPLAY_DEBUG) echo '<li>UPDATE: '.$dblink->get_query()."</li><hr>";
             }
             
-        }
+        }*/
     }
 }
 

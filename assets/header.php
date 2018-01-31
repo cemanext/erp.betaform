@@ -308,7 +308,7 @@ $conteggio_ticket_lavorazione_terminata = $row_11['conto'];
                                                   <div class="media-status">
                                                       <span class="badge badge-success">&nbsp;</span>
                                                   </div>
-                                                  <img class="media-object" src="<?= BASE_URL ?>/media/users/<?php echo $utente['avatar']; ?>.jpg" alt="...">
+                                                  <img class="media-object" src="<?= BASE_URL ?>/media/users/<?php echo $utente['avatar']; ?>" alt="...">
                                                   <div class="media-body">
                                                       <h4 class="media-heading"><?php echo $utente['cognome']." ".$utente['nome']; ?></h4>
                                                       <div class="media-heading-sub"> <?php echo $utente['livello'] ?> </div>

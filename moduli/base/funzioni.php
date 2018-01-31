@@ -8,6 +8,26 @@ function Stampa_HTML_index_Base($tabella){
 
     switch($tabella){
     
+        case 'lista_iscritti':
+            $tabella = "lista_iscrizioni";
+            $titolo = 'Elenco Utenti Attivi';
+            
+            $sql_0001 = "SELECT 'fa-search', 'tipo', 'data_fine_iscrizione', 'partecipante', 'classe', 'email', 'telefono' FROM $tabella WHERE 1";
+            
+            stampa_table_datatables_ajax($sql_0001, "datatable_ajax", $titolo, '', 'green-turquoise', false);
+            //stampa_table_datatables_responsive($sql_0001, $titolo, 'tabella_base');
+        break;
+    
+        case 'lista_disattivi':
+            $tabella = "lista_iscrizioni";
+            $titolo = 'Elenco Utenti Disattivi';
+            
+            $sql_0001 = "SELECT 'fa-search', 'tipo', 'data_fine_iscrizione', 'partecipante', 'classe', 'email', 'telefono' FROM $tabella WHERE 1";
+            
+            stampa_table_datatables_ajax($sql_0001, "datatable_ajax", $titolo, '', 'red-intense', false);
+            //stampa_table_datatables_responsive($sql_0001, $titolo, 'tabella_base');
+        break;
+        
         case 'lista_prodotti_gruppi':
             $tabella = "lista_prodotti_gruppi";
             $campi_visualizzati = $table_listaProdottiGruppi['index']['campi'];

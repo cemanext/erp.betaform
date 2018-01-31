@@ -70,7 +70,7 @@ if(isset($_POST['intervallo_data'])) {
 
     <body class="page-header-fixed page-sidebar-closed-hide-logo page-content-white page-sidebar-fixed">
         <!-- BEGIN HEADER -->
-        <?php include(BASE_ROOT.'/assets/header_risultatiRicerca.php'); ?>
+        <?php include(BASE_ROOT.'/assets/header.php'); ?>
         <!-- END HEADER -->
         <!-- BEGIN HEADER & CONTENT DIVIDER -->
         <div class="clearfix"> </div>
@@ -89,9 +89,9 @@ if(isset($_POST['intervallo_data'])) {
 
                     <!-- END THEME PANEL -->
                     
+                    <!-- BEGIN PAGE BAR -->
+                    <?php include(BASE_ROOT . '/assets/page_bar.php'); ?>
                     <!-- END PAGE BAR -->
-                    <!-- BEGIN PAGE TITLE-->
-                    <?php include(BASE_ROOT.'/assets/search_form.php'); ?>
 
                     <!--<h3 class="page-title"> Dashboard
                         <small>& Statistiche</small>

@@ -14,6 +14,7 @@ if (isset($_POST['intervallo_data'])) {
 } else {
     $where_intervallo = " AND YEAR(data_creazione)=YEAR(CURDATE()) AND MONTH(data_creazione)=MONTH(CURDATE())";
     $titolo_intervallo = " del mese in corso";
+    $_POST['intervallo_data'] = "01-".date("m-Y")." al ".date("t-m-Y");
 }
 ?>
 <!DOCTYPE html>
@@ -60,7 +61,7 @@ if (isset($_POST['intervallo_data'])) {
 
     <body class="page-header-fixed page-sidebar-closed-hide-logo page-content-white page-sidebar-fixed">
         <!-- BEGIN HEADER -->
-        <?php include(BASE_ROOT . '/assets/header_risultatiRicerca.php'); ?>
+        <?php include(BASE_ROOT . '/assets/header.php'); ?>
         <!-- END HEADER -->
         <!-- BEGIN HEADER & CONTENT DIVIDER -->
         <div class="clearfix"> </div>
@@ -79,6 +80,8 @@ if (isset($_POST['intervallo_data'])) {
 
                     <!-- END THEME PANEL -->
                     <!-- BEGIN PAGE BAR -->
+                    <?php include(BASE_ROOT . '/assets/page_bar.php'); ?>
+                    <!-- END PAGE BAR -->
                     <div class="row">
 
                         <div class="col-md-6">

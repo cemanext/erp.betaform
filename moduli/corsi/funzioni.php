@@ -23,6 +23,7 @@ function Stampa_HTML_index_Corsi($tabella){
             $tabella = "lista_iscrizioni";
             $campi_visualizzati = $table_listaIscrizioniPartecipanti['index']['campi'];
             $campi_visualizzati = str_replace("data_inizio,", "data_completamento,", $campi_visualizzati);
+            $campi_visualizzati.= ",CONCAT('<a class=\"btn btn-circle btn-icon-only red-intense btn-outline\" href=\"".BASE_URL."/moduli/corsi/printAttestatoPDF.php?idIscrizione=',id,'\" target=\"_blank\" title=\"STAMPA ATTESTATO\" alt=\"STAMPA ATTESTATO\"><i class=\"fa fa-file-pdf-o\"></i></a>') AS 'fa-file-pdf-o'";
             $where = "stato_invio_attestato LIKE 'In Attesa di Invio'";
             $ordine = $table_listaIscrizioniPartecipanti['index']['order'];
             $titolo = 'Elenco Attestati - In Attesa di Invio';
@@ -36,6 +37,7 @@ function Stampa_HTML_index_Corsi($tabella){
             $tabella = "lista_iscrizioni";
             $campi_visualizzati = $table_listaIscrizioniPartecipanti['index']['campi'];
             $campi_visualizzati = str_replace("data_inizio,", "data_completamento,data_invio_attestato,", $campi_visualizzati);
+            $campi_visualizzati.= ",'fa-file-pdf-o'";
             $where = "stato_invio_attestato LIKE 'Inviata'";
             $ordine = $table_listaIscrizioniPartecipanti['index']['order'];
             $titolo = 'Elenco Attestati - Inviati';

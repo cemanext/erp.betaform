@@ -113,7 +113,8 @@ $tabella = 'lista_campagne';
                                 <div class="form-body">
                                     <div class="form-group">
                                         <div class="col-md-12">
-                                            <div class="col-md-6"><?=print_hidden("idMenu", $_GET['idMenu'])?></div>
+                                            <div class="col-md-3"><?=print_hidden("idMenu", $_GET['idMenu'])?></div>
+                                            <div class="col-md-3"><?=print_hidden("tbl", $tabella)?></div>
                                             <label class="control-label col-md-3" style="padding: 0px;">Escludi Campagne Disattive</label>
                                             <div class="col-md-3"><?=print_select_static(array("1"=>"SI", "0" => "NO"), "escludiDisattive", $_GET['escludiDisattive']); ?></div>
                                         </div>

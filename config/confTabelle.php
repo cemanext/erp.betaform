@@ -2772,7 +2772,7 @@ LISTA_ISCRIZIONI X PARTECIPANTI
 
 */
 $table_listaIscrizioniPartecipanti = array(
-                "index" => array("campi" => "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
+                "index" => array("campi" => "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/iscrizioni/dettaglio.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
                 IF(abbonamento=1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Abbonamento</span>',
                 IF(abbonamento>1,'<span class=\"btn sbold uppercase btn-outline blue-steel\">Pacchetto</span>',
                 '<span class=\"btn sbold uppercase btn-outline green-seagreen\">Singolo Corso</span>')
