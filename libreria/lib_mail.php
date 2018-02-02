@@ -1642,4 +1642,142 @@ function inviaEmailTemplate_Ticket($idTicket, $nome_tamplate) {
     return $return;
 }
 
+function inviaEmailRinnovoAbbonamento($idCalendario, $template_attestato) {
+    global $dblink, $log;
+    
+    $mitt = USER_MAIL;
+    
+    $sql = "SELECT * FROM calendario WHERE id='" . $idCalendario . "'";
+    $row = $dblink->get_row($sql,true);
+    
+    $dest = $row['email'];
+    $oggetto_da_inviare = $row['oggetto'];
+    $messaggio_da_inviare = html_entity_decode($row['messaggio']);
+    
+    $sql_template = "SELECT * FROM lista_template_email WHERE nome = '".$template_attestato."'";
+    $rs_template = $dblink->get_results($sql_template);
+    foreach ($rs_template as $row_template) {
+        $mittente = $row_template['mittente'];
+        $reply = $row_template['reply'];
+        $destinatario_admin = $row_template['destinatario'];
+        $dest_cc = $row_template['cc'];
+        $dest_bcc = $row_template['bcc'];
+        //$oggetto_da_inviare = $row_template['oggetto'];
+        //$messaggio_da_inviare = html_entity_decode($row_template['messaggio']);
+    }
+    
+    $mitt = $mittente;
+    $ogg = $oggetto_da_inviare;
+    $mess = $messaggio_da_inviare;
+     
+    if (DISPLAY_DEBUG) {
+        echo '<li>$mitt = '.$mitt.'</li>';
+        echo '<li>$destinatario_admin = '.$destinatario_admin.'</li>';
+        echo '<li>$dest = '.$dest.'</li>';
+        echo '<li>$ogg = '.$ogg.'</li>';
+        echo '<li>$mess = '.$mess.'</li>';
+        echo '<li> $template_attestato = '. $template_attestato.'</li>';
+    }
+     
+    $verifica = verificaEmail($dest);
+    if($verifica) {
+        //require_once BASE_ROOT . "classi/phpmailer/class.phpmailer.php";
+        $messaggio = new PHPmailer();
+        $messaggio->IsHTML(true);
+        //$messaggio->SMTPDebug  = 2;
+        $messaggio->IsSMTP();
+        # I added SetLanguage like this
+        $messaggio->SetLanguage('it', BASE_ROOT . 'classi/phpmailer/language/');
+        //  $messaggio->IsSMTP(); // telling the class to use SMTP			//$messaggio->IsSMTP();
+        $messaggio->SMTPAuth = true;                  // enable SMTP authentication
+        $messaggio->Host = SERVER_HOST_MAIL; // sets the SMTP server
+        $messaggio->SMTPSecure = SECURE_SMTP_MAIL;
+        $messaggio->Port = PORT_MAIL;
+        // set the SMTP port for the GMAIL server
+        $messaggio->Username = USER_MAIL; // SMTP account username
+        $messaggio->Password = PASS_MAIL;        // SMTP account password
+        //echo '<h2>$email_mittente = '.$email_mittente.'</h2>';
+        //intestazioni e corpo dell'email
+        $messaggio->From = $mitt;
+        $messaggio->FromName = $mitt;
+        $messaggio->ConfirmReadingTo = $mitt;
+        $messaggio->AddReplyTo($mitt);
+
+
+        //$dest = 'simone.crocco@cemanext.it';
+        if(EMAIL_DEBUG){
+            if (strlen($destinatario_admin) > 5) {
+                $dest = $destinatario_admin;
+            }else{
+                $dest = trim(EMAIL_TO_SEND_DEBUG);
+            }
+        }
+        
+        $dest = str_replace(' ', '', $dest);
+        $dest = str_replace(';', ',', $dest);
+        $string = trim($dest);
+        /* Use tab and newline as tokenizing characters as well  */
+        $tok = strtok($string, ",");
+
+        while ($tok !== false) {
+            //echo "Word=$tok<br />";
+            $messaggio->AddAddress(trim($tok));
+            $tok = strtok(",");
+        }
+
+        if(!EMAIL_DEBUG){
+            if (strlen($dest_cc) > 0) {
+                //$messaggio->AddAddress($dest_cc);
+                $dest_cc = str_replace(' ', '', $dest_cc);
+                $dest_cc = str_replace(';', ',', $dest_cc);
+                $string = trim($dest_cc);
+                /* Use tab and newline as tokenizing characters as well  */
+                $tok = strtok($string, ",");
+
+                while ($tok !== false) {
+                    //echo "Word=$tok<br />";
+                    $messaggio->AddAddress(trim($tok));
+                    $tok = strtok(",");
+                }
+            }
+        }
+
+        
+        if(!EMAIL_DEBUG){
+        //$dest_bcc = 'cucchi@betaformazione.com';
+            if (strlen($dest_bcc) > 0) {
+                //$messaggio->AddBCC($dest_bcc);
+                $dest_bcc = str_replace(' ', '', $dest_bcc);
+                $dest_bcc = str_replace(';', ',', $dest_bcc);
+                $string = trim($dest_bcc);
+                /* Use tab and newline as tokenizing characters as well  */
+                $tok = strtok($string, ",");
+
+                while ($tok !== false) {
+                    //echo "Word=$tok<br />";
+                    $messaggio->AddBCC(trim($tok));
+                    $tok = strtok(",");
+                }
+            }
+        }
+        
+        $messaggio->Subject = $ogg;
+        $messaggio->Body = stripslashes($mess);
+
+        $return = true;
+        
+        if (!$messaggio->Send()) {
+            $log->log_all_errors('inviaEmailRinnovoAbbonamento -> Email NON Inviata [' . $messaggio->ErrorInfo . '] -> $destinatario = ' . $dest, 'ERRORE');
+        
+            $return = false;
+        } else {
+            $return = true;
+        }
+        
+    }
+    
+    return $return;
+    
+}
+
 ?>
