@@ -35,8 +35,8 @@ foreach ($rs_00000002 AS $row_00000001) {
     
     $id_azienda =  ottieniIdAzienda($idProfessionista);
     
-    $rowCampagna = $dblink->get_row("SELECT id AS id_campagna, id_tipo_marketing, nome, id_prodotto FROM lista_campagne WHERE id = '166'", true);
-    $rowMarketing = $dblink->get_row("SELECT id AS id_tipo_marketing, nome FROM lista_tipo_marketing WHERE id = '49'", true);
+    $rowCampagna = $dblink->get_row("SELECT id AS id_campagna, id_tipo_marketing, nome, id_prodotto, url_1 FROM lista_campagne WHERE id = '754'", true);
+    $rowMarketing = $dblink->get_row("SELECT id AS id_tipo_marketing, nome FROM lista_tipo_marketing WHERE id = '86'", true);
     if($row_00000001['abbonamento']=="1"){
         $rowProdotto = $dblink->get_row("SELECT * FROM lista_prodotti WHERE codice_esterno = 'abb_".$row_00000001['id_classe']."'", true);
         if (DISPLAY_DEBUG) echo "<br>".$dblink->get_query();
@@ -45,12 +45,15 @@ foreach ($rs_00000002 AS $row_00000001) {
         if (DISPLAY_DEBUG) echo "<br>".$dblink->get_query();
     }
     
-    if($id_azienda <= 0){
+    /*if($id_azienda <= 0){
         $variabili = base64_encode("/carrello/dati-fattura/?betaformazione_utente_id=$idProfessionista&betaformazione_fatturazione_id=$id_azienda");
     }else{
         $variabili = base64_encode("/carrello/pagamento/?betaformazione_utente_id=$idProfessionista&betaformazione_fatturazione_id=$id_azienda");
     }
     $linkShop = "<a href=\"".WP_DOMAIN_NAME."/carrello/?a=".$rowProdotto['id']."&r=$variabili\">Voglio rinnovare il mio abbonamento</a><br /><br />Oppure copia e incolla questo link:<br>".WP_DOMAIN_NAME."/carrello/?a=".$rowProdotto['id']."&r=$variabili";
+    */
+    
+    $linkShop = "<a href=\"".$rowCampagna['url_1']."\">Voglio rinnovare il mio abbonamento</a><br /><br />Oppure copia e incolla questo link:<br>".$rowCampagna['url_1'];
     
     $messaggio_da_inviare = str_replace('_XXX_NOME_CLIENTE_XXX_', $rowProfessionista['cognome']." ".$rowProfessionista['nome'], $messaggio_da_inviare);
     $messaggio_da_inviare = str_replace('_XXX_NOME_ABBONAMENTO_XXX_', $rowProdotto['nome'], $messaggio_da_inviare);

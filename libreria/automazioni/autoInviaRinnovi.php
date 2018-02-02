@@ -23,7 +23,7 @@ if(DISPLAY_DEBUG){
     //echo '<h1>MODIFICARE $destinatario = simone.crocco@cemanext.it IN LIB_MAIL</h1>';
 
     
-    $sql_rinnovi_invia = "SELECT * FROM calendario WHERE etichetta LIKE 'Nuovo Rinnovo' AND stato LIKE 'In Attesa di Invio' LIMIT 1";
+    $sql_rinnovi_invia = "SELECT * FROM calendario WHERE etichetta LIKE 'Nuovo Rinnovo' AND stato LIKE 'In Attesa di Invio' LIMIT 500";
     if(DISPLAY_DEBUG) {
         echo "<li>$sql_rinnovi_invia</li>"; 
     }
@@ -57,7 +57,7 @@ if(DISPLAY_DEBUG){
         }
         if(DISPLAY_DEBUG) echo '<hr>';
         //ob_flush();
-        sleep(1);
+        sleep(6);
     }
 /*}else{
     unset($_SESSION['autoInviaiscrizioniCount']);
