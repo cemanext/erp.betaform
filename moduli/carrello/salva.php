@@ -8,7 +8,7 @@ if(isset($_GET['fn'])){
            //print_r($_GET);
            $betaformazione_utente_carrello = $_GET['betaformazione_utente_carrello'];
            $idProdotto = $_GET['idProdotto'];
-           if(isset($_GET['r'])){
+           /*if(isset($_GET['r'])){
                $sql_r0001 = "SELECT id FROM lista_ordini WHERE campo_20='".$betaformazione_utente_carrello."' AND (stato='In Corso' OR stato='In Attesa')";
                $rIdOrdine = $dblink->get_field($sql_r0001);
                
@@ -17,7 +17,7 @@ if(isset($_GET['fn'])){
                $redirect = base64_decode($_GET['r']);
            }else{
                $redirect = false;
-           }
+           }*/
            if(isset($_GET['idCampagna']) && !empty($_GET['idCampagna'])){
                 $idCampagna = $_GET['idCampagna'];
            }else{
@@ -65,18 +65,18 @@ if(isset($_GET['fn'])){
                                 $dblink->query($sql_0006);
                 }
                 
-                if($redirect != false){
-                    $chiaveValore = explode("&", $redirect);
+                /*if($redirect != false){
+                    /*$chiaveValore = explode("&", $redirect);
                     $valProf = explode("=", $chiaveValore[0]);
                     $valAzienda = explode("=", $chiaveValore[1]);
                     $sql_0005 = "UPDATE lista_ordini SET id_professionista = '".$valProf[1]."', id_azienda='".$valAzienda[1]."'
                     WHERE campo_20='".$valore_del_cookie."' AND (stato='In Corso' OR stato='In Attesa')";
                     $rs_0005 = $dblink->query($sql_0005);
                     
-                    header('Location:'.WP_DOMAIN_NAME.''.$redirect);
-                }else{
+                    header('Location:'.WP_DOMAIN_NAME.''.$redirect);*/
+                //}else{
                     header('Location:'.WP_DOMAIN_NAME.'/carrello/?betaformazione_utente_carrello='.$betaformazione_utente_carrello);
-                }
+                //}
            }
                                                                     
         break;

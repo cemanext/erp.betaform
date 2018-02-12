@@ -537,7 +537,7 @@ if(isset($_POST['intervallo_data'])) {
                             (SELECT IF(SUM(lp.imponibile)>0, SUM(lp.imponibile), 0) AS conteggio_preventivi FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Chiuso') AND lp.id_campagna='0' AND lp.id_calendario = ag.id $where_intervallo_all) AS Ordinato_Lordo,
                             (SELECT IF(SUM(ABS(lf.imponibile))>0, SUM(ABS(lf.imponibile)), 0) AS conteggio_annullate FROM lista_fatture AS lf WHERE (lf.stato LIKE 'Nota di Credito%') AND lf.tipo LIKE 'Nota di Credito%' AND lf.id_campagna='0' AND lf.id_calendario = ag.id $where_intervallo_fatture_all) AS Fatture_Annullate,
                             (SELECT IF(SUM(ABS(lf.imponibile))>0, SUM(ABS(lf.imponibile)), 0) AS conteggio_annullate FROM lista_fatture AS lf WHERE (lf.stato LIKE 'In Attesa' OR lf.stato LIKE 'Pagata%') AND lf.tipo LIKE 'Fattura%' AND lf.id_campagna='0' AND lf.id_calendario = ag.id $where_intervallo_fatture_all) AS Fatturato
-                            FROM calendario as ag WHERE id_tipo_marketing = 0);";
+                            FROM calendario as ag WHERE id_tipo_marketing = 0 GROUP BY id_tipo_marketing);";
                             $dblink->query($sql_0036, true);
                             //echo $dblink->get_query();
                             
@@ -617,13 +617,25 @@ if(isset($_POST['intervallo_data'])) {
                             (SELECT IF(SUM(ABS(lf.imponibile))>0, SUM(ABS(lf.imponibile)), 0) AS conteggio_annullate FROM lista_fatture AS lf WHERE (lf.stato LIKE 'Nota di Credito%') AND lf.tipo LIKE 'Nota di Credito%' AND lf.id_campagna='0' $where_intervallo_fatture_all) AS Fatture_Annullate,
                             (SELECT IF(SUM(ABS(lf.imponibile))>0, SUM(ABS(lf.imponibile)), 0) AS conteggio_annullate FROM lista_fatture AS lf WHERE (lf.stato LIKE 'In Attesa' OR lf.stato LIKE 'Pagata%') AND lf.tipo LIKE 'Fattura%' AND lf.id_campagna='0' $where_intervallo_fatture_all) AS Fatturato
                             WHERE 1);";
+                            $sql_0034 = "CREATE TEMPORARY TABLE stat_campagna_home_no_id_tmp (SELECT 
+                            'Nessuna Campagna' as Nome_Campagna,
+                            'Nessun Tipo Marketing' AS tipo_marketing,
+                            (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND ca.id_campagna='0' $where_intervallo_tot) AS Tutte_Richieste,
+                            (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato LIKE 'Mai Contattato' OR ca.stato LIKE 'Richiamare') AND ca.id_campagna='0') AS Richiami,
+                            (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato LIKE 'Mai Contattato' OR ca.stato LIKE 'Richiamare') AND ca.id_campagna='0' $where_intervallo_tot) AS Tel_Richiami,
+                            (SELECT COUNT(*) AS conteggio_gestite FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Negativo') AND lp.id_campagna='0' AND lp.id_calendario = ag.id $where_intervallo_negativo_all) AS Negativo,
+                            (SELECT COUNT(*) AS conteggio_venduti FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Chiuso') AND lp.id_campagna='0' AND lp.id_calendario = ag.id $where_intervallo_all) AS Confermati,
+                            (SELECT IF(SUM(lp.imponibile)>0, SUM(lp.imponibile), 0) AS conteggio_preventivi FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Chiuso') AND lp.id_campagna='0' AND lp.id_calendario = ag.id $where_intervallo_all) AS Ordinato_Lordo,
+                            (SELECT IF(SUM(ABS(lf.imponibile))>0, SUM(ABS(lf.imponibile)), 0) AS conteggio_annullate FROM lista_fatture AS lf WHERE (lf.stato LIKE 'Nota di Credito%') AND lf.tipo LIKE 'Nota di Credito%' AND lf.id_campagna='0' AND lf.id_calendario = ag.id $where_intervallo_fatture_all) AS Fatture_Annullate,
+                            (SELECT IF(SUM(ABS(lf.imponibile))>0, SUM(ABS(lf.imponibile)), 0) AS conteggio_annullate FROM lista_fatture AS lf WHERE (lf.stato LIKE 'In Attesa' OR lf.stato LIKE 'Pagata%') AND lf.tipo LIKE 'Fattura%' AND lf.id_campagna='0' AND lf.id_calendario = ag.id $where_intervallo_fatture_all) AS Fatturato
+                            FROM calendario as ag WHERE id_campagna = 0 GROUP BY id_campagna);";
                             $dblink->query($sql_0034, true);
                             
                             $sql_0035 = "CREATE TEMPORARY TABLE stat_campagna_home_no_id (SELECT Nome_Campagna, tipo_marketing, Richiami, Tutte_Richieste, Tel_Richiami+Negativo+Confermati AS 'Tel_Gestite',"
                                     . " Confermati, Negativo, Ordinato_Lordo, Fatture_Annullate, (Ordinato_Lordo-Fatture_Annullate) AS Ordinato_Netto, "
                                     . " Fatturato AS Fatturato_Lordo, (Fatturato-Fatture_Annullate) AS Fatturato_Netto, IF(Confermati>0,ROUND((Confermati*100)/(Negativo+Confermati), 2),0) AS Realizzato,"
                                     . " IF(Ordinato_Lordo>0, ROUND((Ordinato_Lordo-Fatture_Annullate)/Confermati,2), 0) AS Media_part_su_Ordinato"
-                                    . " FROM stat_campagna_home_no_id_tmp);";
+                                    . " FROM stat_campagna_home_no_id_tmp GROUP BY Nome_Campagna);";
                             $dblink->query($sql_0035, true);
                             
                             $sql_00261 = "CREATE TEMPORARY TABLE stat_tutte_le_righe (SELECT * FROM stat_campagna_home_2);";

@@ -12,7 +12,7 @@ if(isset($_GET['idMenu'])){
 }
 
 /* 	fine post ricerca sinistra	 */
-if (isset($_GET['id']) && $_GET['id'] != "") {
+if (isset($_GET['id']) && $_GET['id'] != ""  && $_GET['id'] != "0") {
     $id = $_GET['id'];
 } else {
     $id = "";
@@ -61,7 +61,7 @@ switch ($tabella) {
             $richiestaReadonly = false;
         }
         
-        if($idCalendario_daPassare>0 && $id_professionista_presente > 0) {
+        if($idCalendario_daPassare > 0 && $id_professionista_presente > 0) {
             $dblink->update("lista_preventivi", array("id_professionista" => $id_professionista_presente, "id_azienda"=>$id_azienda_presente), array("id_calendario"=>$idCalendario_daPassare, "id_professionista"=>'0'));
         }
         
@@ -150,7 +150,7 @@ switch ($tabella) {
     $sql_00011 = "UPDATE lista_preventivi, calendario
     SET  lista_preventivi.id_agente = calendario.id_agente
     WHERE lista_preventivi.id_agente<=0
-    AND calendario.id = lista_preventivi.id_calendario";
+    AND calendario.id = lista_preventivi.id_calendario AND lista_preventivi.id_calendario > 0";
     $rs_000011 = $dblink->query($sql_00011, true);
 
 
@@ -272,7 +272,7 @@ if($richiestaReadonly===false){
     SET  lista_preventivi.id_azienda = calendario.id_azienda,
     calendario.id_preventivo = lista_preventivi.id
     WHERE 1
-    AND lista_preventivi.id_calendario = calendario.id";
+    AND lista_preventivi.id_calendario = calendario.id AND lista_preventivi.id_calendario > 0";
     $dblink->query($sql_00011_0000002);
     
     //AGGIORNO ID_AZIENDA E ID_PROFESSIONISTA  SUL PREVENTIVO_DETTAGLIO           
