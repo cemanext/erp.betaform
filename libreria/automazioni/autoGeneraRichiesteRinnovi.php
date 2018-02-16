@@ -44,16 +44,18 @@ foreach ($rs_00000002 AS $row_00000001) {
         $rowProdotto = $dblink->get_row("SELECT * FROM lista_prodotti INNER JOIN lista_corsi ON lista_prodotti.id = lista_corsi.id_prodotto WHERE lista_corsi.id = '".$row_00000001['id_corso']."'", true);
         if (DISPLAY_DEBUG) echo "<br>".$dblink->get_query();
     }
+    if(empty($rowCampagna['url_1'])){
     
-    /*if($id_azienda <= 0){
-        $variabili = base64_encode("/carrello/dati-fattura/?betaformazione_utente_id=$idProfessionista&betaformazione_fatturazione_id=$id_azienda");
+        if($id_azienda <= 0){
+            $variabili = base64_encode("/carrello/dati-fattura/?betaformazione_utente_id=$idProfessionista&betaformazione_fatturazione_id=$id_azienda|".$rowProdotto['prezzo_min']);
+        }else{
+            $variabili = base64_encode("/carrello/pagamento/?betaformazione_utente_id=$idProfessionista&betaformazione_fatturazione_id=$id_azienda|".$rowProdotto['prezzo_min']);
+        }
+        $linkShop = "<a href=\"".WP_DOMAIN_NAME."/carrello/?a=".$rowProdotto['id']."&idCampagna=754&r=$variabili\">Voglio rinnovare il mio abbonamento</a><br /><br />Oppure copia e incolla questo link:<br>".WP_DOMAIN_NAME."/carrello/?a=".$rowProdotto['id']."&r=$variabili";
+    
     }else{
-        $variabili = base64_encode("/carrello/pagamento/?betaformazione_utente_id=$idProfessionista&betaformazione_fatturazione_id=$id_azienda");
+        $linkShop = "<a href=\"".$rowCampagna['url_1']."\">Voglio rinnovare il mio abbonamento</a><br /><br />Oppure copia e incolla questo link:<br>".$rowCampagna['url_1'];
     }
-    $linkShop = "<a href=\"".WP_DOMAIN_NAME."/carrello/?a=".$rowProdotto['id']."&r=$variabili\">Voglio rinnovare il mio abbonamento</a><br /><br />Oppure copia e incolla questo link:<br>".WP_DOMAIN_NAME."/carrello/?a=".$rowProdotto['id']."&r=$variabili";
-    */
-    
-    $linkShop = "<a href=\"".$rowCampagna['url_1']."\">Voglio rinnovare il mio abbonamento</a><br /><br />Oppure copia e incolla questo link:<br>".$rowCampagna['url_1'];
     
     $messaggio_da_inviare = str_replace('_XXX_NOME_CLIENTE_XXX_', $rowProfessionista['cognome']." ".$rowProfessionista['nome'], $messaggio_da_inviare);
     $messaggio_da_inviare = str_replace('_XXX_NOME_ABBONAMENTO_XXX_', $rowProdotto['nome'], $messaggio_da_inviare);
@@ -116,7 +118,7 @@ foreach ($rs_00000002 AS $row_00000001) {
     
 }
 
-$Sql_tmp_0001 = "CREATE TEMPORARY TABLE listaRinnoviAbbonamentiDaCaricare (SELECT id as id_iscrizione, scrittore, id_professionista, abbonamento, id_classe, id_corso, data_fine_iscrizione FROM lista_iscrizioni WHERE data_fine_iscrizione = DATE_ADD(CURDATE(), INTERVAL 15 DAY) AND (stato LIKE 'Configurazione') AND abbonamento=1 GROUP BY id_professionista, abbonamento ORDER BY `lista_iscrizioni`.`data_fine_iscrizione` ASC);";
+$Sql_tmp_0001 = "CREATE TEMPORARY TABLE listaRinnoviAbbonamentiDaCaricare (SELECT id as id_iscrizione, scrittore, id_professionista, abbonamento, id_classe, id_corso, data_fine_iscrizione FROM lista_iscrizioni WHERE data_fine_iscrizione = DATE_ADD(CURDATE(), INTERVAL 4 DAY) AND (stato LIKE 'Configurazione') AND abbonamento=1 GROUP BY id_professionista, abbonamento ORDER BY `lista_iscrizioni`.`data_fine_iscrizione` ASC);";
 $dblink->query($Sql_tmp_0001);
 //$Sql_tmp_0002 = "CREATE TEMPORARY TABLE listaRinnoviCorsiDaCaricare (SELECT scrittore, id_professionista, abbonamento, id_classe, id_corso, data_fine_iscrizione FROM lista_iscrizioni WHERE data_fine_iscrizione = DATE_ADD(CURDATE(), INTERVAL 30 DAY) AND (stato LIKE 'In Corso' OR stato LIKE 'In Attesa%') AND abbonamento=0 GROUP BY id_professionista, id_corso ORDER BY `lista_iscrizioni`.`data_fine_iscrizione` ASC);";
 //$dblink->query($Sql_tmp_0002);
@@ -156,7 +158,7 @@ foreach ($rs_00000001 AS $row_00000001) {
         if (DISPLAY_DEBUG) echo "<li>id_corso = ".$row_00000001['id_corso']."</li>";
         $insert = array(
             "dataagg" => date("Y-m-d H:i:s"),
-            "scrittore" => $dblink->filter("autoGeneraRichiesteRinnovi15gg"),
+            "scrittore" => $dblink->filter("autoGeneraRichiesteRinnovi4gg"),
             "datainsert" => date("Y-m-d"),
             "orainsert" => date("H:i:s"),
             "data" => date("Y-m-d"),
@@ -204,51 +206,56 @@ foreach ($rs_00000001 AS $row_00000001) {
         $richiesta_id_calendario = $dblink->lastid();
         controllaRichiesteMultiple($richiesta_id_calendario);
     }else{
-        $update = array(
-            "dataagg" => date("Y-m-d H:i:s"),
-            "scrittore" => $dblink->filter("autoGeneraRichiesteRinnovi15gg"),
-            "datainsert" => date("Y-m-d"),
-            "orainsert" => date("H:i:s"),
-            "data" => date("Y-m-d"),
-            "ora" => date("H:i:s"),
-            "etichetta" => 'Nuova Richiesta',
-            "oggetto" => $dblink->filter($rowCampagna['nome']),
-            "messaggio" => "Nome: ".$dblink->filter($rowProfessionista['nome'])."\\nCognome: ".$dblink->filter($rowProfessionista['cognome'])."\\nCodice Cliente: ".$dblink->filter($rowProfessionista['codice'])."\\nTelefono: ".$dblink->filter($rowProfessionista['telefono'])."\\nE-Mail: ".$dblink->filter($rowProfessionista['email'])."\\n\\nTipo Marketing: ".$dblink->filter($rowMarketing['nome'])."\\nNome Campagna: ".$dblink->filter($rowCampagna['nome'])."\\nURL: ".$dblink->filter($_POST['referer'])."\\n\\nMESSAGGIO\\n".$dblink->filter("RICHIESTA DI RINNOVO AUTOMATICO"),
-            "mittente" => $dblink->filter($rowProfessionista['cognome'])." ".$dblink->filter($rowProfessionista['nome']),
-            "destinatario" => "",
-            "priorita" => "Alta",
-            "stato" => "In Attesa di Controllo",
-            "tipo_marketing" => $dblink->filter(strtoupper($rowMarketing['nome'])),
-            "id_campagna" => $rowCampagna['id_campagna'],
-            "id_prodotto" => $rowProdotto['id'],
-            "id_azienda" => $id_azienda,
-            "id_professionista" => $idProfessionista,
-            "id_tipo_marketing" => $rowMarketing['id_tipo_marketing'],
-            "giorno" => date("d"),
-            "mese" => date("m"),
-            "anno" => date("Y"),
-            "campo_1" => $dblink->filter($rowProfessionista['nome']),
-            "campo_2" => $dblink->filter($rowProfessionista['cognome']),
-            "campo_3" => $dblink->filter($rowProfessionista['codice_fiscale']),
-            "campo_4" => $dblink->filter($rowProfessionista['telefono']),
-            "campo_5" => $dblink->filter($rowProfessionista['email']),
-            "campo_6" => $dblink->filter($rowMarketing['nome']),
-            "campo_7" => $dblink->filter($rowCampagna['nome']),
-            "campo_8" => "",
-            "campo_9" => $dblink->filter($rowProfessionista['codice']),
-            "nome" => $dblink->filter($rowProfessionista['nome']),
-            "cognome" => $dblink->filter($rowProfessionista['cognome']),
-            "telefono" => $dblink->filter($rowProfessionista['telefono']),
-            "email" => $dblink->filter($rowProfessionista['email']),
-            "notifica_email" => "Si",
-            "notifica_sms" => "No"
-        );
-
-        $ok = true;
+        $rowCalendario2 = $dblink->get_row("SELECT id FROM calendario WHERE numerico_1 = '$idIscrizione'",true);
+    
+        if(!empty($rowCalendario2)){
         
-        $ok = $ok && $dblink->update("calendario", $update, array("id" => $rowCalendario['id']));
-        $richiesta_id_calendario = $rowCalendario['id'];
-        controllaRichiesteMultiple($richiesta_id_calendario);
+            $update = array(
+                "dataagg" => date("Y-m-d H:i:s"),
+                "scrittore" => $dblink->filter("autoGeneraRichiesteRinnovi4gg"),
+                "datainsert" => date("Y-m-d"),
+                "orainsert" => date("H:i:s"),
+                "data" => date("Y-m-d"),
+                "ora" => date("H:i:s"),
+                "etichetta" => 'Nuova Richiesta',
+                "oggetto" => $dblink->filter($rowCampagna['nome']),
+                "messaggio" => "Nome: ".$dblink->filter($rowProfessionista['nome'])."\\nCognome: ".$dblink->filter($rowProfessionista['cognome'])."\\nCodice Cliente: ".$dblink->filter($rowProfessionista['codice'])."\\nTelefono: ".$dblink->filter($rowProfessionista['telefono'])."\\nE-Mail: ".$dblink->filter($rowProfessionista['email'])."\\n\\nTipo Marketing: ".$dblink->filter($rowMarketing['nome'])."\\nNome Campagna: ".$dblink->filter($rowCampagna['nome'])."\\nURL: ".$dblink->filter($_POST['referer'])."\\n\\nMESSAGGIO\\n".$dblink->filter("RICHIESTA DI RINNOVO AUTOMATICO"),
+                "mittente" => $dblink->filter($rowProfessionista['cognome'])." ".$dblink->filter($rowProfessionista['nome']),
+                "destinatario" => "",
+                "priorita" => "Alta",
+                "stato" => "In Attesa di Controllo",
+                "tipo_marketing" => $dblink->filter(strtoupper($rowMarketing['nome'])),
+                "id_campagna" => $rowCampagna['id_campagna'],
+                "id_prodotto" => $rowProdotto['id'],
+                "id_azienda" => $id_azienda,
+                "id_professionista" => $idProfessionista,
+                "id_tipo_marketing" => $rowMarketing['id_tipo_marketing'],
+                "giorno" => date("d"),
+                "mese" => date("m"),
+                "anno" => date("Y"),
+                "campo_1" => $dblink->filter($rowProfessionista['nome']),
+                "campo_2" => $dblink->filter($rowProfessionista['cognome']),
+                "campo_3" => $dblink->filter($rowProfessionista['codice_fiscale']),
+                "campo_4" => $dblink->filter($rowProfessionista['telefono']),
+                "campo_5" => $dblink->filter($rowProfessionista['email']),
+                "campo_6" => $dblink->filter($rowMarketing['nome']),
+                "campo_7" => $dblink->filter($rowCampagna['nome']),
+                "campo_8" => "",
+                "campo_9" => $dblink->filter($rowProfessionista['codice']),
+                "nome" => $dblink->filter($rowProfessionista['nome']),
+                "cognome" => $dblink->filter($rowProfessionista['cognome']),
+                "telefono" => $dblink->filter($rowProfessionista['telefono']),
+                "email" => $dblink->filter($rowProfessionista['email']),
+                "notifica_email" => "Si",
+                "notifica_sms" => "No"
+            );
+
+            $ok = true;
+
+            $ok = $ok && $dblink->update("calendario", $update, array("id" => $rowCalendario['id']));
+            $richiesta_id_calendario = $rowCalendario['id'];
+            controllaRichiesteMultiple($richiesta_id_calendario);
+        }
     }
     
 }

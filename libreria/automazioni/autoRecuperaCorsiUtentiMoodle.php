@@ -185,8 +185,8 @@ foreach($rs_utente_entrato as $row_utente_entrato){
                     "id_utente_moodle" => $id_utente_moodle,
                     "id_user_enrolments" => $id_user_enrolments,
                     "stato" => "In Attesa",
-                    "id_fattura" => $datiConfigurazione['id_fattura'],
-                    "id_fattura_dettaglio" => $datiConfigurazione['id_fattura_dettaglio'],
+                    //"id_fattura" => $datiConfigurazione['id_fattura'],
+                    //"id_fattura_dettaglio" => $datiConfigurazione['id_fattura_dettaglio'],
                 );
 
                 $ok = $dblink->insert(DB_NAME.".lista_iscrizioni", $insert);

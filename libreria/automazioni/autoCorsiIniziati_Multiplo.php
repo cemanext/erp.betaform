@@ -166,10 +166,12 @@ echo '<li>$sql_iscritti = '.$sql_iscritti.'</li>';
                             scrittore = 'autoCorsiIniziati',
                             stato='In Corso',
                             `avanzamento_completamento` = '" . $percentuale_corso_utente . "',
-                            data_inizio = '" . $data_ora_inizio_corso . "',
-                            id_fattura = '".$datiConfigurazione['id_fattura']."',
-                            id_fattura_dettaglio = '".$datiConfigurazione['id_fattura_dettaglio']."'
-                            WHERE id = " . $id_iscrizione . "
+                            data_inizio = '" . $data_ora_inizio_corso . "'";
+                        if($controlloAbbonamento==1){
+                            $sql_00005 .= ",id_fattura = '".$datiConfigurazione['id_fattura']."',
+                            id_fattura_dettaglio = '".$datiConfigurazione['id_fattura_dettaglio']."'";
+                        }
+                        $sql_00005 .= " WHERE id = " . $id_iscrizione . "
                             AND id_corso = " . $id_corso_nostro . " 
                             AND id_professionista = " . $id_professionista_nostro . "
                             AND stato = 'In Attesa'";
@@ -233,10 +235,12 @@ echo '<li>$sql_iscritti = '.$sql_iscritti.'</li>';
                                     scrittore = 'autoCorsiIniziati',
                                     stato='In Corso',
                                      `avanzamento_completamento` = '" . $percentuale_corso_utente . "',
-                                    data_inizio = '" . $data_ora_inizio_corso . "',
-                                    id_fattura = '".$datiConfigurazione['id_fattura']."',
-                                    id_fattura_dettaglio = '".$datiConfigurazione['id_fattura_dettaglio']."'
-                                    WHERE id = " . $id_iscrizione . "
+                                    data_inizio = '" . $data_ora_inizio_corso . "'";
+                        if($controlloAbbonamento==1){
+                            $sql_00005 .= ",id_fattura = '".$datiConfigurazione['id_fattura']."',
+                            id_fattura_dettaglio = '".$datiConfigurazione['id_fattura_dettaglio']."'";
+                        }
+                            $sql_00005 .= " WHERE id = " . $id_iscrizione . "
                                     AND id_corso = " . $id_corso_nostro . " 
                                     AND id_utente_moodle = " . $id_utente_moodle . "
                                     AND stato = 'In Attesa'";

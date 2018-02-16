@@ -8,7 +8,7 @@ if(isset($_GET['fn'])){
            //print_r($_GET);
            $betaformazione_utente_carrello = $_GET['betaformazione_utente_carrello'];
            $idProdotto = $_GET['idProdotto'];
-           /*if(isset($_GET['r'])){
+           if(isset($_GET['r'])){
                $sql_r0001 = "SELECT id FROM lista_ordini WHERE campo_20='".$betaformazione_utente_carrello."' AND (stato='In Corso' OR stato='In Attesa')";
                $rIdOrdine = $dblink->get_field($sql_r0001);
                
@@ -17,7 +17,7 @@ if(isset($_GET['fn'])){
                $redirect = base64_decode($_GET['r']);
            }else{
                $redirect = false;
-           }*/
+           }
            if(isset($_GET['idCampagna']) && !empty($_GET['idCampagna'])){
                 $idCampagna = $_GET['idCampagna'];
            }else{
@@ -58,25 +58,36 @@ if(isset($_GET['fn'])){
                 //echo "<br>";
                 if($idCampagna > 0 && $idCampagna != 169){
                     $resPromo = $dblink->get_row("SELECT * FROM lista_campagne WHERE id='".$idCampagna."'",true);
-                    echo $sql_0006 = "UPDATE `lista_ordini_dettaglio` SET 
+                    $sql_0006 = "UPDATE `lista_ordini_dettaglio` SET 
                                 lista_ordini_dettaglio.prezzo_prodotto = '".$resPromo['prezzo_sconto']."',
                                 lista_ordini_dettaglio.quantita = 1
                                 WHERE lista_ordini_dettaglio.id = '".$idOrdineDettaglio."' ";
                                 $dblink->query($sql_0006);
                 }
                 
-                /*if($redirect != false){
-                    /*$chiaveValore = explode("&", $redirect);
+                if($redirect != false){
+                    $tmpDati = explode("|", $redirect);
+                    $redirect = $tmpDati[0];
+                    $chiaveValore = explode("&", $redirect);
                     $valProf = explode("=", $chiaveValore[0]);
                     $valAzienda = explode("=", $chiaveValore[1]);
-                    $sql_0005 = "UPDATE lista_ordini SET id_professionista = '".$valProf[1]."', id_azienda='".$valAzienda[1]."'
+                    $valPrezzo = $tmpDati[1];
+                    $sql_1005 = "UPDATE lista_ordini SET id_professionista = '".$valProf[1]."', id_azienda='".$valAzienda[1]."'
                     WHERE campo_20='".$valore_del_cookie."' AND (stato='In Corso' OR stato='In Attesa')";
-                    $rs_0005 = $dblink->query($sql_0005);
+                    $rs_1005 = $dblink->query($sql_1005);
                     
-                    header('Location:'.WP_DOMAIN_NAME.''.$redirect);*/
-                //}else{
+                    if(!empty($valPrezzo) && $valPrezzo > 0){
+                        $sql_1006 = "UPDATE `lista_ordini_dettaglio` SET 
+                                    lista_ordini_dettaglio.prezzo_prodotto = '".$valPrezzo."',
+                                    lista_ordini_dettaglio.quantita = 1
+                                    WHERE lista_ordini_dettaglio.id = '".$idOrdineDettaglio."' ";
+                        $dblink->query($sql_1006);
+                    }
+                    
+                    header('Location:'.WP_DOMAIN_NAME.''.$redirect);
+                }else{
                     header('Location:'.WP_DOMAIN_NAME.'/carrello/?betaformazione_utente_carrello='.$betaformazione_utente_carrello);
-                //}
+                }
            }
                                                                     
         break;

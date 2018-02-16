@@ -24,6 +24,20 @@ if(isset($_POST)){
             $rowCampagna['id_prodotto'] = $_POST['id_prodotto']; // SE ID PRODOTTO NON E' VUOTO LO SOVRASCRIVO ALLA CAMPAGNA
         }
         
+        $adMessaggio = "";
+        
+        if(!empty($_POST['professione'])){
+            $adMessaggio.= "\\nProfessione: ".strip_tags($dblink->filter($_POST['professione']));
+        }
+        
+        if(!empty($_POST['ora_contatto'])){
+            $adMessaggio.= "\\nOra di Contatto: ".$dblink->filter($_POST['ora_contatto']);
+        }
+        
+        if(!empty($_POST['privacy'])){
+            $adMessaggio.= "\\nAcconsente Privacy: SI";
+        }
+        
         $insert = array(
             "dataagg" => date("Y-m-d H:i:s"),
             "scrittore" => $dblink->filter($_POST['cognome'])." ".$dblink->filter($_POST['nome']),
@@ -33,7 +47,7 @@ if(isset($_POST)){
             "ora" => date("H:i:s"),
             "etichetta" => 'Nuova Richiesta',
             "oggetto" => $dblink->filter($rowCampagna['nome']),
-            "messaggio" => "Nome: ".$dblink->filter($_POST['nome'])."\\nCognome: ".$dblink->filter($_POST['cognome'])."\\nCodice Cliente: ".$dblink->filter($_POST['codice_cliente'])."\\nTelefono: ".$dblink->filter($_POST['telefono'])."\\nE-Mail: ".$dblink->filter($_POST['email'])."\\n\\nTipo Marketing: ".$dblink->filter($rowMarketing['nome'])."\\nNome Campagna: ".$dblink->filter($rowCampagna['nome'])."\\nURL: ".$dblink->filter($_POST['referer'])."\\n\\nMESSAGGIO\\n".$dblink->filter($_POST['messaggio']),
+            "messaggio" => "Nome: ".$dblink->filter($_POST['nome'])."\\nCognome: ".$dblink->filter($_POST['cognome'])."\\nCodice Cliente: ".$dblink->filter($_POST['codice_cliente'])."\\nTelefono: ".$dblink->filter($_POST['telefono'])."\\nE-Mail: ".$dblink->filter($_POST['email'])."\\n\\nTipo Marketing: ".$dblink->filter($rowMarketing['nome'])."\\nNome Campagna: ".$dblink->filter($rowCampagna['nome']).$adMessaggio."\\nURL: ".$dblink->filter($_POST['referer'])."\\n\\nMESSAGGIO\\n".$dblink->filter($_POST['messaggio']),
             "mittente" => $dblink->filter($_POST['cognome'])." ".$dblink->filter($_POST['nome']),
             "destinatario" => "",
             "priorita" => "Alta",
@@ -54,6 +68,9 @@ if(isset($_POST)){
             "campo_7" => $dblink->filter($_POST['nome_campagna']),
             "campo_8" => $dblink->filter($_POST['referer']),
             "campo_9" => $dblink->filter($codiceUtente),
+            "campo_11" => strip_tags($dblink->filter($_POST['professione'])),
+            "campo_12" => $dblink->filter($_POST['ora_contatto']),
+            "campo_13" => $dblink->filter($_POST['privacy']),
             "nome" => $dblink->filter($_POST['nome']),
             "cognome" => $dblink->filter($_POST['cognome']),
             "telefono" => $dblink->filter($_POST['telefono']),
@@ -70,7 +87,11 @@ if(isset($_POST)){
             include_once(BASE_ROOT.'libreria/automazioni/autoNuovaRichiestaControllo.php');
 
             if(isset($_POST['nuovo_form_beta']) && $_POST['nuovo_form_beta'] == "1"){
-                header("Location:".WP_DOMAIN_NAME."/grazie-per-averci-contattato/?idCampagna=".$_POST['id_campagna']);
+                if(isset($_POST['thankyou_page']) && !empty($_POST['thankyou_page'])){
+                    header("Location:".$_POST['thankyou_page']."?idCampagna=".$_POST['id_campagna']);
+                }else{
+                    header("Location:".WP_DOMAIN_NAME."/grazie-per-averci-contattato/?idCampagna=".$_POST['id_campagna']);
+                }
             }else{
                 header("Location:".ERP_DOMAIN_NAME."/libreria/automazioni/form_sito.php?ret=1");
             }

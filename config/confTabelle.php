@@ -583,8 +583,8 @@ $table_listaAlbiProfessionali = array(
                 );
 
 /** TABELLA LISTA_PASSWORD **/
-$table_listaPassword = array(
-                "index" => array("campi" => "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_password&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
+$table_listaPassword = array( //CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_password&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
+                "index" => array("campi" => "
                                             CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"modifica.php?tbl=lista_password&id=',id,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>') AS 'fa-edit',
                                             CONCAT('<h4>',`cognome`,' ',`nome`,'</h4><small>(',id_professionista,')</small>') AS 'Professionista',
                                             username AS 'Nome Utente', livello, CONCAT('Creato: <br>',DATE_FORMAT(DATE(data_creazione), '%d-%m-%Y'),'<br>Scadenza: <br>',DATE_FORMAT(DATE(data_scadenza), '%d-%m-%Y'),'<br>Ultimo: <br>',DATE_FORMAT(DATE(data_ultimo_accesso), '%d-%m-%Y')) AS 'Validit&agrave;', email AS 'E-Mail', `id_moodle_user` AS 'Id MOODLE', stato AS 'Stato'",
@@ -658,7 +658,7 @@ $table_listaPassword = array(
                         "readonly" => false
                     ),
                 array(  "campo" => "passwd_email",
-                        "tipo" => "input",
+                        "tipo" => "password",
                         "etichetta" => "Password E-Mail",
                         "readonly" => false
                     ),
@@ -3559,7 +3559,7 @@ $table_listaCommerciali = array(
                         "readonly" => false
                     ),
                 array(  "campo" => "passwd_email",
-                        "tipo" => "input",
+                        "tipo" => "passwd_email",
                         "etichetta" => "Password E-Mail",
                         "readonly" => false
                     ),
@@ -3794,6 +3794,17 @@ $table_listaOrdini = array(
                         "default" => "",
                         "attivo" => true,
                         "sql" => array("In Corso" => "In Corso", "Chiuso"=>"Chiuso")
+                    ),
+                    array(  "campo" => "id_campagna",
+                            "tipo" => "select2",
+                            "etichetta" => "Nome Campagna",
+                            "readonly" => false,
+                            "like" => false,
+                            "uguale" => true,
+                            "maggiore" => false,
+                            "sql" => "SELECT id AS valore, nome AS nome FROM lista_campagne WHERE UPPER(nome) LIKE '%SHOP%'",
+                            "attivo" => true,
+                            "default" => ""
                     ),
                     array("campo" => "id_azienda",
                         "tipo" => "inner_select",

@@ -19,6 +19,28 @@ if(strpos($campoRicerca," ")!==false){
     }
 }
 
+$where_data_base = "";
+$where_data_fine_iscrizione_base = "";
+
+if($tabella == "lista_iscritti" || $tabella == "lista_disattivi"){
+    if (!empty($_SESSION['intervallo_data_base'])) {
+        $intervallo_data = $_SESSION['intervallo_data_base'];
+        $data_in = before(' al ', $intervallo_data);
+        $data_out = after(' al ', $intervallo_data);
+
+        if($data_in == $data_out){
+            $where_data_base = " AND DATE(dataagg) = '" . GiraDataOra($data_in) . "'";
+            $where_data_fine_iscrizione_base = " AND DATE(data_fine_iscrizione) = '" . GiraDataOra($data_in) . "'";
+        }else{
+            $where_data_base = " AND dataagg BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+            $where_data_fine_iscrizione_base = " AND data_fine_iscrizione BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        }
+    } else {
+        $where_data_base = " AND YEAR(dataagg)=YEAR(CURDATE()) AND MONTH(dataagg)=MONTH(CURDATE())";;
+        $where_data_fine_iscrizione_base = " AND YEAR(data_fine_iscrizione)=YEAR(CURDATE()) AND MONTH(data_fine_iscrizione)=MONTH(CURDATE())";;
+    }
+}
+
 switch($tabella){
     
     case 'lista_iscritti':
@@ -31,7 +53,7 @@ switch($tabella){
                                (SELECT email FROM lista_professionisti WHERE id = id_professionista LIMIT 1) as email,
                                (SELECT if(cellulare > 0, cellulare, telefono) as numero FROM lista_professionisti WHERE id = id_professionista LIMIT 1) as telefono
                                 ";
-        $where = "stato NOT LIKE '%Scadu%' AND stato NOT LIKE '%Disat%' AND data_fine_iscrizione > CURDATE()";
+        $where = "stato NOT LIKE '%Scadu%' AND stato NOT LIKE '%Disat%' AND data_fine_iscrizione > CURDATE()".$where_data_fine_iscrizione_base;
         $gruppo = "GROUP BY id_professionista";
         $ordine = "ORDER BY stato ASC, data_fine_iscrizione DESC";
     break;
@@ -46,7 +68,7 @@ switch($tabella){
                                (SELECT email FROM lista_professionisti WHERE id = id_professionista LIMIT 1) as email,
                                (SELECT if(cellulare > 0, cellulare, telefono) as numero FROM lista_professionisti WHERE id = id_professionista LIMIT 1) as telefono
                                 ";
-        $where = "(stato LIKE '%Scadu%' OR stato LIKE '%Disat%') AND id_professionista NOT IN (SELECT id_professionista FROM $tabella WHERE data_fine_iscrizione > CURDATE() AND stato NOT LIKE '%Scadu%' AND stato NOT LIKE '%Disat%')";
+        $where = "(stato LIKE '%Scadu%' OR stato LIKE '%Disat%') AND id_professionista NOT IN (SELECT id_professionista FROM $tabella WHERE data_fine_iscrizione > CURDATE() AND stato NOT LIKE '%Scadu%' AND stato NOT LIKE '%Disat%')".$where_data_fine_iscrizione_base;
         $gruppo = "GROUP BY id_professionista";
         $ordine = "ORDER BY stato ASC, data_fine_iscrizione DESC";
     break;
