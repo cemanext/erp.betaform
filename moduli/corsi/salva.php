@@ -7,6 +7,27 @@ $referer = recupera_referer();
 if(isset($_GET['fn'])){
     switch ($_GET['fn']) {
         
+        //http://dev.betaformazione.com/moduli/corsi/salva.php?tbl=lista_domande&idCorsoDettaglio=8880&fn=aggiungiDomandaCorso
+        
+        case 'aggiungiDomandaCorso':
+            $ok = true;
+            $dblink->begin();
+            $idCorsoDettaglio = $_GET['idCorsoDettaglio'];
+            
+            $sql_00001 = "INSERT INTO lista_domande (id, dataagg, scrittore, id_corso, id_corso_dettaglio, id_modulo, instance, id_corso_moodle) 
+            SELECT '', NOW(), '".$_SESSION['cognome_nome_utente']."',  id_corso, id, id_modulo, instance, id_corso_moodle FROM lista_corsi_dettaglio WHERE id='".$idCorsoDettaglio."'";
+            $ok = $ok && $dblink->query($sql_00001);
+            $lastId=$dblink->insert_id();
+            
+            if($ok){
+                $ok = 1;
+                $dblink->commit();
+            }else{
+                $ok = 0;
+                $dblink->rollback();
+            }
+            header("Location:".$referer."&ret=$ok");
+        break;
         
         case 'iscriviEsameUtente':
             $ok = true;
@@ -196,8 +217,11 @@ if(isset($_GET['fn'])){
             header("Location:".$referer."");
         break;
         
-        case "salvaConfigurazioneCorso":
+        case "salvaConfigurazioneCorso":  
+        case "salvaDomandeCorso":        
             $idCorso = $_GET['idCorso'];
+            $tabella = $_GET['tbl'];
+            
             
             $arrayRisultati = $_POST;
             
@@ -253,7 +277,7 @@ if(isset($_GET['fn'])){
                     unset($tuttiCampi[$r]['id']);
                     
                     //print_r($tuttiCampi[$r]);
-                    $ok = $dblink->update("lista_corsi_configurazioni", $tuttiCampi[$r], array("id"=>$idWhere)); 
+                    $ok = $dblink->update($tabella, $tuttiCampi[$r], array("id"=>$idWhere)); 
                     
                     //echo $dblink->get_query();
                     //echo "<br>";
@@ -268,7 +292,7 @@ if(isset($_GET['fn'])){
 }
 
 if(isset($_POST['txt_tbl'])){
-    switch ($_POST['txt_tbl']) {
+    switch ($_POST['txt_tbl']) {    
         case "lista_corsi":
             salvaGenerale();
 

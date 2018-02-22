@@ -88,6 +88,43 @@ function Stampa_HTML_Dettaglio_Corsi($tabella,$id){
     global $table_listaCorsi, $dblink;
     
     switch ($tabella) {
+        case 'lista_domande':
+            $idCorsoDettaglio = $_GET['idCorsoDettaglio'];
+            echo '<div class="row"><div class="col-md-12 col-sm-12">';            
+            $sql_0001 = "SELECT CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"dettaglio.php?tbl=lista_corsi&id=',id_corso,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search', 
+            CONCAT('<H3>',nome,'</H3>') AS 'Corso',  modname AS tipologia 
+            FROM `lista_corsi_dettaglio` WHERE id ='" . $idCorsoDettaglio."'";
+            stampa_table_static_basic($sql_0001, '', 'Corso', 'green-haze');
+            echo '</div></div>';
+            
+            echo '<div class="row"><div class="col-md-12 col-sm-12">';
+            
+            /*
+            $numRowBase = $dblink->num_rows("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$id' AND titolo LIKE 'Base'");
+            if($numRowBase <= 0){
+                $dblink->query("INSERT INTO `lista_corsi_configurazioni` (`id`, `dataagg`, `scrittore`, `stato`, `id_corso`, `id_prodotto`,titolo, avanzamento, id_attestato, messaggio, firma, email_oggetto, email_mittente, email_messaggio) SELECT '', NOW(), '".addslashes($_SESSION['cognome_nome_utente'])."', 'Non Attivo', id, id_prodotto, 'Base', '80.00', '9', '<h2>ATTESTATO di FREQUENZA</h2>Si attesta che<br>nel periodo dal _XXX_DATA_INIZIO_XXX_  al _XXX_DATA_FINE_XXX_ <br><br><h1>_XXX_TITOLO_XXX_ _XXX_COGNOME_XXX_ _XXX_NOME_XXX_</h1>nato a _XXX_LUOGO_NASCITA_XXX_  (_XXX_PROV_NASCITA_XXX_) il _XXX_DATA_NASCITA_XXX_ <br><br><br>ha frequentato il corso di<h3>\" _XXX_NOME_CORSO_XXX_ \"</h3>Durata del percorso formativo: <b>_XXX_ORE_CORSO_XXX_ ore</b><br>Codice: <b>_XXX_CODICE_ACCREDITAMENTO_XXX_</b><br>Crediti Formativi Professionali: <b>_XXX_NUMERO_CREDITI_XXX_</b>', '<b>Lugo (RA), _XXX_DATA_FIRMA_XXX_</b>', 'INVIO ATTESTATO', 'attestati@betaformazione.com', '&lt;div&gt;Gentile &lt;b&gt;_XXX_NOME_XXX_ _XXX_COGNOME_XXX_&lt;/b&gt;,&lt;br&gt;&lt;/div&gt;&lt;div&gt;la presente per confermarle che sono state formalizzate le comunicazioni al CNAPPC per i crediti formativi maturati.&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Nei prossimi giorni il consiglio nazionale provveder&agrave; a validare le singole richieste e sar&agrave; quindi possibile visionare i propri crediti direttamente sul portale.&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Per visualizzare i crediti, una volta che sono stati validati, potrebbe essere necessario completare il feedback, una voce nuova, che &egrave; stata aggiunta sulle piattaforma di im@teria nel mese di marzo.&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Deve entrare nella sezione Formazione di im@teria, posizionarsi ne I miei corsi, (accanto a Corsi Disponibili).&lt;/div&gt;&lt;div&gt;Trova il corso seguito con un triangolino giallo che dice &quot;Feedback mancante&quot;.&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Vicino al titolo del corso trova un&#039;icona quadrata, con due freccette che guardano una verso l&#039;alto e una verso il basso, deve clikkarla.&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;L&#039;ultima voce &egrave; Lascia Il feedback, a quel punto salva e i crediti Le risultano immediatamente&lt;/div&gt;&lt;div&gt;Nel frattempo, le inviamo in allegato attestato riportante numero di crediti e codice&lt;/div&gt;&lt;div&gt;RingraziandoLa fin d&#039;ora e rimanendo a disposizione per qualsiasi delucidazione, porgo cordiali saluti&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Dott.ssa Valentina Cucchi&lt;/div&gt;&lt;div&gt;Tel: 0545 916279&lt;/div&gt;&lt;div&gt;Fax: 0545 030139&lt;/div&gt;&lt;div&gt;Sede legale: Via Piratello n. 66/68 - 48022 Lugo (RA)&lt;/div&gt;' FROM lista_corsi WHERE id='".$id."'");
+            }
+            */
+            
+            $sql_0001 = "SELECT id, 
+            CONCAT('<a class=\"btn btn-circle btn-icon-only red-thunderbird btn-outline\" href=\"cancella.php?tbl=lista_domande&id=',id,'\" title=\"ELIMINA\" alt=\"ELIMINA\"><i class=\"fa fa-trash\"></i></a>') AS 'fa fa-trash',
+            domanda, risposta, ordine
+            FROM `lista_domande` WHERE id_corso_dettaglio ='".$idCorsoDettaglio."' ORDER BY ordine ASC";
+            echo "<form enctype=\"multipart/form-data\" role=\"form\" action=\"salva.php?tbl=lista_domande&idCorsoDettaglio=". $idCorsoDettaglio . "&fn=salvaDomandeCorso\" method=\"POST\">";
+            stampa_table_static_basic_input('lista_domande', $sql_0001, '', 'Domande', 'blue-hoki');
+            echo '<center><button type="submit" class="btn green-meadow">
+                        <i class="fa fa-save"></i>
+                        Salva
+                        </button>
+                        <a href="salva.php?tbl=lista_domande&idCorsoDettaglio=' . $idCorsoDettaglio . '&fn=aggiungiDomandaCorso" class="btn green-meadow">
+                        Aggiungi Domanda
+                        <i class="fa fa-plus"></i>
+                        </a>
+                        </center><br />';
+            echo '</div></div>';
+            echo '</form>';
+        break;
+    
         case 'calendario_esami':
         $idProdotto = $_GET['idProdotto'];
         $idCalendario = $_GET['id'];
@@ -247,13 +284,21 @@ function Stampa_HTML_Dettaglio_Corsi($tabella,$id){
              echo '<div class="row"><div class="col-md-12 col-sm-12">';
             //$sql_0001 = "SELECT id, `ordine`, `id_modulo`, `url`, `name`, `instance`, `visible`, `modicon`, `modname`, `modplural`, `availability`, `indent`
             //FROM lista_corsi_dettaglio WHERE id_corso=".$id;
+           
+            $sql_aggiorna_dettaglio = "UPDATE lista_corsi, lista_corsi_dettaglio
+            SET lista_corsi_dettaglio.id_corso_moodle = lista_corsi.id_corso_moodle
+            WHERE lista_corsi.id = lista_corsi_dettaglio.id_corso
+            AND lista_corsi.id='".$id."'";
+            $rs_aggiorna_dettaglio = $dblink->query($sql_aggiorna_dettaglio);
+            
             $sql_0001 = "SELECT 
+            CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"dettaglio.php?tbl=lista_domande&idCorsoDettaglio=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search', 
             CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"modifica.php?tbl=lista_corsi_dettaglio&id=',id,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>') AS 'fa-edit', 
             CONCAT('<H4>',`name`,'</H4>') AS 'Nome', 
             `modname` AS 'Tipo', durata,
             IF(`visible`>=1,'Attivo','Non Attivo') AS 'Stato',
              `ordine`, `id_modulo`,          
-              `instance` AS 'ISTANCE MOODLE'
+              `instance` AS 'ISTANCE MOODLE', (SELECT COUNT(*) FROM lista_domande WHERE id_corso_dettaglio=lista_corsi_dettaglio.id AND id_corso='".$id."') AS 'N° Domande'
             FROM lista_corsi_dettaglio WHERE id_corso='".$id."' ORDER BY ordine ASC";
             stampa_table_static_basic($sql_0001, '', 'Moduli', 'green-haze');
             echo '</div></div>';
