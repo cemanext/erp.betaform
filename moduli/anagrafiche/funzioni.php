@@ -159,7 +159,7 @@ function Stampa_HTML_Dettaglio_Anagrafica($tabella, $id) {
         case 'lista_professionisti':
 
             $sql_007_aggiorna_id_calendario = "UPDATE lista_fatture, lista_professionisti
-            SET lista_fatture.codice_ricerca = CONCAT(lista_fatture.codice,'/',lista_fatture.sezionale)
+            SET lista_fatture.codice_ricerca = CONCAT(lista_fatture.codice,'".SEPARATORE_FATTURA."',lista_fatture.sezionale)
             WHERE lista_professionisti.id = '" . $id . "'
             AND lista_fatture.id_professionista = lista_professionisti.id";
             $rs_007_aggiorna_id_calendario = $dblink->query($sql_007_aggiorna_id_calendario);

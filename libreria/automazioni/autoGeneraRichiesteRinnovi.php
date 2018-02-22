@@ -35,8 +35,8 @@ foreach ($rs_00000002 AS $row_00000001) {
     
     $id_azienda =  ottieniIdAzienda($idProfessionista);
     
-    $rowCampagna = $dblink->get_row("SELECT id AS id_campagna, id_tipo_marketing, nome, id_prodotto, url_1 FROM lista_campagne WHERE id = '754'", true);
-    $rowMarketing = $dblink->get_row("SELECT id AS id_tipo_marketing, nome FROM lista_tipo_marketing WHERE id = '86'", true);
+    $rowCampagna = $dblink->get_row("SELECT id AS id_campagna, id_tipo_marketing, nome, id_prodotto, url_1 FROM lista_campagne WHERE id = '".ID_CAMPAGNA_RINNOVI_AUTOMATICI."'", true);
+    $rowMarketing = $dblink->get_row("SELECT id AS id_tipo_marketing, nome FROM lista_tipo_marketing WHERE id = '".ID_TIPO_MARKETING_RINNOVI_AUTOMATICI."'", true);
     if($row_00000001['abbonamento']=="1"){
         $rowProdotto = $dblink->get_row("SELECT * FROM lista_prodotti WHERE codice_esterno = 'abb_".$row_00000001['id_classe']."'", true);
         if (DISPLAY_DEBUG) echo "<br>".$dblink->get_query();
@@ -51,7 +51,7 @@ foreach ($rs_00000002 AS $row_00000001) {
         }else{
             $variabili = base64_encode("/carrello/pagamento/?betaformazione_utente_id=$idProfessionista&betaformazione_fatturazione_id=$id_azienda|".$rowProdotto['prezzo_min']);
         }
-        $linkShop = "<a href=\"".WP_DOMAIN_NAME."/carrello/?a=".$rowProdotto['id']."&idCampagna=754&r=$variabili\">Voglio rinnovare il mio abbonamento</a><br /><br />Oppure copia e incolla questo link:<br>".WP_DOMAIN_NAME."/carrello/?a=".$rowProdotto['id']."&r=$variabili";
+        $linkShop = "<a href=\"".WP_DOMAIN_NAME."/carrello/?a=".$rowProdotto['id']."&idCampagna=".ID_CAMPAGNA_RINNOVI_AUTOMATICI."&r=$variabili\">Voglio rinnovare il mio abbonamento</a><br /><br />Oppure copia e incolla questo link:<br>".WP_DOMAIN_NAME."/carrello/?a=".$rowProdotto['id']."&r=$variabili";
     
     }else{
         $linkShop = "<a href=\"".$rowCampagna['url_1']."\">Voglio rinnovare il mio abbonamento</a><br /><br />Oppure copia e incolla questo link:<br>".$rowCampagna['url_1'];

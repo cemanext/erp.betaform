@@ -33,7 +33,9 @@ class logerp {
 
             $this->setFilenameError = $this->dir.'log/'.date('Ymd').'_errori_erp.log';
 
-            if(file_put_contents($this->setFilenameError, $formatted_message, FILE_APPEND)){
+            if(DISPLAY_DEBUG){
+                echo "<li>".$formatted_message."</li>";
+            }else if(file_put_contents($this->setFilenameError, $formatted_message, FILE_APPEND)){
                 /*if (file_exists(_PS_ROOT_DIR_.'/error500.html') && $level!="AVVISO")
                     echo file_get_contents(_PS_ROOT_DIR_.'/error500.html');*/
             }
@@ -42,7 +44,11 @@ class logerp {
 
             $this->setFilenameError = $this->dir.'log/'.date('Ymd').'_errori_erp.log';
             
-            file_put_contents($this->setFilenameError, $formatted_message, FILE_APPEND);
+            if(DISPLAY_DEBUG){
+                echo "<li>".$formatted_message."</li>";
+            }else{
+                file_put_contents($this->setFilenameError, $formatted_message, FILE_APPEND);
+            }
         }
     }
     
@@ -52,7 +58,9 @@ class logerp {
 
         $this->setFilenameError = $this->dir.'log/'.date('Ymd').'_errori_database_erp.log';
 
-        if(file_put_contents($this->setFilenameError, $formatted_message, FILE_APPEND)){
+        if(DISPLAY_DEBUG){
+                echo "<li>".$formatted_message."</li>";
+        }else if(file_put_contents($this->setFilenameError, $formatted_message, FILE_APPEND)){
             /*if (file_exists($this->dir.'/error500.html') && $level!="AVVISO")
                 echo file_get_contents($this->dir.'/error500.html');*/
         }

@@ -11,7 +11,7 @@ if ($browser == true) {
 }
 
 if (isset($_GET['idTicket'])) {
-    $mitt = 'betaformazione_sviluppo@cemanext.it';
+    $mitt = NOME_CLIENTE_TICKET.'_sviluppo@cemanext.it';
 
     //  creaFatturaPDF($_GET['idTicket'], false);
 
@@ -39,7 +39,7 @@ if (isset($_GET['idTicket'])) {
     $dest = $emailDesti;
     $dest_cc = '';
     $dest_bcc = '';
-    $ogg = 'Ticket - Betaformazione ';
+    $ogg = 'Ticket - '.NOME_CLIENTE_TICKET;
     $mess = 'Nuovo ticket da.... che ci mettiamo qua? ';
 }
 ?>

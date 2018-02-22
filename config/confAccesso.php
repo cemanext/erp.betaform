@@ -289,7 +289,7 @@ if ($_SESSION['livello_utente'] == 'amministratore') {
     $_SESSION['email_utente']           = null;
     $_SESSION['stato_utente']           = null;
 
-    header("Location: http://elearning.betaformazione.com/login/index.php");
+    header("Location: ".MOODLE_DOMAIN_NAME."/login/index.php");
     die();
 } else {
 
@@ -331,16 +331,7 @@ if ($_SESSION['livello_utente'] == 'amministratore') {
 
 $where_lista_menu = " AND `lista_menu`.livello='" . $_SESSION['livello_utente'] . "'";
 
-/* MODULO CONTATTI - CONFIGURAZIONE */
-
-$title_contatti = "Gestione Contatti";
-$description_contatti = "Modulo per la gestione dei contatti";
-$keywords_contatti = "";
-
-$site_name = "Beta Formazione";
-$author = "CEMA NEXT";
-
-$config_tipo_lista_menu = "betaform_erp";
+$site_name = SITE_NAME;
 
 include_once(BASE_ROOT . 'config/confTabelle.php');
 include_once(BASE_ROOT . 'libreria/libreria.php');

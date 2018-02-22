@@ -498,7 +498,7 @@ function creaPreventivoPDF($idPrev, $echo = false) {
                     $sezionale_originale = $row['sezionale'];
 
                     //$filename = "BetaFormazione_Ordine_" . $codice . "-" . $sezionale_originale . ".pdf";
-                    $filename = "BetaFormazione_Ordine_" . $id_preventivo . ".pdf";
+                    $filename = PREFIX_FILE_PDF_PREVENTIVO . $id_preventivo . ".pdf";
 
                     //$pdf->SetTextColor(0,0,0);
                     //$pdf->SetFillColor(255,255,255);

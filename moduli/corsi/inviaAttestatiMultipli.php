@@ -175,6 +175,7 @@ if (isset($_POST['intervallo_data'])) {
                 CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"".BASE_URL."/moduli/corsi/printAttestatoPDF.php?idIscrizione=',id,'\" title=\"ATTESTATO\" alt=\"ATTESTATO\" target=\"_blank\"><i class=\"fa fa-file-pdf-o\"></i></a>') AS 'fa-file-pdf-o', dataagg, scrittore,
                 CONCAT('<span class=\"btn sbold uppercase btn-outline blue-steel\">',cognome_nome_professionista,'</span>') AS cognome_nome_professionista, 
                 CONCAT('<span class=\"btn sbold uppercase btn-outline red\">',nome_corso,'</span>') AS nome_corso, 
+                nome_classe,
                 data_completamento, stato_completamento AS Stato, 
                 (SELECT codice_ricerca FROM lista_fatture WHERE id=id_fattura) AS 'Cod. Fatt.', (SELECT stato FROM lista_fatture WHERE id=id_fattura) AS Stato_Fattura, id AS selezione
                 FROM totaleIscrizioni WHERE 1 $where_intervallo";

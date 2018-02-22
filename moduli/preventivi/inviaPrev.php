@@ -22,15 +22,15 @@ if (isset($_GET['idPrev'])) {
     if (isset($_SESSION['email_utente'])) {
         $mitt = $_SESSION['email_utente'];
     } else {
-        $mitt = 'erp@betaformazione.com';
+        $mitt = MAIL_DA_INVIA_PREVENTIVO;
     }
 
     $sql = "SELECT codice FROM lista_preventivi WHERE id='" . $_GET['idPrev'] . "'";
     list($codice) = $dblink->get_row($sql);
 
     $n_progetto = str_replace("/", "-", $codice);
-    $filename = "BetaFormazione_Ordine_" . $_GET['idPrev'] . ".pdf";
-    $filename_oggetto = "Ordine " . $_GET['idPrev'] . "";
+    $filename = PREFIX_FILE_PDF_PREVENTIVO . $_GET['idPrev'] . ".pdf";
+    $filename_oggetto = PREFIX_MAIL_OGGETTO_INIVA_PREVENTIVO . $_GET['idPrev'] . "";
 
     $id_Preventivo = $_GET['idPrev'];
 
@@ -54,33 +54,8 @@ if (isset($_GET['idPrev'])) {
     $dest = $emailDesti;
     $dest_cc = '';
     $dest_bcc = '';
-    $ogg = 'Beta Formazione s.r.l. -  ';
-    $mess = 'Gentile Cliente,<br>
-                in allegato alla presente Le inviamo la copia (in formato PDF) della fattura relativa ai servizi da noi forniti.<br>
-                Il presente invio SOSTITUISCE INTEGRALMENTE quello effettuato in modo tradizionale a mezzo servizio postale .<br>
-                Tale operazione è ammessa dalla normativa fiscale in essere, relativa alla "Trasmissione delle Fatture " per via Telematica:<br>
-                - R.M. n. 571134 del 19/07/88 - (posta elettronica)<br>
-                - R.M. n. 450217 del 30/07/90 - (procedure informatizzate)<br>
-                - R.M. n. 107 del 04/07/01 - (trasmissione fatture)<br>
-                - R.M. n. 202/E del 04/12/01 - (archiviazione fatture)<br>
-                Risoluzioni che forniscono chiarimenti in ordine alle condizioni necessarie per l\'ammissibilità ai sensi dell\'art. 21 D.P.R. 26/10/72 n. 633 della procedura di trasmissione e memorizzazione delle fatture mediante sistemi combinati fondati sull\'impiego congiunto di supporti informatici, telefax e posta elettronica.<br>
-                La normativa nazionale italiana ad oggi NON consente l\'archiviazione di alcun documento contabile in formato digitale.<br>
-                Quindi è necessario GENERARNE UNA STAMPA e procedere alla relativa archiviazione come da prassi a norma di legge<br>
-                Il file è in formato pdf di seguito il link del software gratuito per la visualizzazione e la stampa di questo formato:<br>
-                http://get.adobe.com/it/reader/<br><br>
-
-                        <br><img src="http://www.betaformazione.com/wp-content/themes/betaformazione_2016/assets/images/logo-head.png" alt="Beta Formazione s.r.l." title="Beta Formazione s.r.l.">
-                        <br>
-                        <h5>Ente n° 8124, accreditato alla Regione Emilia-Romagna<br>
-                        con D.G.R. n. 481 dell’11 Aprile 2011<br>
-                        Azienda operante con sistema di<br>
-                        Qualità Certificato da QGest<br>
-                        Certificato n. Q/00522/14</h5>
-                <b>Sede legale e operativa :via Piratello, 66/68  48022 Lugo (RA)<b><br>
-                        Tel. <b>0545 916279</b> - Fax <b>0545 030139</b> - <a href="http://www.betaformazione.com/">www.betaformazione.com</a>
-                <h6>Le informazioni contenute in questa e-mail e negli eventuali allegati sono riservate e destinate esclusivamente alla persona sopraindicata. Qualora non foste il destinatario, siete pregati di distruggere questo messaggio e notificarci il problema immediatamente.<br>
-                In ogni caso, non dovrete spedire a terzi, copiare, usare o diffondere il contenuto di questa e-mail e degli eventuali allegati. Si ricorda che la diffusione l\'utilizzo e/o la conservazione dei dati ricevuti per errore costituiscono violazione alle disposizioni del D.lgs. n. 196/2003 (Codice in materia di protezione dei dati personali) oltre a costituire violazione di carattere penale ai sensi dell\'art. 616 C.P.
-                </h6>';
+    $ogg = MAIL_OGGETTO_INVIA_PREVENTIVO;
+    $mess = MAIL_TESTO_INVIA_PREVENTIVO;
 }
 ?>
 <form action="salva.php?fn=inviaEmailPreventivo" method="post" enctype="multipart/form-data" class="form">

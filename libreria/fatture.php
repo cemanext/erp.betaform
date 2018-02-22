@@ -327,7 +327,8 @@ function creaFatturaPDF($idFatt, $echo = false) {
                         $margine_y_codice_fattura = 51;
 
                         $pdf->SetXY($margine_x_codice_fattura, $margine_y_codice_fattura);
-                        $pdf->Cell(36, 5, '' . $row_1['codice'] . '/' . $row_1['sezionale'], 0, 0, 'C', 0, 0);
+                        //$pdf->Cell(36, 5, '' . $row_1['codice'] . SEPARATORE_FATTURA . $row_1['sezionale'], 0, 0, 'C', 0, 0);
+                        $pdf->Cell(36, 5, '' . $row_1['codice_ricerca'] . '', 0, 0, 'C', 0, 0);
 
                         $pdf->SetXY($margine_x_codice_fattura + 38, $margine_y_codice_fattura);
                         $pdf->Cell(17, 5, '' . $row_1['data_creazione'] . '', 0, 0, 'C', 0, 0);
@@ -434,7 +435,7 @@ function creaFatturaPDF($idFatt, $echo = false) {
                     $codice_originale = $row['codice'];
                     $sezionale_originale = $row['sezionale'];
 
-                    $filename = "BetaFormazione_Fattura_" . $codice . "-" . $sezionale_originale . ".pdf";
+                    $filename = PREFIX_FILE_PDF_FATTURA . $codice . "-" . $sezionale_originale . ".pdf";
 
                     //$pdf->SetTextColor(0,0,0);
                     //$pdf->SetFillColor(255,255,255);

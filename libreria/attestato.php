@@ -9,6 +9,8 @@ use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 function creaAttestatoPDF($idIscrizione, $echo = false) {
     global $dblink;
     
+    $rowInviato = $dblink->get_row("SELECT * FROM lista_iscrizioni WHERE id = '$idIscrizione' AND stato_invio_completato LIKE 'Inviato'", true);
+    
     $rowIscrizione = $dblink->get_row("SELECT * FROM lista_iscrizioni WHERE id = '$idIscrizione'", true);
     $idClasse = $rowIscrizione['id_classe'];
     $idCorso = $rowIscrizione['id_corso'];

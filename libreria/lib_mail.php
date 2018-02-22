@@ -8,11 +8,11 @@ require BASE_ROOT.'classi/phpmailer/src/PHPMailer.php';
 require BASE_ROOT.'classi/phpmailer/src/SMTP.php';
 
 
-define("SERVER_HOST_MAIL", "authsmtp.betaformazione.com");
-define("SECURE_SMTP_MAIL", "");
-define("PORT_MAIL", "25");
-define("PASS_MAIL", "p8arEtha@1");
-define("USER_MAIL", "smtp@betaformazione.com");
+define("SERVER_HOST_MAIL", BASE_SERVER_HOST_MAIL);
+define("SECURE_SMTP_MAIL", BASE_SECURE_SMTP_MAIL);
+define("PORT_MAIL", BASE_PORT_MAIL);
+define("PASS_MAIL", BASE_PASS_MAIL);
+define("USER_MAIL", BASE_USER_MAIL);
 
 /*
 define("SERVER_HOST_MAIL", "tls://smtp.office365.com");
@@ -444,9 +444,9 @@ function inviaEmailFatturaDaId($idFattura,$updateFattura) {
     $row = $dblink->get_row($sql,true);
     
     $n_progetto = str_replace("/", "-", $row['codice']);
-    $filename = "BetaFormazione_Fattura_" . $row['codice'] . "-" . $row['sezionale'] . ".pdf";
+    $filename = PREFIX_FILE_PDF_FATTURA . $n_progetto . "-" . $row['sezionale'] . ".pdf";
     $allegato_1 = $filename;
-    $filename_oggetto = "Fattura " . $row['codice'] . "/" . $row['sezionale'] . "";
+    $filename_oggetto = PREFIX_MAIL_OGGETTO_INIVA_FATTURA . $row['codice'] . "/" . $row['sezionale'] . "";
     $causale = $row['causale'];
 
     $emailDesti = $dblink->get_row("SELECT email, ragione_sociale FROM lista_aziende WHERE id = '".$row['id_azienda']."'", true);
@@ -457,7 +457,7 @@ function inviaEmailFatturaDaId($idFattura,$updateFattura) {
 
     $dest = $emailDesti['email'];
     $ragione_sociale = $emailDesti['ragione_sociale'];
-    $ogg = 'Beta Formazione s.r.l. -  ' . $filename_oggetto;
+    $ogg = MAIL_OGGETTO_INVIA_FATTURA . $filename_oggetto;
 
     $sql_template = "SELECT * FROM lista_template_email WHERE nome = 'inviaEmailFatturaDaId'";
     $rs_template = $dblink->get_results($sql_template);
@@ -636,7 +636,7 @@ function inviaEmailCorsoCompletato($idIscrione,$updateIscrizione) {
     $dest = $emailDesti['email'];
     $cognome = $emailDesti['cognome'];
     $nome = $emailDesti['nome'];
-    $ogg = 'Beta Formazione s.r.l. -  Conferma Conclusione Corso';
+    $ogg = 'Conferma Conclusione Corso';
     
     
     $sql_template = "SELECT * FROM lista_template_email WHERE nome = '".$template_attestato."'";
@@ -972,7 +972,7 @@ function inviaEmailAttestatoDaIdIscrizione($idIscrione) {
         //require_once BASE_ROOT . "classi/phpmailer/class.phpmailer.php";
         $messaggio = new PHPmailer();
         $messaggio->IsHTML(true);
-        //$messaggio->SMTPDebug  = 2;
+        $messaggio->SMTPDebug  = 2;
         $messaggio->IsSMTP();
         # I added SetLanguage like this
         $messaggio->SetLanguage('it', BASE_ROOT . 'classi/phpmailer/language/');

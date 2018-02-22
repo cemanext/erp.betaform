@@ -11,7 +11,7 @@ if (isset($_GET['idMenu'])) {
     $row_padre = $dblink->get_row($sql_padre, true);
     if(!empty($row_padre)){
         $nome_del_padre = $row_padre['tipo'];
-        $sql_id_padre = "SELECT id FROM `lista_menu` WHERE `nome` = '".addslashes($nome_del_padre)."' AND tipo='betaform_erp' AND livello='".$_SESSION['livello_utente']."'";
+        $sql_id_padre = "SELECT id FROM `lista_menu` WHERE `nome` = '".addslashes($nome_del_padre)."' AND tipo='".CONFIG_TIPO_LISTA_MENU."' AND livello='".$_SESSION['livello_utente']."'";
         $row_id_padre = $dblink->get_row($sql_id_padre, true);
         if(!empty($row_id_padre)){
             $id_del_menu_padre = $row_id_padre['id'];
@@ -53,7 +53,7 @@ if (isset($_GET['idMenu'])) {
             <!-- DOC: To remove the search box from the sidebar you just need to completely remove the below "sidebar-search-wrapper" LI element -->
             <li class="sidebar-search-wrapper"></li>
                 <?php
-                $sql = "SELECT * FROM lista_menu WHERE tipo='" . $config_tipo_lista_menu . "' AND stato='Attivo' $where_lista_menu ORDER BY ordine ASC";
+                $sql = "SELECT * FROM lista_menu WHERE tipo='" . CONFIG_TIPO_LISTA_MENU . "' AND stato='Attivo' $where_lista_menu ORDER BY ordine ASC";
                 $row = $dblink->get_row($sql,true);
                 if (!empty($row)) {
                     $sql_sub = "SELECT * FROM lista_menu WHERE tipo='" . $row['nome'] . "' AND stato='Attivo' $where_lista_menu ORDER BY ordine ASC";
