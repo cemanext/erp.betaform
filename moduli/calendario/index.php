@@ -396,5 +396,31 @@ if(isset($_GET['whrStato']) && $_GET['whrStato']!="0e902aba617fb11d469e1b90f57fd
                 </div>
             </div>
         </div>
+        
+        <div id="myModalRichiestaNegativa" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- dialog body -->
+                    <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        Indicare la motivazione per la quale si dichiara che l'offerta è negativa!
+                        <form method="POST" action="salva.php?fn=salvaNomeObiezioneInCalendario" class="form-horizontal form-bordered" enctype="multipart/form-data" id="formSalvaNomeObiezioneInCalendario">
+                            <div class="form-body">
+                                <div class="form-group">
+                                    <label></label>
+                                    <div class="col-md-12">
+                                        <?php print_hidden("txt_id_calendario", "");?>
+                                        <?php print_hidden("txt_id_preventivo", "");?>
+                                        <?php print_hidden("txt_id_obiezione", "");?>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- dialog buttons -->
+                    <div class="modal-footer"><button type="button" id="annullaButtonRichiestaNegativa" class="btn btn-primary red">ANNULLA</button><button type="button" id="okButtonRichiestaNegativa" class="btn btn-primary">CONFERMA</button></div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

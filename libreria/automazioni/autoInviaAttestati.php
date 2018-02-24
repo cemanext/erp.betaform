@@ -14,7 +14,7 @@ iF(DISPLAY_DEBUG){
     echo '<li>'.date('Y-m-d H:i:s').'</li>';
 }
 
-$sql_lista_iscrizioni_invia = "SELECT * FROM lista_iscrizioni WHERE stato_invio_attestato LIKE 'In Attesa di Invio' LIMIT 1";
+$sql_lista_iscrizioni_invia = "SELECT * FROM lista_iscrizioni WHERE stato_invio_attestato LIKE 'In Attesa di Invio' LIMIT 20";
 $rs_lista_iscrizioni_invia = $dblink->get_results($sql_lista_iscrizioni_invia);
 foreach ($rs_lista_iscrizioni_invia AS $row_lista_iscrizioni_invia){
         

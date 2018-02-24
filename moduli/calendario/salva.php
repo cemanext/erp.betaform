@@ -495,6 +495,31 @@ if(isset($_GET['fn'])){
             else header("Location:".$referer."&res=0");
         break;
         
+        case "salvaNomeObiezioneInCalendario":
+            $ok = true;
+            $idPreventivo =  $_POST['txt_id_preventivo'];
+            $idCalendario =  $_POST['txt_id_calendario'];
+            $idObiezione =  $_POST['txt_id_obiezione'];
+            
+            if($idObiezione > 0){
+                $nomeObiezione = $dblink->get_field("SELECT nome FROM lista_obiezioni WHERE id = '$idObiezione'");
+
+                if($idPreventivo>0){
+                    $ok = $ok && $dblink->update("lista_preventivi",array("dataagg" => date("Y-m-d H:i:s"),"scrittore" => $dblink->filter($_SESSION['cognome_nome_utente']),"nome_obiezione"=> $dblink->filter($nomeObiezione), "id_obiezione"=>"$idObiezione"),array("id"=>$idPreventivo));
+                    //echo $dblink->get_query();
+                }
+                if($idCalendario>0){
+                    $ok = $ok && $dblink->update("calendario", array("dataagg" => date("Y-m-d H:i:s"),"scrittore" => $dblink->filter($_SESSION['cognome_nome_utente']),"nome_obiezione"=> $dblink->filter($nomeObiezione) , "id_obiezione"=>"$idObiezione"), array("id"=>$idCalendario));
+                    //echo $dblink->get_query();
+                }
+                //die();
+                if($ok===true) header("Location:".$referer."&res=1");
+                else header("Location:".$referer."&res=0");
+            }else{
+                header("Location:".$referer."&res=0");
+            }
+        break;
+        
         default:
             echo "data: {\"status\": ERRORE";
             echo "}";
