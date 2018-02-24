@@ -334,7 +334,7 @@ if (isset($_GET['fn'])) {
             }
             header("Location:$referer");
 
-            break;
+        break;
 
         case 'SalvaFatturaDettaglio':
             //print_r($_POST);
