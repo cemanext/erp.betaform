@@ -285,6 +285,9 @@ function stampa_table_static_basic($query, $stile, $titolo, $colore_tabella = CO
                         else $nomeCampo = strtolower($fields[$c]->name);
                         if (strpos($nomeCampo, "data") !== false || $nomeCampo == "iniziato il") { //$nomeCampo == "in corso" || $nomeCampo == "validit&agrave;" ||
                             $rowTable .= '<td style="text-align:center; vertical-align:middle;">' . GiraDataOra($column) . '</td>';
+                        }else if (strtolower($fields[$c]->name) == "nome_obiezione") {
+                            $tmp = explode("|", $column);
+                            $rowTable .=  '<td style="text-align:center; vertical-align:middle;">' . print_select2("SELECT id as valore, nome, $tmp[0] AS var_1, $tmp[1] AS var_2, id AS var_3 FROM lista_obiezioni WHERE stato='Attivo' ORDER BY nome ASC", "txt_" . $r . "_" . $nomeCampo, '', "scriviNomeObiezioneInCalendario", false, 'tooltips select_obiezione', 'data-container="body" data-placement="top" data-original-title="NOME OBIEZIONE"') . '</td>';
                         }else if (strtolower($fields[$c]->name) == "selezione") {
                             if($column>0){
                                 $rowTable .= '<td style="text-align:center; vertical-align:middle;"><label class="mt-checkbox"><input name="txt_checkbox_' . $r . '" id="txt_checkbox_' . $r . '" type="checkbox"  value="'.$column.'"><span></span></label></td>';

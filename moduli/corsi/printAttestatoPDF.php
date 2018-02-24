@@ -7,7 +7,12 @@ if ($browser == true) {
     //echo 'Code You Want To Execute';
 }
 
+if(isset($_GET['force']) && $_GET['force'] == "1"){
+    $forzaRigenerazione = true;
+}else{
+    $forzaRigenerazione = false;
+}
 
-creaAttestatoPDF($_GET['idIscrizione'], true);
+creaAttestatoPDF($_GET['idIscrizione'], true, $forzaRigenerazione);
 
 ?>

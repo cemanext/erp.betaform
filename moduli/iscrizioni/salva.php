@@ -151,6 +151,79 @@ if(isset($_GET['fn'])){
             header("Location:".$referer."");
         break;
         
+        case 'inviaEmailAttestato':
+
+            $wMitt = $_POST['mitt'];
+            $wDest = $_POST['dest'];
+            $wDestCC = $_POST['dest_cc'];
+            $wDestBCC = "";
+            $wOgg = $_POST['ogg'];
+            $wMess = $_POST['mess'];
+
+            $wAllegato_1 = $_POST['fileDoc'];
+            $wAllegato_2 = "";
+            
+            $PasswdEmailUtente = "";
+            $testo_debug = "";
+
+            if (strlen($wDest) > 5 and $wOgg != 'BETAFORMAZIONE - ') {
+
+                /*  echo '<li>$wMitt = '.$wMitt.'</li>';
+                  echo '<li>$wDest = '.$wDest.'</li>';
+                  echo '<li>$wDestCC = '.$wDestCC.'</li>';
+                  echo '<li>$wOgg = '.$wOgg.'</li>';
+                  //echo '<li>$wMess = '.$wMess.'</li>';
+                  echo '<li>$wAllegato_1 = '.$wAllegato_1.'</li>';
+                  echo '<li>$wAllegato_2 = '.$wAllegato_2.'</li>';
+                  echo '<li>$wAllegato_2 = '.$wAllegato_2.'</li>';
+                  echo '<li>$idFattura = '.$idFattura.'</li>'; */
+                if (isset($_FILES['documentoAllegato1']) and strlen($_FILES["documentoAllegato1"]["name"]) > 3) {
+                    $testo_debug .= '<h1>UPLOAD</h1>';
+                    $wAllegato_2 = $_FILES["documentoAllegato1"]["name"];
+                    $testo_debug .= '<li>$nome_documentoAllegato1 = ' . $nome_documentoAllegato1 . '</li>';
+
+                    /** 		UPLOAD IMMAGINE		 */
+                    $percorso_tabella = BASE_ROOT . "media/lista_documenti/" . $_SESSION['id_utente'];
+                    $wAllegato_2 = $percorso_tabella."/".$_FILES["documentoAllegato1"]["name"];
+                    $testo_debug .= '<li>$percorso_tabella = ' . $percorso_tabella . '</li>';
+                    //echo '<li>$percorso_tabella = '.$percorso_tabella.'</li>';
+                    if ($_FILES["documentoAllegato1"]["error"] > 0 and strlen($_FILES["documentoAllegato1"]["name"]) > 1) {
+                        $testo_debug .= "<li>Return Code: " . $_FILES["documentoAllegato1"]["error"] . "</li>";
+                    } else {
+                        /* 	echo "<li>Upload: " . $_FILES["file"]["name"] . "</li>";
+                          echo "<li>Type: " . $_FILES["file"]["type"] . "</li>";
+                          echo "<li>Size: " . ($_FILES["file"]["size"] / 1024) . " Kb</li>";
+                          echo "<li>Temp file: " . $_FILES["file"]["tmp_name"] . "</li>"; */
+
+                        //@mkdir("".$percorso_tabella."");
+
+                        if (!mkdir($percorso_tabella, 0777, true)) {
+                            //die('Failed to create folders...');
+                            $testo_debug .= "Failed to create folders...";
+                        }
+
+                        if (strlen($_FILES["documentoAllegato1"]["name"]) > 3) {
+                            if (file_exists("" . $percorso_tabella . "/" . $_FILES["documentoAllegato1"]["name"])) {
+                                //echo "<li>".$_FILES["file"]["name"] . " already exists.</li>";
+                                move_uploaded_file($_FILES["documentoAllegato1"]["tmp_name"], "" . $percorso_tabella . "/" . $_FILES["documentoAllegato1"]["name"]);
+                                //echo "<li>Stored in: " . "".$percorso_tabella."/" . $_FILES["file"]["name"]."</li>";
+                            } else {
+                                move_uploaded_file($_FILES["documentoAllegato1"]["tmp_name"], "" . $percorso_tabella . "/" . $_FILES["documentoAllegato1"]["name"]);
+                                $testo_debug .= "<li>Stored in: " . "" . $percorso_tabella . "/" . $_FILES["documentoAllegato1"]["name"] . "</li>";
+                            }
+                        }
+                    }
+                    /** 		FINE	UPLOAD IMMAGINE		 */
+                } else {
+                    $testo_debug .= "<h3>NESSUN FILE RECUPERATO</h3>";
+                }
+
+                inviaEmailAttestato($wMitt, $wDest, $wDestCC, $wDestBCC, $wOgg, $wMess, $wAllegato_1, $wAllegato_2, $PasswdEmailUtente);
+            }
+            header("Location:$referer");
+
+        break;
+        
         default:
             salvaGenerale();
             

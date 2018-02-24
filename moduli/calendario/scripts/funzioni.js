@@ -6,6 +6,21 @@
 
 var BASE_URL_HOST = "http://"+window.location.hostname+"";
 
+function scriviNomeObiezioneInCalendario(selettore){
+    
+    var id = selettore.id;
+
+    var temp = new Array();
+    var valori = $("#"+id).find(':selected').data("options");
+    temp = valori.split(":");
+
+    $("#txt_id_calendario").val(temp[0]);
+    $("#txt_id_preventivo").val(temp[1]);
+    $("#txt_id_obiezione").val(temp[2]);
+    
+    $("#formSalvaNomeObiezioneInCalendario").submit();
+}
+
 $(document).ready(function() {
     
     BASE_URL_HOST = "http://"+window.location.hostname+"";

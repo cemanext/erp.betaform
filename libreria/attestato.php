@@ -6,7 +6,7 @@ use Spipu\Html2Pdf\Html2Pdf;
 use Spipu\Html2Pdf\Exception\Html2PdfException;
 use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
-function creaAttestatoPDF($idIscrizione, $echo = false) {
+function creaAttestatoPDF($idIscrizione, $echo = false, $forzaRigenerazione = false) {
     global $dblink;
     
     $rowInviato = $dblink->get_row("SELECT * FROM lista_iscrizioni WHERE id = '$idIscrizione' AND stato_invio_completato LIKE 'Inviato'", true);
@@ -194,184 +194,196 @@ function creaAttestatoPDF($idIscrizione, $echo = false) {
     if(file_exists(BASE_ROOT . "media/lista_attestati/".$codiceCorso."/".$anno."/".$mese."/".$filename)){
         chmod(BASE_ROOT. "media/lista_attestati/".$codiceCorso."/".$anno."/".$mese."/" . $filename, 0777);
     }
-        
+     
+    if(empty($rowInviato) || !file_exists(BASE_ROOT. "media/lista_attestati/".$codiceCorso."/".$anno."/".$mese."/" . $filename) || $forzaRigenerazione){
 
-    $totale = 1;
+        $totale = 1;
 
-    $pageSize = 12;
-    $pagina = 1;
-    $begin = ($pagina - 1) * $pageSize;
-    $countPages = ceil($totale / $pageSize);
+        $pageSize = 12;
+        $pagina = 1;
+        $begin = ($pagina - 1) * $pageSize;
+        $countPages = ceil($totale / $pageSize);
 
-    if($orientamento == "L"){
+        if($orientamento == "L"){
 
-        $html = '<STYLE type="text/css">    
-            
-        body {
-            font-family: \'Trajan Pro\';
-            font-size: 14pt;
-            background-color: #FFFFCC;
-        }
-        #divid{margin-top: 0px;margin-left: 0px;
-            text-align:center;
-            vertical-align: middle;
-            width: 277mm;
-            height: 200mm;
-            font-size: 14pt;
-            margin-left: 10mm;
-            margin-right: 10mm;
-         }
-         .pagebreakafter_always {
-            page-break-after: always;
-            width: 297mm;
-            height: 210mm;
-         }
-         .cornice{
-            position: absolute;
-            top: 0mm;
-            left: 0mm;
-            bottom: 0mm;
-            right: 0mm;
-            width: 297mm;
-            height: 210mm;
-        }
-        .cornice img{
-            width: 297mm;
-            height: 210mm;
-        }
-         h1{
-            font-size: 32pt;
-            margin-bottom: 0px;
-         }
+            $html = '<STYLE type="text/css">    
 
-         h2{
-            font-size: 28pt;
-            margin-bottom: 0px;
-         }
-         h3{
-            font-size: 20pt;
-         }
-
-        #firma{
-            text-align:left;
-            margin-left: 112px;
-            margin-top: 710px;
-            font-size: 11pt;
-            position: absolute;
-            font-weight: bold;
-        }
-            </style>
-            <html>
-            <body>
-                '.$htmladd.'
-            </body>
-            </html>';
-
-        try {
-            //$messaggio = str_replace('_XXX_MESSAGGIO_XXX_', $messaggio, $html);
-            //$messaggio = str_replace('_XXX_DATA_FIRMA_XXX_', "Lugo (RA), ".GiraDataOra($dataCompletamento), $messaggio);
-            $content = html_entity_decode($html);
-
-            $html2pdf = new Html2Pdf($orientamento, 'A4', 'it', true, 'UTF-8',array(0, 0, 0, 0 ));
-            $html2pdf->setDefaultFont('Times');
-            $html2pdf->writeHTML($content);
-            
-            if($echo===true){
-                $esporta = "FI";
-            }else{
-                $esporta = "F";
+            body {
+                font-family: \'Trajan Pro\';
+                font-size: 14pt;
+                background-color: #FFFFCC;
             }
-            
-            $html2pdf->output(BASE_ROOT. "media/lista_attestati/".$codiceCorso."/".$anno."/".$mese."/" . $filename, $esporta);
-            
-        } catch (Html2PdfException $e) {
-            $formatter = new ExceptionFormatter($e);
-            echo $formatter->getHtmlMessage();
+            #divid{margin-top: 0px;margin-left: 0px;
+                text-align:center;
+                vertical-align: middle;
+                width: 277mm;
+                height: 200mm;
+                font-size: 14pt;
+                margin-left: 10mm;
+                margin-right: 10mm;
+             }
+             .pagebreakafter_always {
+                page-break-after: always;
+                width: 297mm;
+                height: 210mm;
+             }
+             .cornice{
+                position: absolute;
+                top: 0mm;
+                left: 0mm;
+                bottom: 0mm;
+                right: 0mm;
+                width: 297mm;
+                height: 210mm;
+            }
+            .cornice img{
+                width: 297mm;
+                height: 210mm;
+            }
+             h1{
+                font-size: 32pt;
+                margin-bottom: 0px;
+             }
+
+             h2{
+                font-size: 28pt;
+                margin-bottom: 0px;
+             }
+             h3{
+                font-size: 20pt;
+             }
+
+            #firma{
+                text-align:left;
+                margin-left: 112px;
+                margin-top: 710px;
+                font-size: 11pt;
+                position: absolute;
+                font-weight: bold;
+            }
+                </style>
+                <html>
+                <body>
+                    '.$htmladd.'
+                </body>
+                </html>';
+
+            try {
+                //$messaggio = str_replace('_XXX_MESSAGGIO_XXX_', $messaggio, $html);
+                //$messaggio = str_replace('_XXX_DATA_FIRMA_XXX_', "Lugo (RA), ".GiraDataOra($dataCompletamento), $messaggio);
+                $content = html_entity_decode($html);
+
+                $html2pdf = new Html2Pdf($orientamento, 'A4', 'it', true, 'UTF-8',array(0, 0, 0, 0 ));
+                $html2pdf->setDefaultFont('Times');
+                $html2pdf->writeHTML($content);
+
+                if($echo===true){
+                    $esporta = "FI";
+                }else{
+                    $esporta = "F";
+                }
+
+                $html2pdf->output(BASE_ROOT. "media/lista_attestati/".$codiceCorso."/".$anno."/".$mese."/" . $filename, $esporta);
+
+            } catch (Html2PdfException $e) {
+                $formatter = new ExceptionFormatter($e);
+                echo $formatter->getHtmlMessage();
+            }
+        }else{
+            $html = '<STYLE type="text/css">    
+
+            body {
+                font-family: \'Trajan Pro\';
+                font-size: 14pt;
+                background-color: #FFFFCC;
+            }
+            #divid{margin-top: 0px;margin-left: 0px;
+                text-align:center;
+                vertical-align: top;
+                margin-left: 9.5mm;
+                margin-top: 45mm;
+                padding: 0px;
+                width: 190mm;
+                height: 190mm;
+                font-size: 14pt;
+             }
+             .pagebreakafter_always {
+                page-break-after: always;
+                width: 210mm;
+                height: 297mm;
+             }
+             .cornice{
+                position: absolute;
+                top: 0mm;
+                left: 0mm;
+                bottom: 0mm;
+                right: 0mm;
+                width: 210mm;
+                height: 297mm;
+            }
+            .cornice img{
+                width: 210mm;
+                height: 297mm;
+            }
+             h1{
+                font-size: 26pt;
+                margin-bottom: 0px;
+             }
+
+             h2{
+                font-size: 18pt;
+                margin-bottom: 0px;
+             }
+             h3{
+                font-size: 18pt;
+             }
+
+            #firma{
+                text-align:right;
+                margin-left: 510px;
+                margin-top: 1000px;
+                font-size: 11pt;
+                position: absolute;
+                font-weight: bold;
+            }
+                </style>
+                <html>
+                <body>
+                    '.$htmladd.'
+                </body>
+                </html>';
+
+            try {
+                //$messaggio = str_replace('_XXX_MESSAGGIO_XXX_', $messaggio, $html);
+                //$messaggio = str_replace('_XXX_DATA_FIRMA_XXX_', "Lugo (RA), ".GiraDataOra($dataCompletamento), $messaggio);
+                $content = html_entity_decode($html);
+
+                $html2pdf = new Html2Pdf($orientamento, 'A4', 'it', true, 'UTF-8',array(0, 0, 0, 0 ));
+                $html2pdf->setDefaultFont('Times');
+                $html2pdf->writeHTML($content);
+                if($echo===true){
+                    $esporta = "FI";
+                }else{
+                    $esporta = "F";
+                }
+                $html2pdf->output(BASE_ROOT. "media/lista_attestati/".$codiceCorso."/".$anno."/".$mese."/" . $filename, $esporta);
+                
+            } catch (Html2PdfException $e) {
+                $formatter = new ExceptionFormatter($e);
+                echo $formatter->getHtmlMessage();
+            }
         }
     }else{
-        $html = '<STYLE type="text/css">    
-           
-        body {
-            font-family: \'Trajan Pro\';
-            font-size: 14pt;
-            background-color: #FFFFCC;
+        
+        if($echo===true){
+            header("Location: ".BASE_URL."/media/lista_attestati/".$codiceCorso."/".$anno."/".$mese."/" . $filename);
+        }else{
+            return "media/lista_attestati/".$codiceCorso."/".$anno."/".$mese."/" . $filename;
         }
-        #divid{margin-top: 0px;margin-left: 0px;
-            text-align:center;
-            vertical-align: top;
-            margin-left: 9.5mm;
-            margin-top: 45mm;
-            padding: 0px;
-            width: 190mm;
-            height: 190mm;
-            font-size: 14pt;
-         }
-         .pagebreakafter_always {
-            page-break-after: always;
-            width: 210mm;
-            height: 297mm;
-         }
-         .cornice{
-            position: absolute;
-            top: 0mm;
-            left: 0mm;
-            bottom: 0mm;
-            right: 0mm;
-            width: 210mm;
-            height: 297mm;
-        }
-        .cornice img{
-            width: 210mm;
-            height: 297mm;
-        }
-         h1{
-            font-size: 26pt;
-            margin-bottom: 0px;
-         }
-
-         h2{
-            font-size: 18pt;
-            margin-bottom: 0px;
-         }
-         h3{
-            font-size: 18pt;
-         }
-
-        #firma{
-            text-align:right;
-            margin-left: 510px;
-            margin-top: 1000px;
-            font-size: 11pt;
-            position: absolute;
-            font-weight: bold;
-        }
-            </style>
-            <html>
-            <body>
-                '.$htmladd.'
-            </body>
-            </html>';
-
-        try {
-            //$messaggio = str_replace('_XXX_MESSAGGIO_XXX_', $messaggio, $html);
-            //$messaggio = str_replace('_XXX_DATA_FIRMA_XXX_', "Lugo (RA), ".GiraDataOra($dataCompletamento), $messaggio);
-            $content = html_entity_decode($html);
-
-            $html2pdf = new Html2Pdf($orientamento, 'A4', 'it', true, 'UTF-8',array(0, 0, 0, 0 ));
-            $html2pdf->setDefaultFont('Times');
-            $html2pdf->writeHTML($content);
-            if($echo===true){
-                $esporta = "FI";
-            }else{
-                $esporta = "F";
-            }
-            $html2pdf->output(BASE_ROOT. "media/lista_attestati/".$codiceCorso."/".$anno."/".$mese."/" . $filename, $esporta);
-            
-        } catch (Html2PdfException $e) {
-            $formatter = new ExceptionFormatter($e);
-            echo $formatter->getHtmlMessage();
-        }
+        
     }
+    
+    return "media/lista_attestati/".$codiceCorso."/".$anno."/".$mese."/" . $filename;
 }
 
 ?>

@@ -210,6 +210,7 @@ switch($whrStato){
         //$ordine = $table_calendario['index']['order'];
         $ordine = " ORDER BY datainsert DESC, orainsert ASC";
     break;
+    case MD5('Obiezione'):
     case MD5('Negativo'):
         $tabella = "calendario INNER JOIN lista_preventivi ON calendario.id = lista_preventivi.id_calendario";
         if($_SESSION['livello_utente']=="commerciale"){
@@ -239,7 +240,10 @@ switch($whrStato){
                             (SELECT nome FROM lista_campagne WHERE id = calendario.id_campagna) AS Campagna";
         }
         //$where = $table_calendario['index']['where'];
-        $where = " (lista_preventivi.stato='Negativo') AND MD5(calendario.stato)='".$_GET['whrStato']."' $where_calendario $where_data_calendario_iscritto";
+        $where = " (lista_preventivi.stato='Negativo') AND calendario.stato='Negativo' $where_calendario $where_data_calendario_iscritto";
+        if($whrStato == "ccd8ed1e063d333d633344cddc386f37") {
+            $where .= " AND calendario.nome_obiezione = '' ";
+        }
         if(!empty($arrayCampoRicerca)){
             foreach ($arrayCampoRicerca as $campoRicerca) {
                 if($campoRicerca=="iscritto") $campoRicerca = "venduto";

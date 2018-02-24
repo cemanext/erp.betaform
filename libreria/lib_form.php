@@ -816,7 +816,7 @@ function print_select2($sql,$nomeSelect,$valoreSelezionato="",$ajaxFunction = ""
     //if($valoreSelezionato==="") {
     $select.= '<option  id="'.$nomeSelect.$i.'" name="'.$nomeSelect.$i.'" value="">Selezionare...</option>';
     //}else{
-    if(!in_array_r($valoreSelezionato, $res)){
+    if(!in_array_r($valoreSelezionato, $res) && $valoreSelezionato!=""){
         $select.= '<option  id="'.$nomeSelect.$i.'" name="'.$nomeSelect.$i.'" value="'.$valoreSelezionato.'">'.$valoreSelezionato.'</option>';
     }
     //}

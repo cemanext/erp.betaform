@@ -300,6 +300,7 @@ class DB
     {
         self::$counter++;
         $num_rows = $this->link->query( $query );
+        $this->last_query = $query;
         if( $this->link->error )
         {
             $this->log_db_errors( $this->link->error, $query );
@@ -1066,6 +1067,7 @@ class DB
     {
         self::$counter++;
         $query = $this->link->query( $query );
+        $this->last_query = $query;
         $fields = $query->field_count;
         return $fields;
     }
