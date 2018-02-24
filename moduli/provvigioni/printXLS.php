@@ -49,7 +49,7 @@ if(isset($_GET['iscritti'])){
             data_inizio_iscrizione AS data_attivazione,
             data_fine_iscrizione AS data_scadenza,
             DATE(data_inizio) AS data_inizio,
-            DATE(data_fine) AS data_fine,
+            DATE(data_completamento) AS data_completamento,
             avanzamento_completamento AS 'avanzamento_%',
             lista_iscrizioni.stato,
             email AS email_professionista,

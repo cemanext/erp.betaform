@@ -73,7 +73,7 @@ function Stampa_HTML_Dettaglio_Provvigioni($tabella, $id){
             
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
                 $sql_0002 = "SELECT 
-                CONCAT('<a class=\"btn btn-circle btn-icon-only red-intense btn-outline\" href=\"".BASE_URL."/moduli/provvigioni/printXLS.php?anno=',YEAR(data_creazione),'&mese=',MONTH(data_creazione),'&id_provvigione=',id_provvigione,'\" target=\"_blank\" title=\"XLS CODICI PARTNER\" alt=\"XLS CODICI PARTNER\"><i class=\"fa fa-file-excel-o\"></i></a>') as 'fa-file-excel-o',
+                CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/provvigioni/printXLS.php?anno=',YEAR(data_creazione),'&mese=',MONTH(data_creazione),'&id_provvigione=',id_provvigione,'\" target=\"_blank\" title=\"XLS CODICI PARTNER\" alt=\"XLS CODICI PARTNER\"><i class=\"fa fa-file-excel-o\"></i></a>') as 'fa-file-excel-o',
                 CONCAT('<a class=\"btn btn-circle btn-icon-only blue-sharp btn-outline\" href=\"".BASE_URL."/moduli/provvigioni/printXLS.php?anno=',YEAR(data_creazione),'&mese=',MONTH(data_creazione),'&id_provvigione=',id_provvigione,'&iscritti=1\" target=\"_blank\" title=\"XLS PROFESSIONISTI ISCRITTI PER PARTNER\" alt=\"XLS PROFESSIONISTI ISCRITTI PER PARTNER\"><i class=\"fa fa-file-o\"></i> ',COUNT(lista_fatture.id_professionista),'</a>') as 'Iscritti',
                 (SELECT nome FROM lista_provvigioni WHERE id = id_provvigione) as Partner,
                 YEAR(data_creazione) AS Anno, MONTH(data_creazione) AS Mese, SUM(imponibile) AS Imponibile, COUNT(lista_fatture.stato) AS CONTEGGIO_FATTURE, lista_fatture.tipo, lista_fatture.sezionale, lista_fatture.stato 

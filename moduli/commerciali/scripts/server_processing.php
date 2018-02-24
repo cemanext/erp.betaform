@@ -116,6 +116,30 @@ switch($funzione){
 
     default:
         switch ($tabella) {
+            case "lista_esami_corsi_commerciali":
+                $tabella = "calendario";
+                $campi_visualizzati = $table_listaEsamiCorsiCommerciali['index']['campi'];
+                if($_SESSION['livello_utente'] == 'commerciale'){
+                    //$where = " (lista_preventivi.stato LIKE 'Venduto' OR lista_preventivi.stato LIKE 'Chiuso') AND sezionale NOT LIKE 'CN%' AND (lista_preventivi.id_agente='" . $_SESSION['id_utente'] . "' OR md5(lista_preventivi.cognome_nome_agente)='" . MD5($_SESSION['cognome_nome_utente']) . "') ";
+                    $where = $table_listaEsamiCorsiCommerciali['index']['where'];
+                }else{
+                    $where = $table_listaEsamiCorsiCommerciali['index']['where'];
+                }
+                if(!empty($arrayCampoRicerca)){
+                    foreach ($arrayCampoRicerca as $campoRicerca) {
+                        if(!empty($campoRicerca)){
+                            //  $campoRicerca = $dblink->filter($campoRicerca);
+                            $where.= " AND ( oggetto LIKE '%".$campoRicerca."%' OR da LIKE '%".$campoRicerca."%'";
+                            //$where.= " OR id_agente IN (SELECT id FROM lista_password WHERE nome LIKE '%".$campoRicerca."%' OR cognome LIKE '%".$campoRicerca."%' )";
+                            //$where.= " OR id_professionista IN (SELECT id FROM lista_professionisti WHERE nome LIKE '%".$campoRicerca."%' OR cognome LIKE '%".$campoRicerca."%' )";
+                            //$where.= " OR id IN (SELECT id_preventivo FROM lista_fatture WHERE lista_fatture.stato LIKE '%".$campoRicerca."%' OR lista_fatture.data_creazione LIKE '%".$campoRicerca."%' OR lista_fatture.imponibile LIKE '%".$campoRicerca."%' )";
+                            //$where.= " OR codice_ricerca LIKE '%".$campoRicerca."%' OR imponibile LIKE '%".$campoRicerca."%')";
+                        }
+                    }
+                }
+                $ordine = $table_listaEsamiCorsiCommerciali['index']['order'];
+            break;
+            
             case "lista_consuntivo_vendite":
                 $tabella = "lista_preventivi";
                 $campi_visualizzati = $table_listaConsuntivoVendite['index']['campi'];

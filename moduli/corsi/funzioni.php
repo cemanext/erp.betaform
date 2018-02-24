@@ -200,7 +200,15 @@ function Stampa_HTML_Dettaglio_Corsi($tabella,$id){
             IF(id_preventivo > 0, 
                 (SELECT IF(stato LIKE 'Paga%', 'SI', 'NO') FROM lista_fatture WHERE lista_fatture.id_preventivo = calendario.id_preventivo ORDER BY data_creazione DESC LIMIT 1),
                'No Fattura') AS fattura_pagata,
-            CONCAT('<a class=\"btn btn-circle btn-icon-only red-thunderbird btn-outline\" href=\"cancella.php?tbl=calendario_esami&idCalendario=',id,'&idCalendarioCorso=',id_calendario_0,'&idIscrizione=',id_iscrizione,'\" title=\"DISISCRIVI DAL CORSO\" alt=\"DISISCRIVI DAL CORSO\"><i class=\"fa fa-user-times\"></i></a>') AS 'fa-user-times' 
+            CONCAT('<a class=\"btn btn-circle btn-icon-only red-thunderbird btn-outline\" href=\"cancella.php?tbl=calendario_esami&idCalendario=',id,'&idCalendarioCorso=',id_calendario_0,'&idIscrizione=',id_iscrizione,'\" title=\"DISISCRIVI DAL CORSO\" alt=\"DISISCRIVI DAL CORSO\"><i class=\"fa fa-user-times\"></i></a>') AS 'fa-user-times' ,
+            
+            (SELECT codice_fiscale FROM lista_professionisti WHERE lista_professionisti.id = calendario.id_professionista) AS 'Cod. Fiscale',
+            (SELECT email FROM lista_professionisti WHERE lista_professionisti.id = calendario.id_professionista) AS 'Email',
+            (SELECT cellulare FROM lista_professionisti WHERE lista_professionisti.id = calendario.id_professionista) AS 'Cellulare',
+            (SELECT data_di_nascita FROM lista_professionisti WHERE lista_professionisti.id = calendario.id_professionista) AS 'data_di_nascita',
+             (SELECT luogo_di_nascita FROM lista_professionisti WHERE lista_professionisti.id = calendario.id_professionista) AS 'luogo_di_nascita',
+             (SELECT provincia_di_nascita FROM lista_professionisti WHERE lista_professionisti.id = calendario.id_professionista) AS 'provincia_di_nascita',
+            (SELECT professione FROM lista_professionisti WHERE lista_professionisti.id = calendario.id_professionista) AS 'Professione'
             FROM calendario
             WHERE id_prodotto='" . $idProdotto."'
             AND id_calendario_0 = '".$id."'

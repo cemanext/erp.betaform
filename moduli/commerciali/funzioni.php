@@ -2,9 +2,21 @@
 
 /** FUNZIONI DI CROCCO */
 function Stampa_HTML_index_Commerciali($tabella){
-    global $table_listaCommerciali, $table_listaConsuntivoVendite, $where_lista_consuntivo_vendite;
+    global $table_listaCommerciali, $table_listaConsuntivoVendite, $where_lista_consuntivo_vendite, $table_listaEsamiCorsiCommerciali;
 
     switch($tabella){
+    
+        case 'lista_esami_corsi_commerciali':
+            $tabella = "calendario";
+            $campi_visualizzati = $table_listaEsamiCorsiCommerciali['index']['campi'];
+            $where = $table_listaEsamiCorsiCommerciali['index']['where'];
+            $ordine = $table_listaEsamiCorsiCommerciali['index']['order'];
+            $titolo = 'Calendario Esami & Corsi';
+            $limit = "LIMIT 1";
+            $sql_0001 = "SELECT ".$campi_visualizzati." FROM ".$tabella." WHERE $where $ordine $limit";
+            stampa_table_datatables_ajax($sql_0001, "datatable_ajax", $titolo, '', '', false);        
+        break;
+    
         case 'lista_consuntivo_vendite':
             $tabella = "lista_preventivi";
             $campi_visualizzati = $table_listaConsuntivoVendite['index']['campi'];

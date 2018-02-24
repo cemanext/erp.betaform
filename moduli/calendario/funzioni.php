@@ -211,7 +211,7 @@ orainsert as ora_richiesta";
                     
                     case MD5('esportaBenedetto'):
                     $campi_visualizzati = "CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio_tab.php?tbl=calendario&id=',calendario.id,'\" title=\"SCHEDA\" alt=\"SCHEDA\"><i class=\"fa fa-book\"></i></a>') AS 'fa-book',
-                    'idIscrizione','idFattura','idRichiesta','idCorso','NomeCorso',  'DataRichiesta','DataIscrizione','DataInizio','DataCompletamento', 'StatoIscrizione', 'StatoRichiesta', 'Cognome',
+                    'idIscrizione','idFattura','idRichiesta','idCorso','NomeCorso', 'DataRichiesta','DataIscrizione','DataInizio','DataCompletamento', 'StatoIscrizione', 'StatoRichiesta', 'Cognome',
                     'Nome', 'Professione', 'telefono', 'cellulare', 'indirizzo', 'cap', 'citta', 'prov', 'regione', 'Email', 'Comm.le', 'Partner'";
                         //$where = $table_calendario['index']['where'];
                         $where = " calendario.etichetta LIKE '%richiesta%' AND lista_iscrizioni.id_corso >0 AND lista_fatture.sezionale NOT LIKE 'CN%'";

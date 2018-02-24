@@ -224,8 +224,6 @@ function Stampa_HTML_Dettaglio_Preventivi($tabella, $id) {
                         Aggiungi Prodotto
                         <i class="fa fa-plus"></i>
                         </a> <input class="btn green-sharp" value="Salva" type="submit"></center>';
-            
-
 
             $sql_00001_prodotto = "SELECT id_prodotto, nome_prodotto, id_preventivo, id_professionista FROM lista_preventivi_dettaglio WHERE id_preventivo='" . $id . "' ORDER BY nome_prodotto";
             $rs_00001_prodotto = $dblink->get_results($sql_00001_prodotto);
@@ -282,7 +280,82 @@ function Stampa_HTML_Dettaglio_Preventivi($tabella, $id) {
                         echo '</div></div>';
                     }
                 }
+                  
+/* INIZIO CORSI DA ABBONAMENTO   */
+$sql_00001_prodotto = "SELECT id_prodotto, nome_prodotto, id_preventivo, id_professionista FROM lista_preventivi_dettaglio WHERE id_preventivo='" . $id . "' ORDER BY nome_prodotto";
+            $rs_00001_prodotto = $dblink->get_results($sql_00001_prodotto);
+                if (!empty($rs_00001_prodotto)) {
+                    foreach ($rs_00001_prodotto as $row_00001_prodotto) {
+                    $idProdotto = $row_00001_prodotto['id_prodotto'];
+                    $idPreventivo = $row_00001_prodotto['id_preventivo'];
+                    $nomeProdotto = $row_00001_prodotto['nome_prodotto'];
+                    $idProfessionista = $row_00001_prodotto['id_professionista'];
+                    //echo '<li>INIZIO CORSI DA ABBONAMENTO</li>';
+                    //echo '<li>$idProdotto = '.$idProdotto.'</li>';
+                        echo '<BR><div class="row"><div class="col-md-12 col-sm-12">';
+                        $sql_00011 = "SELECT 
+                        CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/corsi/dettaglio.php?tbl=calendario_esami&id=',calendario.id,'&idProdotto=',calendario.id_prodotto,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
+                        (SELECT IF(cal.id_calendario_0>0,CONCAT('<span class=\"btn sbold uppercase btn-outline green\">ISCRITTO</span>'),CONCAT('<span class=\"btn sbold uppercase btn-outline red-thunderbird\">NON ISCRITTO</span>')) AS 'Tipo' FROM calendario AS cal INNER JOIN lista_prodotti_dettaglio ON cal.id_prodotto = lista_prodotti_dettaglio.id_prodotto WHERE cal.id_calendario_0=calendario.id  AND cal.id_professionista = '".$idProfessionista."' AND lista_prodotti_dettaglio.id_prodotto_0='" . $idProdotto."' AND cal.etichetta LIKE 'Iscrizione Corso') AS stato,
+                        CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/corsi/salva.php?tbl=calendario_esami&idCalendario=',calendario.id,'&idProfessionista=".$idProfessionista."&idProdotto=',calendario.id_prodotto,'&idPreventivo=".$id."&fn=iscriviCorsoUtente\" title=\"ISCRIVI CORSO\" alt=\"ISCRIVI CORSO\"><i class=\"fa fa-user-plus\"></i></a>') AS 'fa-user-plus', 
+                        
+                        (SELECT IF(cal.id_calendario_0>0,CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"".BASE_URL."/moduli/corsi/cancella.php?tbl=calendario_corsi&idCalendario=',calendario.id,'&idCalendarioCorso=',id_calendario_0,'\" title=\"DISISCRIVI CORSO\" alt=\"DISISCRIVI CORSO\"><i class=\"fa fa-user-times\"></i></a>'),CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/corsi/salva.php?tbl=calendario_esami&idCalendario=',calendario.id,'&idProfessionista=".$idProfessionista."&idProdotto=',calendario.id_prodotto,'&idPreventivo=".$id."&fn=iscriviCorsoUtente\" title=\"ISCRIVI CORSO\" alt=\"ISCRIVI CORSO\"><i class=\"fa fa-user-plus\"></i></a>')) AS 'Tipo' FROM calendario AS cal INNER JOIN lista_prodotti_dettaglio ON cal.id_prodotto = lista_prodotti_dettaglio.id_prodotto WHERE cal.id_calendario_0=calendario.id  AND cal.id_professionista = '".$idProfessionista."' AND lista_prodotti_dettaglio.id_prodotto_0='" . $idProdotto."' AND cal.etichetta LIKE 'Iscrizione Corso') AS 'fa-user-times',
+                 
+                            data, ora, IF(etichetta LIKE 'Calendario Esami',CONCAT('<span class=\"btn sbold uppercase btn-outline blue\">',etichetta,'</span>'),CONCAT('<span class=\"btn sbold uppercase btn-outline red-thunderbird\">',etichetta,'</span>')) AS 'Tipo', oggetto, numerico_10 AS 'Iscritti'
+                            FROM lista_prodotti_dettaglio INNER JOIN  calendario ON calendario.id_prodotto = lista_prodotti_dettaglio.id_prodotto
+                            WHERE lista_prodotti_dettaglio.id_prodotto_0='".$idProdotto."'
+                            AND etichetta LIKE 'Calendario Corsi'
+                            ORDER BY data DESC, ora ASC";
+                            $numero_edizioni_disponibili = $dblink->num_rows($sql_00011);
+                            if($numero_edizioni_disponibili > 0) {
+                                stampa_table_static_basic($sql_00011, '', strtoupper($nomeProdotto).' - Edizioni Disponibili', 'blue');
+                            }
+                    }
+                    echo '</div></div>';
+                }else{
+                
+                }
+/* FINE CORSI DA ABBONAMENTO   */
 
+/* INIZIO ESAMI DA ABBONAMENTO   */
+$sql_00001_prodotto = "SELECT id_prodotto, nome_prodotto, id_preventivo, id_professionista FROM lista_preventivi_dettaglio WHERE id_preventivo='" . $id . "' ORDER BY nome_prodotto";
+            $rs_00001_prodotto = $dblink->get_results($sql_00001_prodotto);
+                if (!empty($rs_00001_prodotto)) {
+                    foreach ($rs_00001_prodotto as $row_00001_prodotto) {
+                    $idProdotto = $row_00001_prodotto['id_prodotto'];
+                    $idPreventivo = $row_00001_prodotto['id_preventivo'];
+                    $nomeProdotto = $row_00001_prodotto['nome_prodotto'];
+                    $idProfessionista = $row_00001_prodotto['id_professionista'];
+                    
+                     //echo '<li>INIZIO ESAMI DA ABBONAMENTO</li>';
+                    //echo '<li>$idProdotto = '.$idProdotto.'</li>';
+                    //echo '<li>$idProfessionista = '.$idProfessionista.'</li>';
+                    //echo '<li>$nomeProdotto = '.$nomeProdotto.'</li>';
+                    echo '<BR><div class="row"><div class="col-md-12 col-sm-12">';                        
+                        
+                        $sql_00011 = "SELECT 
+                        CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/corsi/dettaglio.php?tbl=calendario_esami&id=',calendario.id,'&idProdotto=',calendario.id_prodotto,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
+                        (SELECT IF(cal.id_calendario_0>0,CONCAT('<span class=\"btn sbold uppercase btn-outline green\">ISCRITTO</span>'),CONCAT('<span class=\"btn sbold uppercase btn-outline red-thunderbird\">NON ISCRITTO</span>')) AS 'Tipo' FROM calendario AS cal INNER JOIN lista_prodotti_dettaglio ON cal.id_prodotto = lista_prodotti_dettaglio.id_prodotto WHERE cal.id_calendario_0=calendario.id  AND cal.id_professionista = '".$idProfessionista."' AND lista_prodotti_dettaglio.id_prodotto_0='" . $idProdotto."' AND cal.etichetta LIKE 'Iscrizione Esame') AS stato,
+                        
+                        CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/corsi/salva.php?tbl=calendario_esami&idCalendario=',calendario.id,'&idProfessionista=".$idProfessionista."&idProdotto=',calendario.id_prodotto,'&idPreventivo=".$id."&fn=iscriviEsameUtente\" title=\"ISCRIVI ESAME\" alt=\"ISCRIVI ESAME\"><i class=\"fa fa-user-plus\"></i></a>') AS 'fa-user-plus', 
+                        (SELECT IF(cal.id_calendario_0>0,CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"".BASE_URL."/moduli/corsi/cancella.php?tbl=calendario_esami&idCalendario=',calendario.id,'&idCalendarioCorso=',id_calendario_0,'\" title=\"DISISCRIVI ESAME\" alt=\"DISISCRIVI ESAME\"><i class=\"fa fa-user-times\"></i></a>'),CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/corsi/salva.php?tbl=calendario_esami&idCalendario=',calendario.id,'&idProfessionista=".$idProfessionista."&idProdotto=',calendario.id_prodotto,'&idPreventivo=".$id."&fn=iscriviEsameUtente\" title=\"ISCRIVI ESAME\" alt=\"ISCRIVI ESAME\"><i class=\"fa fa-user-plus\"></i></a>')) AS 'Tipo' FROM calendario AS cal INNER JOIN lista_prodotti_dettaglio ON cal.id_prodotto = lista_prodotti_dettaglio.id_prodotto WHERE cal.id_calendario_0=calendario.id  AND cal.id_professionista = '".$idProfessionista."' AND lista_prodotti_dettaglio.id_prodotto_0='" . $idProdotto."' AND cal.etichetta LIKE 'Iscrizione Esame') AS 'fa-user-times',
+                        
+                        
+                        
+                            data, ora, IF(etichetta LIKE 'Calendario Esami',CONCAT('<span class=\"btn sbold uppercase btn-outline blue\">',etichetta,'</span>'),CONCAT('<span class=\"btn sbold uppercase btn-outline red-thunderbird\">',etichetta,'</span>')) AS 'Tipo', oggetto, calendario.numerico_10 AS 'Iscritti'
+                            FROM lista_prodotti_dettaglio INNER JOIN  calendario ON calendario.id_prodotto = lista_prodotti_dettaglio.id_prodotto
+                            WHERE lista_prodotti_dettaglio.id_prodotto_0='".$idProdotto."'
+                            AND etichetta LIKE 'Calendario Esami'
+                            ORDER BY data DESC, ora ASC";
+                            //echo $sql_00011;
+                            $numero_edizioni_disponibili = $dblink->num_rows($sql_00011);
+                            
+                            if($numero_edizioni_disponibili > 0) {
+                                stampa_table_static_basic($sql_00011, '', strtoupper($nomeProdotto).' - Esami Disponibili', 'green');
+                            }
+                    }
+                    echo '</div></div>';
+                }
+/* FINE ESAMI DA ABBONAMENTO   */
             
             echo '</div></div>';
             echo '</form>';
