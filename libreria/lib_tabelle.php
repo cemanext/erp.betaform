@@ -415,6 +415,13 @@ function stampa_table_static_basic_input($tabella, $query, $stile, $titolo, $col
                             else
                                 $rowTable .=  '<td style="text-align:center; vertical-align:middle;"><input name="txt_' . $record . '_' . $nome_colonna . '" id="txt_' . $record . '_' . $nome_colonna . '" type="text" class="form-control" placeholder="' . $nome_colonna . '" value="' . $column . '"></td>';
                         break;
+                        
+                        case "risposta":
+                            if($tabella == "lista_domande")
+                                $rowTable .=  '<td style="text-align:center; vertical-align:middle;">' . print_select_static(array("0" => "Falso", "1" => "Vero"), "txt_" . $record . "_" . $nome_colonna, $column, "", false, 'tooltips select_risposta', 'data-container="body" data-placement="top" data-original-title="RISPOSTA"') . '</td>';
+                            else
+                                $rowTable .=  '<td style="text-align:center; vertical-align:middle;"><input name="txt_' . $record . '_' . $nome_colonna . '" id="txt_' . $record . '_' . $nome_colonna . '" type="text" class="form-control" placeholder="' . $nome_colonna . '" value="' . $column . '"></td>';
+                        break;
 
                         case "nome_professionista":
                         case "id_professionista":

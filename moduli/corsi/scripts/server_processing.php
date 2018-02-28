@@ -80,7 +80,7 @@ switch($tabella){
                 foreach ($arrayCampoRicerca as $campoRicerca) {
                     $campoRicerca = $dblink->filter($campoRicerca);
                     $where.= " AND ( nome_prodotto LIKE '%".$campoRicerca."%' OR Durata LIKE '%".$campoRicerca."%'";
-                    $where.= " OR codice LIKE '%".$campoRicerca."%' OR stato LIKE '%".$campoRicerca."%')";
+                    $where.= " OR codice LIKE '%".$campoRicerca."%' OR stato LIKE '%".$campoRicerca."%' OR id_corso_moodle LIKE '%".$campoRicerca."%')";
                 }
             }
             

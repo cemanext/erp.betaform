@@ -642,7 +642,7 @@ function Stampa_HTML_Dettaglio_Fatture($tabella,$id){
             lista_costi.id_fattura = '" . $id."'
             OR
             lista_costi.id_fattura = (SELECT id_fattura_nota_credito FROM lista_fatture WHERE lista_fatture.id = '".$id."') ORDER BY id DESC";
-            stampa_table_static_basic($sql_0001, '', 'Entrate / Uscite', 'green', 'fa-id-card');
+            stampa_table_static_basic($sql_0001, '', 'Entrate / Uscite', 'green', 'fa fa-id-card');
             echo '</div></div>';
 
             if($id_fattura_nota_credito_trovata>0){
