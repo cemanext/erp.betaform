@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-var BASE_URL_HOST = "http://"+window.location.hostname+"";
+var BASE_URL_HOST = location.protocol+"//"+window.location.hostname+"";
 
 var TableDatatablesResponsive = function () {
 
@@ -129,7 +129,7 @@ var TableDatatablesAjaxPreventivi = function () {
 
 $( document ).ready(function() {
     
-    BASE_URL_HOST = "http://"+window.location.hostname+"";
+    BASE_URL_HOST = location.protocol+"//"+window.location.hostname+"";
     
     TableDatatablesResponsive.init();
     TableDatatablesAjaxPreventivi.init();

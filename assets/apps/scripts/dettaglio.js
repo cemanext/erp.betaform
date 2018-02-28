@@ -184,7 +184,10 @@ var ComponentsEditors = function () {
         //$('#summernote_1').summernote({height: 300});
         //API:
         //var sHTML = $('#summernote_1').code(); // get code
-        $('.wysihtml5').destroy();
+        $(".wysihtml5-toolbar").remove();
+        $(".wysihtml5-sandbox").remove();
+        $("input[name='_wysihtml5_mode']").remove();
+        $(".wysihtml5").show();
         //$('#summernote_1').destroy(); // destroy
     }
 

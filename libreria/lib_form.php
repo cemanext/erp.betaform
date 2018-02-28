@@ -813,13 +813,13 @@ function print_select2($sql,$nomeSelect,$valoreSelezionato="",$ajaxFunction = ""
     $select= '<select class="form-control input-sm '.$classi.'" '.$extra_data.' id="'.$nomeSelect.'" name="'.$nomeSelect.'" '.($ajaxFunction!="" ? "onchange=\"".$ajaxFunction."(this);\"" : "").'>';
     $res = $dblink->get_results($sql);
     $i = 0;
-    //if($valoreSelezionato==="") {
-    $select.= '<option  id="'.$nomeSelect.$i.'" name="'.$nomeSelect.$i.'" value="">Selezionare...</option>';
-    //}else{
-    if(!in_array_r($valoreSelezionato, $res) && $valoreSelezionato!=""){
-        $select.= '<option  id="'.$nomeSelect.$i.'" name="'.$nomeSelect.$i.'" value="'.$valoreSelezionato.'">'.$valoreSelezionato.'</option>';
+    if($valoreSelezionato==="") {
+        $select.= '<option  id="'.$nomeSelect.$i.'" name="'.$nomeSelect.$i.'" value="">Selezionare...</option>';
+    }else{
+        if(!in_array_r($valoreSelezionato, $res) && $valoreSelezionato!=""){
+            $select.= '<option  id="'.$nomeSelect.$i.'" name="'.$nomeSelect.$i.'" value="'.$valoreSelezionato.'">'.$valoreSelezionato.'</option>';
+        }
     }
-    //}
     foreach ($res as $row2) {
         $i++;
         $a=0;

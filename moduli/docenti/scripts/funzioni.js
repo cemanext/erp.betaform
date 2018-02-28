@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-var BASE_URL_HOST = "http://"+window.location.hostname+"";
+var BASE_URL_HOST = location.protocol+"//"+window.location.hostname+"";
 
 function removeParam(key, sourceURL) {
     var rtn = sourceURL.split("?")[0],
@@ -26,7 +26,7 @@ function removeParam(key, sourceURL) {
 
 $( document ).ready(function() {
     
-    BASE_URL_HOST = "http://"+window.location.hostname+"";
+    BASE_URL_HOST = location.protocol+"//"+window.location.hostname+"";
     
     toastr.options = {
         "closeButton": false,

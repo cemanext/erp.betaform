@@ -17,6 +17,54 @@ if (isset($_GET['tbl'])) {
 }else{
     $tabella = 'lista_password';
 }
+
+if(isset($_GET['tbl']) && $_GET['tbl']=="lista_esami_corsi_commerciali"){
+    if (!empty($_GET['intervallo_data'])) {
+        $intervallo_data = $_GET['intervallo_data'];
+        $_SESSION['intervallo_data'] = $_GET['intervallo_data'];
+        $data_in = before(' al ', $intervallo_data);
+        $data_out = after(' al ', $intervallo_data);
+        
+        $_GET['intervallo_data'] = ($data_in)." al ".($data_out);
+
+        //$tmp_in = explode("-",$data_in);
+        //$tmp_out = explode("-",$data_out);
+        //$setDataCalIn = $tmp_in[1]."/".$tmp_in[2]."/".$tmp_in[0];
+        $setDataCalIn = $data_in;
+        //$setDataCalOut = $tmp_out[1]."/".$tmp_out[2]."/".$tmp_out[0];
+        $setDataCalOut = $data_out;
+        
+        if("01-".date("m-Y")." al ".date("t-m-Y") == $intervallo_data){
+            $titolo_intervallo = " del mese in corso";
+        }else if(date("d-m-Y", strtotime("-29 days"))." al ".date('d-m-Y') == $intervallo_data) {
+            $titolo_intervallo = " utlimi 30 gioni";
+        }else if(date("d-m-Y", strtotime("-6 days"))." al ".date('d-m-Y') == $intervallo_data) {
+            $titolo_intervallo = " utlimi 7 gioni";
+        }else if(date("d-m-Y", strtotime("-1 days"))." al ".date('d-m-Y', strtotime("-1 days")) == $intervallo_data) {
+            $titolo_intervallo = " ieri";
+        }elseif(date("d-m-Y")." al ".date('d-m-Y') == $intervallo_data) {
+            $titolo_intervallo = " oggi";
+        }else{
+            $titolo_intervallo = " dal  " . $data_in . " al  " . $data_out . "";
+        }
+
+        //$titolo_intervallo = " dal  " . $data_in . " al  " . $data_out . "";
+        //echo '<h1>$intervallo_data = '.$intervallo_data.'</h1>';
+    } else {
+        $richiestaAperta = $dblink->get_row("SELECT data FROM calendario WHERE (etichetta LIKE 'Calendario Esami' OR etichetta LIKE 'Calendario Corsi') ORDER BY data DESC LIMIT 1", true);
+        $titolo_intervallo = " dal ".date("d-m-Y")." al ".GiraDataOra($richiestaAperta['data']);
+        $_SESSION['intervallo_data'] = date("d-m-Y")." al ".GiraDataOra($richiestaAperta['data']);
+        $_GET['intervallo_data'] = date("d-m-Y")." al ".GiraDataOra($richiestaAperta['data']);
+        //$setDataCalOut = date("m")."/".date("d")."/".date("Y");
+        $setDataCalOut = GiraDataOra($richiestaAperta['data']);
+        //$tmp_in = explode("-",$richiestaAperta['data']);
+        //$setDataCalIn = $tmp_in[1]."/".$tmp_in[2]."/".$tmp_in[0];
+        $setDataCalIn = date("d-m-Y");
+    }
+}else{
+    $_SESSION['intervallo_data'] = null;
+    unset($_SESSION['intervallo_data']);
+}
 ?>
 <!DOCTYPE html>
 <!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
@@ -40,6 +88,7 @@ if (isset($_GET['tbl'])) {
         <link href="<?= BASE_URL ?>/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
         <!-- END GLOBAL MANDATORY STYLES -->
         <!-- BEGIN PAGE LEVEL PLUGINS -->
+        <link href="<?= BASE_URL ?>/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.css" rel="stylesheet" type="text/css" />
         <link href="<?= BASE_URL ?>/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
         <link href="<?= BASE_URL ?>/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
         <link href="<?= BASE_URL ?>/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -91,6 +140,31 @@ if (isset($_GET['tbl'])) {
                     <!-- BEGIN PAGE BAR -->
                     <?php include(BASE_ROOT . '/assets/page_bar.php'); ?>
                     <!-- END PAGE BAR -->
+                    <?php if(isset($_GET['tbl']) && $_GET['tbl']=="lista_esami_corsi_commerciali"){ ?>
+                    <div class="clearfix"></div>
+                    <div class="row" style="margin-top: 10px; margin-bottom: -20px;">
+                        <form action="?" class="form-horizontal form-bordered" method="GET" id="formIntervallo" name="formIntervallo">
+                            <input type="hidden" name="tbl" id="whrStato" value="<?=$_GET['tbl']?>">
+                            <input type="hidden" name="idMenu" id="idMenu" value="<?=$_GET['idMenu']?>">
+                        <div class="col-md-6">
+                                <div class="form-body">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3">Intervallo </label>
+                                        <div class="input-group" id="dataRangeHome" name="dataRangeHome">
+                                            <input type="text" class="form-control" id="intervallo_data" name="intervallo_data" value="<?=$_SESSION['intervallo_data']?>" readonly="true">
+                                            <span class="input-group-btn">
+                                                <button class="btn default date-range-toggle" type="button">
+                                                    <i class="fa fa-calendar"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="col-md-6" style="vertical-align: middle;"><center>Risultati <?= $titolo_intervallo; ?></center></div>
+                        </form>
+                    </div>
+                    <?php } ?>
                     <!-- START PAGE TITLE -->
                     <?php
                     get_pagina_titolo($idMenu, $where_lista_menu);
@@ -98,9 +172,9 @@ if (isset($_GET['tbl'])) {
                     <!-- END PAGE TITLE -->
                     <!-- END PAGE HEADER-->
                     <?php Stampa_HTML_index_Commerciali($tabella); ?>
-                    <div class="form-actions left">
+                    <!--<div class="form-actions left">
                         <a href="modifica.php?tbl=<?=$tabella?>&id=0" class="btn btn-circle btn-lg green-jungle"><i class="fa fa-plus"></i> Aggiungi Nuovo</a>
-                    </div>
+                    </div>-->
                 </div>
                 <!-- END CONTENT BODY -->
             </div>
@@ -126,6 +200,7 @@ if (isset($_GET['tbl'])) {
         <script src="<?= BASE_URL ?>/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
         <!-- END CORE PLUGINS -->
         <!-- BEGIN PAGE LEVEL PLUGINS -->
+        <script src="<?= BASE_URL ?>/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/plugins/jquery.pulsate.min.js" type="text/javascript"></script>
@@ -138,6 +213,52 @@ if (isset($_GET['tbl'])) {
         <!-- BEGIN THEME GLOBAL SCRIPTS -->
         <script src="<?= BASE_URL ?>/assets/global/scripts/app.min.js" type="text/javascript"></script>
         <!-- END THEME GLOBAL SCRIPTS -->
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#dataRangeHome').daterangepicker({
+                    opens: (App.isRTL() ? 'left' : 'right'),
+                    startDate: '<?=$setDataCalIn?>',
+                    endDate: '<?=$setDataCalOut?>',
+                    ranges: {
+                        'Oggi': [moment(), moment()],
+                        'Ieri': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Ultimi 7 giorni': [moment().subtract(6, 'days'), moment()],
+                        'Ultimi 30 giorni': [moment().subtract(29, 'days'), moment()],
+                        'Questo mese': [moment().startOf('month'), moment().endOf('month')],
+                        'Scorso Mese': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    },
+                    locale: {
+                        format: 'DD-MM-YYYY',
+                        separator: ' al ',
+                        applyLabel: 'Filtra',
+                        cancelLabel: 'Resetta',
+                        fromLabel: 'Dal',
+                        toLabel: 'Al',
+                        customRangeLabel: 'Date Personalizzate',
+                        daysOfWeek: ['Do', 'Lu', 'Ma', 'Me', 'Gi', 'Ve', 'Sa'],
+                        monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+                        firstDay: 1
+                    },
+                    minDate: '07/01/2017',
+                },
+                    function (startDate, endDate) {
+                        //$('#intervallo_data').val(startDate.format('YYYY-MM-DD') + '|' + endDate.format('YYYY-MM-DD'));
+                        //$('#defaultrange input').val(startDate.format('YYYY-MM-DD') + '|' + endDate.format('YYYY-MM-DD'));
+                        $('#intervallo_data').val(startDate.format('DD-MM-YYYY') + ' al ' + endDate.format('DD-MM-YYYY'));
+                    }
+                );
+                $('#dataRangeHome').on('apply.daterangepicker', function(ev, picker) {
+                    //console.log(picker.startDate.format('YYYY-MM-DD'));
+                    //console.log(picker.endDate.format('YYYY-MM-DD'));
+                    document.formIntervallo.submit();
+                });
+
+                $('#intervallo_data').on('change', function(ev, picker) {
+                    document.formIntervallo.submit();
+                });
+
+            });
+        </script>
         <!-- BEGIN PAGE LEVEL SCRIPTS -->
         <!--<script src="<?= BASE_URL ?>/assets/pages/scripts/table-datatables-responsive.js" type="text/javascript"></script>-->
 <!--<script src="<?= BASE_URL ?>/assets/apps/scripts/todo-2.min.js" type="text/javascript"></script>-->

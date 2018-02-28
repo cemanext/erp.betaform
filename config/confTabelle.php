@@ -4,8 +4,8 @@
 
 
 /** TABELLA lista_esami_corsi_commerciali  **/
-$table_listaEsamiCorsiCommerciali = array(
-                "index" => array("campi" => "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=calendario_esami&id=',id,'&idProdotto=',id_prodotto,'',IF(etichetta LIKE 'Calendario Esami','&esame=1','&esame=0'),'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search', ora, data,
+$table_listaEsamiCorsiCommerciali = array( //CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/corsi/dettaglio.php?tbl=calendario_esami&id=',id,'&idProdotto=',id_prodotto,'',IF(etichetta LIKE 'Calendario Esami','&esame=1','&esame=0'),'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
+                "index" => array("campi" => " ora, data,
                                             IF(etichetta LIKE 'Calendario Esami',CONCAT('<span class=\"btn sbold uppercase btn-outline blue\">',etichetta,'</span>'),CONCAT('<span class=\"btn sbold uppercase btn-outline red-thunderbird\">',etichetta,'</span>')) AS 'Tipo',
                                             CONCAT('<B>',oggetto,'</B>') AS Oggetto, 
                                             IF(id_aula>0, (SELECT nome FROM lista_aule WHERE id = id_aula),'') AS 'Aula',
@@ -823,11 +823,16 @@ $table_listaPassword = array( //CONCAT('<a class=\"btn btn-circle btn-icon-only 
                         "etichetta" => "Numerico 5",
                         "readonly" => false
                     ),
-                    array(  "campo" => "id_moodle_user",
-                        "tipo" => "numerico",
-                        "etichetta" => "ID MOODLE",
-                        "readonly" => true
-                    ))
+                array(  "campo" => "id_moodle_user",
+                    "tipo" => "numerico",
+                    "etichetta" => "ID MOODLE",
+                    "readonly" => true
+                ),
+                array(  "campo" => "firma_email",
+                    "tipo" => "htmlarea",
+                    "etichetta" => "FIRMA E-MAIL",
+                    "readonly" => false
+                ))
             );
 
 /** TABELLA LISTA_PASSWORD UTENTI MOODLE **/

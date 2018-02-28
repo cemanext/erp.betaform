@@ -595,6 +595,26 @@ if(isset($_GET['fn'])){
             header("Location:$referer");
 
         break;
+        
+        case "CaricaTemplate":
+            $idTemplate = $_GET['id'];
+            $idProfessionista = $_GET['idProf'];
+            
+            $row = $dblink->get_row("SELECT * FROM lista_template_email WHERE id ='$idTemplate'",true);
+            
+            $rowComm = $dblink->get_row("SELECT * FROM lista_password WHERE id ='".$_SESSION['id_utente']."'",true);
+            
+            $rowProf = $dblink->get_row("SELECT * FROM lista_professionisti WHERE id ='$idProfessionista'",true);
+            
+            $row['messaggio'] = html_entity_decode($row['messaggio']);
+            $rowComm['firma_email'] = html_entity_decode($rowComm['firma_email']);
+            
+            $row['messaggio'] = str_replace("_XXX_COGNOME_XXX_", $rowProf['cognome'], $row['messaggio']);
+            $row['messaggio'] = str_replace("_XXX_NOME_XXX_", $rowProf['nome'], $row['messaggio']);
+            $row['messaggio'] = str_replace("_XXX_FIRMA_MAIL_XXX_", $rowComm['firma_email'], $row['messaggio']);
+            
+            echo json_encode($row);
+        break;
 
         default:
 

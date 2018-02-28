@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-var BASE_URL_HOST = "http://"+window.location.hostname+"";
+var BASE_URL_HOST = location.protocol+"//"+window.location.hostname+"";
 
 function scriviDentroListaPreventiviDettaglio(){
 
@@ -301,7 +301,7 @@ var ComponentsSelectProvvigione = function() {
 
 $( document ).ready(function() {
     
-    BASE_URL_HOST = "http://"+window.location.hostname+"";
+    BASE_URL_HOST = location.protocol+"//"+window.location.hostname+"";
     
     ComponentsSelectProdotto.init();
     TableDatatablesResponsive.init();

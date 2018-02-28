@@ -32,10 +32,10 @@ function inviaEmailPreventivo($mitt, $dest, $dest_cc, $dest_bcc, $ogg, $mess, $a
     $verifica = preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i", $mitt);
 
     if ($verifica) {
-        //require BASE_ROOT . "classi/phpmailer/class.phpmailer.php";
         $messaggio = new PHPmailer();
         $messaggio->IsHTML(true);
         $messaggio->IsSMTP();
+        $messaggio->CharSet = 'UTF-8';
         # I added SetLanguage like this
         $messaggio->SetLanguage('it', BASE_ROOT . 'classi/phpmailer/language/');
         //  $messaggio->IsSMTP(); // telling the class to use SMTP			//$messaggio->IsSMTP();

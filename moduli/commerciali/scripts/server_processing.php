@@ -27,6 +27,34 @@ if(strpos($campoRicerca," ")!==false){
     }
 }
 
+$where_data_calendario = "";
+$where_data_calendario_inserimento = "";
+
+if($_GET['tbl']=="lista_esami_corsi_commerciali" && $_GET['tbl']!="" && $_GET['whrStato']!="null"){
+    if (!empty($_SESSION['intervallo_data'])) {
+        $intervallo_data = $_SESSION['intervallo_data'];
+        $data_in = GiraDataOra(before(' al ', $intervallo_data));
+        $data_out = GiraDataOra(after(' al ', $intervallo_data));
+
+        if($data_in == $data_out){
+            $where_data_calendario = " AND DATE(data) = '" . $data_in . "'";
+            $where_data_calendario_inserimento = " AND DATE(datainsert) = '" . $data_in . "'";
+            $where_data_calendario_iscritto = " AND DATE(data_iscrizione) = '" . $data_in . "'";
+            $where_data_calendario_fattura = " AND DATE(data_creazione) = '" . $data_in . "'";
+        }else{
+            $where_data_calendario = " AND data BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
+            $where_data_calendario_inserimento = " AND datainsert BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
+            $where_data_calendario_iscritto = " AND data_iscrizione BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
+            $where_data_calendario_fattura = " AND data_creazione BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
+        }
+    } else {
+        $where_data_calendario = " AND YEAR(data)=YEAR(CURDATE()) AND MONTH(data)=MONTH(CURDATE())";
+        $where_data_calendario_inserimento = " AND YEAR(datainsert)=YEAR(CURDATE()) AND MONTH(datainsert)=MONTH(CURDATE())";
+        $where_data_calendario_iscritto = " AND YEAR(data_iscrizione)=YEAR(CURDATE()) AND MONTH(data_iscrizione)=MONTH(CURDATE())";
+        $where_data_calendario_fattura = " AND YEAR(data_creazione)=YEAR(CURDATE()) AND MONTH(data_creazione)=MONTH(CURDATE())";
+    }
+}
+
 switch($funzione){
     case "tabella1":
         $campi_visualizzati = "CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio_tab.php?tbl=calendario&id=',id,'\" title=\"SCHEDA\" alt=\"SCHEDA\"><i class=\"fa fa-book\"></i></a>') AS 'fa-book',
@@ -137,6 +165,7 @@ switch($funzione){
                         }
                     }
                 }
+                $where .= $where_data_calendario;
                 $ordine = $table_listaEsamiCorsiCommerciali['index']['order'];
             break;
             
