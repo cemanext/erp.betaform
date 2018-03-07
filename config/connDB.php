@@ -116,6 +116,9 @@ define('WP_DOMAIN_NAME', 'http://demo.xxxxxxxx.com');
 define('WP_DB_NAME', 'wp_betaform');
 
 /** CONFIGURAZIONE RINNOVI **/
+define('ID_CAMPAGNA_TELEFONATE', '1');
+define('ID_CAMPAGNA_RINNOVI', '166');
+define('ID_TIPO_MARKETING_RINNOVI', '49');
 define('ID_CAMPAGNA_RINNOVI_AUTOMATICI', '754');
 define('ID_TIPO_MARKETING_RINNOVI_AUTOMATICI', '86');
 

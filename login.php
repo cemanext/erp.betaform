@@ -64,11 +64,12 @@ if (isset($_POST['txt1']) and isset($_POST['txt2']) and strlen($_POST['txt1']) >
 
     <head>
         <meta charset="utf-8" />
-        <title>Beta Formazione | Login </title>
+        <title><?=SITE_NAME?> | Login </title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <meta content="" name="description" />
         <meta content="" name="CEMA NEXT" />
+        <meta name="robots" content="noindex, nofollow">
         <!-- BEGIN GLOBAL MANDATORY STYLES -->
         <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
         <link href="<?=BASE_URL?>/assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
@@ -499,7 +500,7 @@ if (isset($_POST['txt1']) and isset($_POST['txt2']) and strlen($_POST['txt1']) >
         </div>
         <!-- END LOGIN -->
         <!-- BEGIN COPYRIGHT -->
-        <div class="copyright">Copyright &copy; 2017 powered by CEMA NEXT <br/> Ultimo aggiornamento <?php echo date("Y-m-d H:i:s"); ?></div>
+        <div class="copyright">Copyright &copy; <?=date("Y");?> powered by <?=AUTHOR?> <br/> Ultimo aggiornamento <?php echo date("Y-m-d H:i:s"); ?></div>
         <!-- END COPYRIGHT -->
         <!--[if lt IE 9]>
 <script src="/assets/global/plugins/respond.min.js"></script>

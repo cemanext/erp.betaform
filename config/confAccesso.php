@@ -40,6 +40,7 @@ if ($_SESSION['livello_utente'] == 'amministratore') {
     $where_lista_corsi_configurazioni = "";
     $where_lista_provvigioni = "";
     $where_lista_consuntivo_vendite = " AND sezionale NOT LIKE 'CN%' AND sezionale NOT LIKE 'FREE' ";
+    $where_lista_obiezioni = "";
 } elseif ($_SESSION['livello_utente'] == 'betaadmin') {
     $where_scrittore = '';
     $where_lista_esercizi = '';
@@ -80,6 +81,7 @@ if ($_SESSION['livello_utente'] == 'amministratore') {
     $where_lista_aule = "";
     $where_lista_corsi_configurazioni = "";
     $where_lista_provvigioni = "";
+    $where_lista_obiezioni = "";
 } elseif ($_SESSION['livello_utente'] == 'backoffice') {
     $where_scrittore = '';
     $where_lista_esercizi = '';
@@ -120,6 +122,7 @@ if ($_SESSION['livello_utente'] == 'amministratore') {
     $where_lista_aule = "";
     $where_lista_corsi_configurazioni = "";
     $where_lista_provvigioni = "";
+    $where_lista_obiezioni = "";
 } elseif ($_SESSION['livello_utente'] == 'backoffice_commerciale') {
     $where_scrittore = '';
     $where_lista_esercizi = '';
@@ -160,6 +163,7 @@ if ($_SESSION['livello_utente'] == 'amministratore') {
     $where_lista_aule = "";
     $where_lista_corsi_configurazioni = "";
     $where_lista_provvigioni = "";
+    $where_lista_obiezioni = "";
 } elseif ($_SESSION['livello_utente'] == 'assistenza') {
     $where_scrittore = " AND md5(scrittore)='" . MD5($_SESSION['cognome_nome_utente']) . "'";
     $where_lista_esercizi = '';
@@ -200,6 +204,7 @@ if ($_SESSION['livello_utente'] == 'amministratore') {
     $where_lista_aule = "";
     $where_lista_corsi_configurazioni = "";
     $where_lista_provvigioni = "";
+    $where_lista_obiezioni = "";
 } elseif ($_SESSION['livello_utente'] == 'commerciale') {
     $where_scrittore = " AND md5(scrittore)='" . MD5($_SESSION['cognome_nome_utente']) . "'";
     $where_lista_esercizi = '';
@@ -240,6 +245,7 @@ if ($_SESSION['livello_utente'] == 'amministratore') {
     $where_lista_aule = "";
     $where_lista_corsi_configurazioni = "";
     $where_lista_provvigioni = "";
+    $where_lista_obiezioni = "";
 } elseif ($_SESSION['livello_utente'] == 'gestore') {
     $where_scrittore = " AND md5(scrittore)='" . MD5($_SESSION['cognome_nome_utente']) . "'";
     $where_lista_esercizi = '';
@@ -327,6 +333,7 @@ if ($_SESSION['livello_utente'] == 'amministratore') {
     $where_lista_aule = "";
     $where_lista_corsi_configurazioni = "";
     $where_lista_provvigioni = "";
+    $where_lista_obiezioni = "";
 }
 
 $where_lista_menu = " AND `lista_menu`.livello='" . $_SESSION['livello_utente'] . "'";

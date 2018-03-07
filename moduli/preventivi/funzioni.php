@@ -389,7 +389,7 @@ $sql_00001_prodotto = "SELECT id_prodotto, nome_prodotto, id_preventivo, id_prof
                CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"" . BASE_URL . "/moduli/fatture/inviaFatt.php?idFatt=',id,'\" data-target=\"#ajax\" data-url=\"inviaFatt.php?idFatt=',id,'\" data-toggle=\"modal\" title=\"INVIA\" alt=\"INVIA\"><i class=\"fa fa-paper-plane\"></i></a>') AS 'Invia',
                DATE(data_creazione) AS 'Creato il',
                DATE(data_scadenza) AS 'Scade il',
-               CONCAT('<b>',`codice`,'/', sezionale ,'</b>') AS codice,
+               CONCAT('<b>',`codice`,'".SEPARATORE_FATTURA."', sezionale ,'</b>') AS codice,
                (SELECT CONCAT('<b>',cognome,' ',nome,'</b><br><small>',(SELECT CONCAT('',ragione_sociale,'') FROM lista_aziende WHERE id=`id_azienda`) ,'</small>') FROM lista_professionisti WHERE id=`id_professionista`) AS 'Contatto',
                IF(id_calendario>0,CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"" . BASE_URL . "/moduli/anagrafiche/dettaglio_tab.php?tbl=calendario&id=',id_calendario,'#tab_azienda\" title=\"SCHEDA\" alt=\"SCHEDA\"><i class=\"fa fa-book\"></i></a>'),IF(id_professionista>0,CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"" . BASE_URL . "/moduli/anagrafiche/dettaglio_tab.php?tbl=lista_professionisti&id=',id_professionista,'\" title=\"SCHEDA\" alt=\"SCHEDA\"><i class=\"fa fa-book\"></i></a>'),'')) AS 'fa-book',
                CONCAT(importo,'<br><small>',imponibile,' +iva</small>') AS 'Importo &euro;',

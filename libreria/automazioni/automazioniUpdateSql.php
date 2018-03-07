@@ -65,7 +65,7 @@ $dblink->query($sql_0006);
 
 //AGGIORNO DATI DI RICERCA IN FATTURE
 $sql_0007 = "UPDATE lista_fatture
-            SET codice_ricerca = CONCAT(codice,'/',sezionale) 
+            SET codice_ricerca = CONCAT(codice,'".SEPARATORE_FATTURA."',sezionale) 
             WHERE codice_ricerca = '' AND tipo='Fattura' AND codice > 0";
 $dblink->query($sql_0007);
 

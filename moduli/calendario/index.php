@@ -20,6 +20,17 @@ if (isset($_GET['tbl'])) {
 }
 
 if(isset($_GET['whrStato']) && $_GET['whrStato']!="0e902aba617fb11d469e1b90f57fd79a" && $_GET['whrStato']!=""){
+    
+    if(isset($_GET['id_campagna']) && count($_GET['id_campagna'])>0){
+        $id_campagna_get = $_GET['id_campagna'];
+        $_SESSION['id_campagna_get'] = $_GET['id_campagna'];
+    }else{
+        $whereCampagnaId = "";
+
+        $id_campagna_get = "";
+        $_SESSION['id_campagna_get'] = "";
+    }
+    
     if (!empty($_GET['intervallo_data'])) {
         $intervallo_data = $_GET['intervallo_data'];
         $_SESSION['intervallo_data'] = $_GET['intervallo_data'];
@@ -65,6 +76,8 @@ if(isset($_GET['whrStato']) && $_GET['whrStato']!="0e902aba617fb11d469e1b90f57fd
 }else{
     $_SESSION['intervallo_data'] = null;
     unset($_SESSION['intervallo_data']);
+    $_SESSION['id_campagna_get'] = null;
+    unset($_SESSION['id_campagna_get']);
 }
 
 ?>
@@ -98,6 +111,7 @@ if(isset($_GET['whrStato']) && $_GET['whrStato']!="0e902aba617fb11d469e1b90f57fd
         <link href="<?= BASE_URL ?>/assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
         <link href="<?= BASE_URL ?>/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
         <link href="<?= BASE_URL ?>/assets/global/plugins/bootstrap-toastr/toastr.min.css" rel="stylesheet" type="text/css">
+        <link href="<?= BASE_URL ?>/assets/global/plugins/bootstrap-multiselect/css/bootstrap-multiselect.css" rel="stylesheet" type="text/css" />
         <!-- END PAGE LEVEL PLUGINS -->
         <!-- BEGIN THEME GLOBAL STYLES -->
         <link href="<?= BASE_URL ?>/assets/global/css/components.min.css" rel="stylesheet" id="style_components" type="text/css" />
@@ -166,7 +180,15 @@ if(isset($_GET['whrStato']) && $_GET['whrStato']!="0e902aba617fb11d469e1b90f57fd
                                     </div>
                                 </div>
                         </div>
-                        <div class="col-md-6" style="vertical-align: middle;"><center>Risultati <?= $titolo_intervallo; ?></center></div>
+                        <?php if($_GET['whrStato']==MD5('In Attesa di Controllo') ){ ?>
+                            <div class="col-md-6">
+                                <?=print_select2("SELECT id AS valore, nome as nome FROM lista_campagne WHERE id IN (SELECT id_campagna FROM calendario WHERE etichetta = 'Nuova Richiesta' AND stato = 'In Attesa di Controllo' GROUP BY id_campagna) ORDER BY nome ASC", "id_campagna", $id_campagna_get, "", false, 'select_campagna-allow-clear', 'data-none-selected="Seleziona Campagna"') ?>
+                                <br>
+                                <center>Risultati <?= $titolo_intervallo; ?></center>
+                            </div>
+                        <?php }else{ ?>
+                            <div class="col-md-6" style="vertical-align: middle;"><center>Risultati <?= $titolo_intervallo; ?></center></div>
+                        <?php } ?>
                         </form>
                     </div>
                     <?php } ?>
@@ -183,10 +205,14 @@ if(isset($_GET['whrStato']) && $_GET['whrStato']!="0e902aba617fb11d469e1b90f57fd
                     
                     <?php Stampa_HTML_index_Calendario(); ?>
                     <?php if($_GET['whrStato']==MD5('In Attesa di Controllo') ){ ?>
-                    <div style="text-align: center; margin-bottom: 15px;"> 
-                        <button id="associaCommerciale" type="button" class="btn btn-icon purple-studio" alt="ASSOCIAZIONE MULTIPLA COMMERCIALE" title="ASSOCIAZIONE MULTIPLA COMMERCIALE"><i class="fa fa-sign-in"></i> Associazione Multipla Commerciale</button>
-                        <button id="associaProdotti" type="button" class="btn btn-icon red-mint" alt="ASSOCIAZIONE MULTIPLA PRODOTTO" title="ASSOCIAZIONE MULTIPLA PRODOTTO"><i class="fa fa-sign-in"></i> Associazione Multipla Prodotto</button>
-                    </div>
+                        <div style="text-align: center; margin-bottom: 15px;"> 
+                            <button id="associaCommerciale" type="button" class="btn btn-icon purple-studio" alt="ASSOCIAZIONE MULTIPLA COMMERCIALE" title="ASSOCIAZIONE MULTIPLA COMMERCIALE"><i class="fa fa-sign-in"></i> Associazione Multipla Commerciale</button>
+                            <button id="associaProdotti" type="button" class="btn btn-icon red-mint" alt="ASSOCIAZIONE MULTIPLA PRODOTTO" title="ASSOCIAZIONE MULTIPLA PRODOTTO"><i class="fa fa-sign-in"></i> Associazione Multipla Prodotto</button>
+                        </div>
+                    <?php }else if(($_GET['whrStato']==MD5('Richiamare') || $_GET['whrStato']==MD5('Mai Contattato')) && ($_SESSION['livello_utente'] == 'amministratore' || $_SESSION['livello_utente'] == 'betaadmin')){ ?>
+                        <div style="text-align: center; margin-bottom: 15px;"> 
+                            <button id="chiudiNegativo" type="button" class="btn btn-icon red-mint" alt="CHIUDI A NEGATIVO" title="CHIUDI A NEGATIVO"><i class="fa fa-times"></i> CHIUDI A NEGATIVO</button>
+                        </div>
                     <?php } ?>
                     <div class="form-actions right">
                         <button onclick="window.location.href = 'nuovo_tab.php'" type="submit" class="btn btn-circle btn-lg green-jungle"><i class="fa fa-plus"></i> Aggiungi Nuova Richiesta</button>
@@ -232,6 +258,7 @@ if(isset($_GET['whrStato']) && $_GET['whrStato']!="0e902aba617fb11d469e1b90f57fd
         <script src="<?= BASE_URL ?>/assets/global/plugins/typeahead/typeahead.bundle.min.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/assets/global/plugins/jquery-validation/js/additional-methods.min.js" type="text/javascript"></script>
+        <script src="<?= BASE_URL ?>/assets/global/plugins/bootstrap-multiselect/js/bootstrap-multiselect.js" type="text/javascript"></script>
 
         <!-- END PAGE LEVEL PLUGINS -->
         <!-- BEGIN THEME GLOBAL SCRIPTS -->
@@ -281,7 +308,7 @@ if(isset($_GET['whrStato']) && $_GET['whrStato']!="0e902aba617fb11d469e1b90f57fd
                     document.formIntervallo.submit();
                 }); 
 
-                $('#id_agente').on('change', function(ev, picker) {
+                $('#id_agente, #id_campagna').on('change', function(ev, picker) {
                     document.formIntervallo.submit();
                 });
 
@@ -419,6 +446,31 @@ if(isset($_GET['whrStato']) && $_GET['whrStato']!="0e902aba617fb11d469e1b90f57fd
                     </div>
                     <!-- dialog buttons -->
                     <div class="modal-footer"><button type="button" id="annullaButtonRichiestaNegativa" class="btn btn-primary red">ANNULLA</button><button type="button" id="okButtonRichiestaNegativa" class="btn btn-primary">CONFERMA</button></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="myModalChiudiNegativo" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- dialog body -->
+                    <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        Indicare la motivazione per la quale si dichiara che la richiesta è negativa!
+                        <form class="form-horizontal form-bordered" enctype="multipart/form-data" id="idFromChiudiNegativo">
+                            <div class="form-body">
+                                <div class="form-group">
+                                    <label></label>
+                                    <div class="col-md-12">
+                                        <?php print_hidden("idCal", "");?>
+                                        <?=print_select2("SELECT id as valore, nome as nome FROM lista_obiezioni WHERE stato='Attivo' ORDER BY nome ASC", "idObiezione", "", "", false, 'tooltips select_obiezione', 'data-container="body" data-placement="top" data-original-title="SELEZIONA OBIEZIONE"') ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- dialog buttons -->
+                    <div class="modal-footer"><button type="button" id="annullaButtonChiudiNegativo" class="btn btn-primary red">ANNULLA</button><button type="button" id="okButtonChiudiNegativo" class="btn btn-primary">CONFERMA</button></div>
                 </div>
             </div>
         </div>

@@ -269,6 +269,70 @@ $(document).ready(function() {
         $("#myModal").remove();
     });*/
     
+    $("#chiudiNegativo").on( "click", function(event) {
+        
+        event.preventDefault();
+        
+        $("#myModalChiudiNegativo").modal({          // wire up the actual modal functionality and show the dialog
+            "backdrop"  : "static",
+            "keyboard"  : true,
+            "show"      : true                     // ensure the modal is shown immediately
+        });
+        
+    }); 
+    
+    $("#myModalChiudiNegativo #okButtonChiudiNegativo").on( "click", function(event) {
+        event.preventDefault();
+        
+        var saveId = "";
+        var numCheck = ($('input:checkbox').length-1);
+        for (i = 0; i < numCheck; i++) { 
+            if ($('#txt_checkbox_'+i+'').is(':checked')) {
+                if(saveId.length > 0){
+                    saveId = saveId+":"+$('#txt_checkbox_'+i+'').val();
+                }else{
+                    saveId = saveId+$('#txt_checkbox_'+i+'').val();
+                }
+            }
+        }
+        
+        if(saveId.length > 0){
+        
+            var valoreObiezione = $("#idFromChiudiNegativo #idObiezione").val();
+            $("#idFromChiudiNegativo #idCal").val(saveId);
+        
+            if(valoreObiezione > 0){
+                var posting = jQuery.post( BASE_URL_HOST+"/moduli/calendario/salva.php?fn=chiudiNegativo" , jQuery( "#idFromChiudiNegativo" ).serializeArray() );
+                posting.done(function(data) {
+                    var tmp = data.split(':');
+                    $("#myModalChiudiNegativo").modal('hide');     // dismiss the dialog
+                    location.href = urlReferer + "&res=1";
+                    //alert( "Data Loaded: " + data );
+                }).fail(function() {
+                    toastr.alert("Impossibile trasferire la richiesta!", "Errore");
+                    $("#myModalChiudiNegativo").modal('hide'); 
+                });
+            }else{
+                alert('Valore obiezione obbligatorio!');    
+            }
+        }else{
+            toastr.warning("Nessuna richiesta selezionata!", "Selezionare richieste");
+            $("#myModalChiudiNegativo #idCal").val('');
+            $("#myModalChiudiNegativo").modal('hide'); 
+        }
+    });
+    
+    $("#myModalChiudiNegativo #annullaButtonChiudiNegativo").on( "click", function(event) {
+        event.preventDefault(); 
+        $("#myModalChiudiNegativo #idCal").val('');
+        $("#myModalChiudiNegativo").modal('hide');     // dismiss the dialog
+    });
+    
+    $('#myModalChiudiNegativo').on('shown.bs.modal', function () {
+        $('#idFromChiudiNegativo #idObiezione').focus();
+    });
+     
+    
     $('#myModalAssociaCommerciale').on('shown.bs.modal', function () {
         $('#idFromCommercialeMultiplo #id_commerciale').focus();
     });
@@ -438,6 +502,8 @@ $(document).ready(function() {
     
     ComponentsSelectCommerciale.init();
     ComponentsSelectProdotto.init();
+    ComponentsSelectCampagna.init();
+    ComponentsMultiselectCampagneHome.init();
     TableDatatablesAjaxCalendario.init();
     FormValCalendario.init();
 });
@@ -760,6 +826,142 @@ var FormValCalendario = function () {
 
         }
 
+    };
+
+}();
+
+var ComponentsSelectCampagna = function() {
+
+    var handleSelectCampagna = function() {
+
+        // Set the "bootstrap" theme as the default theme for all Select2
+        // widgets.
+        //
+        // @see https://github.com/select2/select2/issues/2927
+        $.fn.select2.defaults.set("theme", "bootstrap");
+
+        var placeholder = "Seleziona Campagna";
+
+        $(".select_campagna, .select_campagna-multiple").select2({
+            placeholder: placeholder,
+            width: null
+        });
+
+        $(".select_campagna-allow-clear").select2({
+            allowClear: true,
+            placeholder: placeholder,
+            width: null
+        });
+
+        $("button[data-select2-open]").click(function() {
+            $("#" + $(this).data("select2-open")).select2("open");
+        });
+
+        $(":checkbox").on("click", function() {
+            $(this).parent().nextAll("select").prop("disabled", !this.checked);
+        });
+
+        // copy Bootstrap validation states to Select2 dropdown
+        //
+        // add .has-waring, .has-error, .has-succes to the Select2 dropdown
+        // (was #select2-drop in Select2 v3.x, in Select2 v4 can be selected via
+        // body > .select2-container) if _any_ of the opened Select2's parents
+        // has one of these forementioned classes (YUCK! ;-))
+        $(".select_campagna, .select_campagna-multiple, .select_campagna-allow-clear").on("select2:open", function() {
+            if ($(this).parents("[class*='has-']").length) {
+                var classNames = $(this).parents("[class*='has-']")[0].className.split(/\s+/);
+
+                for (var i = 0; i < classNames.length; ++i) {
+                    if (classNames[i].match("has-")) {
+                        $("body > .select2-container").addClass(classNames[i]);
+                    }
+                }
+            }
+        });
+
+        $(".js-btn-set-scaling-classes").on("click", function() {
+            $("#select2-multiple-input-sm, #select2-single-input-sm").next(".select2-container--bootstrap").addClass("input-sm");
+            $("#select2-multiple-input-lg, #select2-single-input-lg").next(".select2-container--bootstrap").addClass("input-lg");
+            $(this).removeClass("btn-primary btn-outline").prop("disabled", true);
+        });
+    }
+
+    return {
+        //main function to initiate the module
+        init: function() {
+            handleSelectCampagna();
+        }
+    };
+
+}();
+
+var ComponentsMultiselectCampagneHome = function () {
+
+    return {
+        //main function to initiate the module
+        init: function () {
+                $('.mt-multiselect').each(function(){
+                        var btn_class = $(this).attr('class');
+                        var clickable_groups = ($(this).data('clickable-groups')) ? $(this).data('clickable-groups') : false ;
+                        var collapse_groups = ($(this).data('collapse-groups')) ? $(this).data('collapse-groups') : false ;
+                        var drop_right = ($(this).data('drop-right')) ? $(this).data('drop-right') : false ;
+                        var drop_up = ($(this).data('drop-up')) ? $(this).data('drop-up') : false ;
+                        var select_all = ($(this).data('select-all')) ? $(this).data('select-all') : false ;
+                        var width = ($(this).data('width')) ? $(this).data('width') : '' ;
+                        var height = ($(this).data('height')) ? $(this).data('height') : '' ;
+                        var filter = ($(this).data('filter')) ? $(this).data('filter') : false ;
+                        var noneText = ($(this).data('none-selected')) ? $(this).data('none-selected') : 'Nessuna dato selezionato' ;
+
+                        // advanced functions
+                        var onchange_function = function(option, checked, select) {
+                        alert('Changed option ' + $(option).val() + '.');
+                    }
+                    var dropdownshow_function = function(event) {
+                        alert('Dropdown shown.');
+                    }
+                    var dropdownhide_function = function(event) {
+                        document.formIntervallo.submit();
+                    }
+
+                    // init advanced functions
+                    var onchange = ($(this).data('action-onchange') == true) ? onchange_function : '';
+                    var dropdownshow = ($(this).data('action-dropdownshow') == true) ? dropdownshow_function : '';
+                    var dropdownhide = ($(this).data('action-dropdownhide') == true) ? dropdownhide_function : '';
+
+                    // template functions
+                    // init variables
+                    var li_template;
+                    if ($(this).attr('multiple')){
+                        li_template = '<li class="mt-checkbox-list"><a href="javascript:void(0);"><label class="mt-checkbox"> <span></span></label></a></li>';
+                        } else {
+                                li_template = '<li><a href="javascript:void(0);"><label></label></a></li>';
+                        }
+
+                    // init multiselect
+                        $(this).multiselect({
+                                enableClickableOptGroups: clickable_groups,
+                                enableCollapsibleOptGroups: collapse_groups,
+                                disableIfEmpty: true,
+                                enableCaseInsensitiveFiltering: true,
+                                enableFullValueFiltering: false,
+                                enableFiltering: filter,
+                                includeSelectAllOption: select_all,
+                                dropRight: drop_right,
+                                buttonWidth: width,
+                                maxHeight: height,
+                                onChange: onchange,
+                                onDropdownShow: dropdownshow,
+                                onDropdownHide: dropdownhide,
+                                buttonClass: btn_class,
+                                nonSelectedText: noneText,
+                                //optionClass: function(element) { return "mt-checkbox"; },
+                                //optionLabel: function(element) { console.log(element); return $(element).html() + '<span></span>'; },
+                                /*templates: {
+                                li: li_template,
+                            }*/
+                        });   
+                });
+        }
     };
 
 }();

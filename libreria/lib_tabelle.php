@@ -35,7 +35,7 @@ function stampa_table_datatables_responsive($query, $titolo = '', $stile = '', $
     
     if($showTotal){
         
-        echo "<tfoot>
+        echo "<tfoot style=\"display: table-header-group;\">
             <tr>";
             $n = 0;
             foreach ($fields as $field) {

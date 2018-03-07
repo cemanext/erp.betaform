@@ -214,14 +214,14 @@ if(empty($row_00001)){
                                                 <div class="col-md-6">
                                                     <div class="form-group " style="padding-right:5px;">
                                                         <label class="control-label font-dark bold">Prodotto / Tipo Marketing</label>
-                                                        <?php print_select2("SELECT id as valore, nome FROM lista_campagne WHERE stato='Attiva' OR stato='In Corso' ORDER BY nome", "calendario_txt_id_campagna", "1", "", true); ?>
+                                                        <?php print_select2("SELECT id as valore, nome FROM lista_campagne WHERE stato='Attiva' OR stato='In Corso' ORDER BY nome", "calendario_txt_id_campagna", ID_CAMPAGNA_TELEFONATE, "", true); ?>
                                                         <?php //print_input("calendario_txt_tipo_marketing", $row_00003['tipo_marketing'],"Canale Marketing",true); ?>
                                                     </div>
                                                 </div>
                                                 <!--<div class="col-md-3">
                                                     <div class="form-group " style="padding-right:5px;">
                                                         <label class="control-label font-dark bold">Campagna</label>
-                                                        <?php print_select2("SELECT id as valore, nome FROM lista_campagne WHERE stato='Attiva' OR stato='In Corso' ORDER BY nome", "calendario_txt_id_campagna", "1", "", true); ?>
+                                                        <?php print_select2("SELECT id as valore, nome FROM lista_campagne WHERE stato='Attiva' OR stato='In Corso' ORDER BY nome", "calendario_txt_id_campagna", ID_CAMPAGNA_TELEFONATE, "", true); ?>
                                                         <?php //print_input("calendario_txt_tipo_marketing", $row_00003['tipo_marketing'],"Campagna",true); ?>
                                                     </div>
                                                 </div>-->

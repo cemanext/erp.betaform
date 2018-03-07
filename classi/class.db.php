@@ -624,7 +624,7 @@ class DB
         
         $sql .= $fields .' VALUES '. $values;
         $query = $this->link->query( $sql );
-        
+        $this->last_query = $sql;
         if( $this->link->error )
         {
             $this->log_db_errors( $this->link->error, $sql );
@@ -902,7 +902,7 @@ class DB
         }
         
         $this->insert($table, $insert);
-        $this->last_query = $sql;
+        
         if( $this->link->error )
         {
             $this->log_db_errors( $this->link->error, $sql );
@@ -913,7 +913,6 @@ class DB
             return true;
         }
     }
-    
     
     /**
      * Delete data from table

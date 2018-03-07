@@ -186,7 +186,7 @@ if (isset($_POST['intervallo_data'])) {
                                                                 <?php
                                                                 $sql_001 = "SELECT
                                                                 CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"" . BASE_URL . "/moduli/fatture/dettaglio.php?tbl=lista_fatture&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'dettaglio',
-                                                                CONCAT('',codice,'/',sezionale,'') AS 'codice', 
+                                                                CONCAT('',codice,'".SEPARATORE_FATTURA."',sezionale,'') AS 'codice', 
                                                                  (SELECT CONCAT('<B>',cognome,' ',nome,'</B>') FROM lista_professionisti WHERE id = id_professionista) as cliente,
                                                                 imponibile, 
                                                                 (SELECT CONCAT('<span class=\"badge bold bg-',colore_sfondo,' bg-font-',colore_sfondo,'\"> ',nome,' </span>') FROM `lista_preventivi_stati` WHERE `lista_preventivi_stati`.nome LIKE lista_ordini.stato) AS stato

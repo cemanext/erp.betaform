@@ -653,7 +653,7 @@ function Stampa_HTML_Dettaglio_Fatture($tabella,$id){
                    CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"printFatturaPDF.php?idFatt=',`id`,'&idA=',id_area,'\" TARGET=\"_BLANK\" title=\"STAMPA\" alt=\"STAMPA\"><i class=\"fa fa-file-pdf-o\"></i></a>') AS 'PDF',
                    CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"inviaFatt.php?idFatt=',id,'\" data-target=\"#ajax\" data-url=\"inviaFatt.php?idFatt=',id,'\" data-toggle=\"modal\" title=\"INVIA\" alt=\"INVIA\"><i class=\"fa fa-paper-plane\"></i></a>') AS 'Invia',
                    DATE(data_creazione) AS 'Creato il',
-                   CONCAT('<b>',`codice`,'/', sezionale ,'</b>') AS codice,
+                   CONCAT('<b>',`codice`,'".SEPARATORE_FATTURA."', sezionale ,'</b>') AS codice,
                    CONCAT(importo,'<br><small>',imponibile,' +iva</small>') AS 'Importo &euro;',
                    stato
                    FROM lista_fatture WHERE id=".$id_fattura_nota_credito_trovata;

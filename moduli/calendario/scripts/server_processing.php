@@ -22,6 +22,11 @@ if(strpos($campoRicerca," ")!==false){
 $where_data_calendario = "";
 
 if($_GET['whrStato']!="0e902aba617fb11d469e1b90f57fd79a" && $_GET['whrStato']!="" && $_GET['whrStato']!="null"){
+    
+    if(!empty($_SESSION['id_campagna_get'])){
+        $whereCampagnaId = " AND id_campagna='".$_SESSION['id_campagna_get']."'";
+    }
+    
     if (!empty($_SESSION['intervallo_data'])) {
         $intervallo_data = $_SESSION['intervallo_data'];
         $data_in = GiraDataOra(before(' al ', $intervallo_data));
@@ -67,7 +72,7 @@ switch($whrStato){
         CONCAT('<span class=\"label label-sm label-warning\">',stato,'</div>') AS 'Stato'";
         */
         //$where = $table_calendario['index']['where'];
-        $where = " MD5(stato)='".$_GET['whrStato']."' $where_calendario $where_data_calendario";
+        $where = " MD5(stato)='".$_GET['whrStato']."' $where_calendario $where_data_calendario $whereCampagnaId";
         if(!empty($arrayCampoRicerca)){
             foreach ($arrayCampoRicerca as $campoRicerca) {
                 if($campoRicerca=="iscritto") $campoRicerca = "venduto";
@@ -137,7 +142,7 @@ switch($whrStato){
                             (SELECT nome FROM lista_tipo_marketing WHERE id = id_tipo_marketing) AS Marketing";
         }else{
             //oggetto AS 'Oggetto', mittente AS 'Mittente', dataagg AS 'Data', campo_5 AS 'E-Mail', campo_4 AS 'Telefono', stato,
-            $campi_visualizzati = "CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio_tab.php?tbl=calendario&id=',id,'\" title=\"SCHEDA\" alt=\"SCHEDA\"><i class=\"fa fa-book\"></i></a>') AS 'fa-book',
+            $campi_visualizzati = "id AS 'selezione', CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio_tab.php?tbl=calendario&id=',id,'\" title=\"SCHEDA\" alt=\"SCHEDA\"><i class=\"fa fa-book\"></i></a>') AS 'fa-book',
                             (SELECT CONCAT(lista_password.nome,' ',lista_password.cognome) FROM lista_password WHERE lista_password.id=calendario.id_agente) AS 'Commerciale', 
                             stato, IF(id_azienda>0,CONCAT('<i class=\"fa fa-user btn btn-icon-only green-jungle btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>'),CONCAT('<i class=\"fa fa-user-times btn btn-icon-only red-flamingo btn-outline\" style=\"display: inline; padding: 3px; line-height: 0.5;\"></i>')) AS 'fa-user',
                             mittente AS 'Mittente',

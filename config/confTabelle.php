@@ -2,6 +2,54 @@
 //include_once(BASE_ROOT . 'config/confAccesso.php');
 //include_once(BASE_ROOT . 'config/confDebug.php');
 
+/** TABELLA lista_obiezioni  **/
+$table_listaObiezioni = array( //CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_obiezioni&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
+                               //CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"cancella.php?tbl=lista_richieste_stati&id=',id,'\" title=\"ELIMINA\" alt=\"ELIMINA\"><i class=\"fa fa-trash\"></i></a>') AS 'fa-trash'
+                "index" => array("campi" => "
+                                CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"modifica.php?tbl=lista_obiezioni&id=',id,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>') AS 'fa-edit',
+                                CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"duplica.php?tbl=lista_obiezioni&id=',id,'\" title=\"DUPLICA\" alt=\"DUPLICA\"><i class=\"fa fa-copy\"></i></a>') AS 'fa-copy',
+                                nome as 'Nome', descrizione as 'Descrizione', stato as 'Stato'",
+                                "where" => "1 ".$where_lista_obiezioni,
+                                "order" => "ORDER BY id DESC"),
+                "modifica" => array(
+                array(
+                "campo" => "id",
+                "tipo" => "hidden",
+                "etichetta" => "Id",
+                "readonly" => true
+                ),
+                array(
+                "campo" => "dataagg",
+                "tipo" => "hidden",
+                "etichetta" => "Dataagg",
+                "readonly" => true
+                ),
+                array(
+                "campo" => "scrittore",
+                "tipo" => "hidden",
+                "etichetta" => "Scrittore",
+                "readonly" => true
+                ),
+                array(
+                    "campo" => "stato",
+                    "tipo" => "select_static",
+                    "etichetta" => "Stato",
+                    "readonly" => false,
+                    "sql" => array("Attivo"=>"Attivo", "Non Attivo"=>"Non Attivo")
+                ),
+                array(
+                "campo" => "nome",
+                "tipo" => "input",
+                "etichetta" => "Nome",
+                "readonly" => false
+                ),
+                array(
+                "campo" => "descrizione",
+                "tipo" => "input",
+                "etichetta" => "Descrizione",
+                "readonly" => false
+                ))
+        );
 
 /** TABELLA lista_esami_corsi_commerciali  **/
 $table_listaEsamiCorsiCommerciali = array( //CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/corsi/dettaglio.php?tbl=calendario_esami&id=',id,'&idProdotto=',id_prodotto,'',IF(etichetta LIKE 'Calendario Esami','&esame=1','&esame=0'),'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
@@ -2607,11 +2655,11 @@ $table_listaProdotti = array(
                         "etichetta" => "Prezzo al Pubblico",
                         "readonly" => false
                     ),
-                    /*array(  "campo" => "prezzo_min",
+                    array(  "campo" => "prezzo_min",
                         "tipo" => "numerico",
                         "etichetta" => "Prezzo Scontato",
                         "readonly" => false
-                    ),*/
+                    ),
                     array(
                         "campo" => "stato",
                         "tipo" => "select_static",
@@ -2958,7 +3006,7 @@ $table_listaIscrizioniPartecipanti = array(
                     "tipo" => "select2",
                     "etichetta" => "Fattura Collegata",
                     "readonly" => false,
-                    "sql" => "SELECT id as valore, CONCAT(codice,'/',sezionale,' del ',DATE_FORMAT(DATE(data_creazione), '%d-%m-%Y'),' a: ',lista_fatture.cognome_nome_professionista) AS nome 
+                    "sql" => "SELECT id as valore, CONCAT(codice,'".SEPARATORE_FATTURA."',sezionale,' del ',DATE_FORMAT(DATE(data_creazione), '%d-%m-%Y'),' a: ',lista_fatture.cognome_nome_professionista) AS nome 
                                 FROM lista_fatture 
                                 WHERE 
                                 (
@@ -4310,7 +4358,7 @@ $table_listaFattureInvioMultiplo = array(
                 "index" => array("campi" => "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_fatture&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
                                             CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"printFatturaPDF.php?idFatt=',id,'&idA=',id_area,'\" title=\"STAMPA\" alt=\"STAMPA\" target=\"_blank\"><i class=\"fa fa-file-pdf-o\"></i></a>') AS 'fa-file-pdf-o',
                                             DATE_FORMAT(DATE(data_creazione), '%d-%m-%Y') AS 'Creata', DATE_FORMAT(DATE(data_scadenza), '%d-%m-%Y') AS 'Scadenza',
-		CONCAT('<b>',`codice`,'/', sezionale ,'</b>') AS codice,
+		CONCAT('<b>',`codice`,'".SEPARATORE_FATTURA."', sezionale ,'</b>') AS codice,
 		CONCAT('<center>',(SELECT CONCAT('<b>',ragione_sociale,'</b>') FROM lista_aziende WHERE id=`id_azienda`),'<br><small>',
 		(SELECT CONCAT('',cognome,' ',nome,'') FROM lista_professionisti WHERE id=`id_professionista`)
 		,'</small></center>') AS 'Azienda / Professionista',

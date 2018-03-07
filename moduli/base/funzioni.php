@@ -4,9 +4,19 @@
 function Stampa_HTML_index_Base($tabella){
     global $dblink, $table_listaPassword, $table_listaRichiesteStati, $table_listaProdotti, 
            $table_listaProdottiCategorie, $table_listaProdottiTipologie, $table_listaProdottiGruppi,
-           $table_listaPasswordUtenti, $where_lista_prodotti;
+           $table_listaPasswordUtenti, $where_lista_prodotti, $table_listaObiezioni;
 
     switch($tabella){
+    
+        case 'lista_obiezioni':
+            $tabella = "lista_obiezioni";
+            $campi_visualizzati = $table_listaObiezioni['index']['campi'];
+            $where = $table_listaObiezioni['index']['where'];
+            $ordine = $table_listaObiezioni['index']['order'];
+            $titolo = 'Elenco Obiezioni Richieste Negative';
+            $sql_0001 = "SELECT ".$campi_visualizzati." FROM ".$tabella." WHERE $where $ordine";
+            stampa_table_datatables_responsive($sql_0001, $titolo);
+        break;
     
         case 'lista_iscritti':
             $tabella = "lista_iscrizioni";

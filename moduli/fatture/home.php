@@ -204,7 +204,8 @@ if (isset($_POST['intervallo_data'])) {
                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                             <?php
                             $sql_0014 = "SELECT 
-                            CONCAT('<a class=\"btn btn-circle btn-icon-only blue-steel btn-outline\" href=\"".BASE_URL."/moduli/fatture/printFattureTeamSystem.php?anno=',YEAR(data_creazione),'&mese=',MONTH(data_creazione),'\" target=\"_blank\" title=\"TXT COMMERCIALISTA\" alt=\"TXT COMMERCIALISTA\"><i class=\"fa fa-file-code-o\"></i></a>') as 'fa-file-code-o',
+                            CONCAT('<a class=\"btn btn-circle btn-icon-only blue-steel btn-outline\" href=\"".BASE_URL."/moduli/fatture/printFattureTeamSystem.php?anno=',YEAR(data_creazione),'&mese=',MONTH(data_creazione),'&primanota=0\" target=\"_blank\" title=\"TXT COMMERCIALISTA\" alt=\"TXT COMMERCIALISTA\"><i class=\"fa fa-file-code-o\"></i></a>') as 'fa-file-code-o',
+                            CONCAT('<a class=\"btn btn-circle btn-icon-only green-meadow btn-outline\" href=\"".BASE_URL."/moduli/fatture/printFattureTeamSystem.php?anno=',YEAR(data_creazione),'&mese=',MONTH(data_creazione),'&primanota=1\" target=\"_blank\" title=\"TXT COMMERCIALISTA PRIMA NOTA\" alt=\"TXT COMMERCIALISTA PRIMA NOTA\"><i class=\"fa fa-file-text-o\"></i></a>') as 'fa-file-text-o',
                             YEAR(data_creazione) AS Anno, MONTH(data_creazione) AS Mese, SUM(imponibile) AS Imponibile, COUNT(stato) AS CONTEGGIO, tipo 
                             FROM lista_fatture WHERE sezionale NOT LIKE '%CN%' AND (stato LIKE 'In Attesa' OR stato LIKE 'Pagata%' OR stato LIKE 'Nota di%')
                             GROUP BY YEAR(data_creazione), MONTH(data_creazione)

@@ -520,6 +520,99 @@ if(isset($_GET['fn'])){
             }
         break;
         
+        case "chiudiNegativo":
+            $ok = true;
+            $ArrayIdCalendario = strlen($_POST['idCal'])>0 ? explode(":",$_POST['idCal']) : 0;
+            $id_obiezione = strlen($_POST['idObiezione'])>0 ? $_POST['idObiezione'] : 0;
+            
+            if(is_array($ArrayIdCalendario) && $id_obiezione>0){
+            
+                foreach($ArrayIdCalendario as $id_calendario) {
+                    
+                    
+                    $nomeObiezione = $dblink->get_field("SELECT nome FROM lista_obiezioni WHERE id = '$id_obiezione'");
+            
+                    $rowCalendario = $dblink->get_row("SELECT id_professionista, id_azienda, id_agente, id_campagna, id_preventivo FROM calendario WHERE id='$id_calendario'", true);
+
+                    $id_preventivo = $rowCalendario['id_preventivo'];
+                    
+                    if($id_preventivo > 0){
+                    
+                        list($idSezionale, $sezionale) = $dblink->get_row("SELECT id, nome FROM lista_fatture_sezionali WHERE id IN (SELECT id_sezionale FROM lista_campagne WHERE id = '".$rowCalendario['id_campagna']."' )");
+
+                        if($idSezionale == 8){
+                            //do nothing
+                        }else{
+                            $idSezionale = 3;
+                            $sezionale = "00";
+                        }
+
+                        $updateCalendario = array(
+                            "dataagg" => date("Y-m-d H:i:s"),
+                            "scrittore" => $dblink->filter($_SESSION['cognome_nome_utente']),
+                            "stato" => "Negativo",
+                            "id_obiezione" => "$id_obiezione",
+                            "nome_obiezione" => $dblink->filter($nomeObiezione)
+                        );
+
+                        $ok = $ok && $dblink->update("calendario", $updateCalendario, array("id"=>$id_calendario));
+
+                        $updatePreventivo = array(
+                            "dataagg" => date("Y-m-d H:i:s"),
+                            "data_iscrizione" => date("Y-m-d"),
+                            "data_firma" => date("Y-m-d"),
+                            "scrittore" => $dblink->filter($_SESSION['cognome_nome_utente']),
+                            "stato" => "Negativo",
+                            "id_azienda" => $rowCalendario['id_azienda'],
+                            "id_professionista" => $rowCalendario['id_professionista'],
+                            "id_calendario" => $id_calendario,
+                            "id_agente" => $rowCalendario['id_agente'],
+                            "cognome_nome_agente" => getNomeAgente($rowCalendario['id_agente']),
+                            "id_sezionale" => $idSezionale,
+                            "sezionale" => $sezionale,
+                            "id_obiezione" => "$id_obiezione",
+                            "nome_obiezione" => $dblink->filter($nomeObiezione)
+                        );
+
+                        $ok = $ok && $dblink->update("lista_preventivi", $updatePreventivo, array("id"=>$id_preventivo));
+
+                        $updatePreventivoDettaglio = array(
+                            "dataagg" => date("Y-m-d H:i:s"),
+                            "scrittore" => $dblink->filter($_SESSION['cognome_nome_utente']),
+                            "stato" => "Negativo",
+                            "id_azienda" => $rowCalendario['id_azienda'],
+                            "id_professionista" => $rowCalendario['id_professionista'],
+                            "id_calendario" => $id_calendario,
+                            "id_sezionale" => $idSezionale,
+                            "sezionale" => $sezionale
+                        );
+
+                        $ok = $ok && $dblink->update("lista_preventivi_dettaglio", $updatePreventivoDettaglio, array("id_preventivo"=>$id_preventivo));
+
+                        $sql_000001 = "INSERT INTO calendario (`id`, `dataagg`, `scrittore`, `datainsert`, `orainsert`, id_agente, id_campagna, id_contatto, id_professionista, id_azienda, id_preventivo, id_commessa, `data`, `ora`, `etichetta`, `oggetto`, `messaggio`, `mittente`, `destinatario`, `priorita`, `stato`, `id_obiezione`, `nome_obiezione`) 
+                        SELECT '', NOW(), '".$dblink->filter($_SESSION['cognome_nome_utente'])."', NOW(), NOW(), id_agente, id_campagna, id_contatto, id_professionista, id_azienda, '".$id_preventivo."', '', CURDATE(), TIME(NOW()), 'Ordini', CONCAT('Ordine n ', id ,''), CONCAT('Ordine n ', id ,': Negativo il ',NOW(),''), '".$dblink->filter($_SESSION['cognome_nome_utente'])."', '', 'Normale', 'Fatto', id_obiezione, nome_obiezione FROM lista_preventivi WHERE id='".$id_preventivo."'";
+                        $ok = $ok && $dblink->query($sql_000001);
+
+                        if($ok){
+                            $ok = 1;
+                            $dblink->commit();
+                        }else{
+                            $ok = 0;
+                            $dblink->rollback();
+                        }
+                    }
+                    
+                }
+                if($ok){
+                    echo "OK:OK";
+                }else{
+                    echo "KO:KO";
+                }
+            }else{
+                echo "KO2:KO2";
+            }
+        break;
+    
         default:
             echo "data: {\"status\": ERRORE";
             echo "}";

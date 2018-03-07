@@ -456,7 +456,7 @@ switch ($_GET['fn']) {
                                 echo "<br />";
                             }*/
                         }else{
-                            $insertConf = array(
+                            /*$insertConf = array(
                                 "dataagg" => date("Y-m-d H:i:s"),
                                 "scrittore" => $dblink->filter("autoImport"),
                                 "id_corso" => $idCorso,
@@ -471,7 +471,7 @@ switch ($_GET['fn']) {
                             if(DISPLAY_DEBUG){
                                 echo $dblink->get_query();
                                 echo "<br />";
-                            }
+                            }*/
                         }
                     }
                 }
