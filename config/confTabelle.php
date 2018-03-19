@@ -4140,6 +4140,7 @@ $table_listaCosti = array(
                                             IF(entrate>0,CONCAT('<FONT COLOR=\"GREEN\">',`entrate`,'</FONT>'),'') AS 'entrate',
                                             IF(uscite>0,CONCAT('<FONT COLOR=\"RED\">',`uscite`,'</FONT>'),'') AS 'uscite',
                                             IF(uscite>0,CONCAT('<h6 class=\"font-red-pink\">',0-(entrate-uscite),' &euro;</h4>'),'') AS 'Differenza',
+                                            IF(id_fattura>0,(SELECT codice_ricerca FROM lista_fatture WHERE lista_fatture.id = id_fattura),'') AS 'Cod. Fatt.',
                                             nome_banca AS 'Banca', stato",
                                             //IF(`stato` = 'Chiuso','<a href=\"#\" title=\"CHIUSO\" alt=\"CHIUSO\" class=\"smallButton\" style=\"margin: 5px;\"><img src=\"images/pallinoverdek.png\"></a>',IF(`stato` = 'In Attesa',CONCAT('<a href=\"#\" title=\"IN ATTESA\" alt=\"IN ATTESA\" class=\"smallButton\" style=\"margin: 5px;\"><img src=\"images/pallinogiallok.png\"></a>'),IF(`stato` = 'Negativo','<a href=\"#\" title=\"NEGATIVO\" alt=\"NEGATIVO\" class=\"smallButton\" style=\"margin: 5px;\"><img src=\"images/pallinorossok.png\"></a>',stato))) AS stato_prev",
                                 "where" => "1 ".$where_lista_costi,
