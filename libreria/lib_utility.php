@@ -667,4 +667,66 @@ function controlloCodiceFiscale($cf){
 
     return true;
 }
+
+function verificaTimingModuliCorso($id_corso_moodle, $idUtenteMoodle, $retStato = true){
+    global $dblink;
+    
+    $sql_0002 = "SELECT
+                `lista_corsi_dettaglio`. `ordine`,
+                  CONCAT('<h3>', `lista_corsi_dettaglio`. `nome`,'</h3>') AS 'Modulo',
+                    `lista_corsi_dettaglio`. `modname` AS 'Tipo',
+                    IF(completionstate>=1,'Si','No') AS 'Completato',
+                 `mdl_course_modules_completion`.timemodified AS 'Data_Completamento',
+                 `lista_corsi_dettaglio`. `durata`,
+                 id_modulo, `lista_corsi_dettaglio`.instance
+                 FROM ".MOODLE_DB_NAME." .`mdl_course_modules_completion`
+                 INNER JOIN ".MOODLE_DB_NAME." .`mdl_course_modules` ON ".MOODLE_DB_NAME." .`mdl_course_modules_completion`. `coursemoduleid` = `mdl_course_modules` .id
+                 INNER JOIN ".MOODLE_DB_NAME." .`mdl_scorm` ON ".MOODLE_DB_NAME." .`mdl_scorm`.`id`=`mdl_course_modules`.`instance`
+                 INNER JOIN `".DB_NAME."`.`lista_corsi_dettaglio` ON `".DB_NAME."`.`lista_corsi_dettaglio`.id_modulo = `mdl_course_modules` .id
+                 AND `mdl_course_modules`.`course`='".$id_corso_moodle."'
+                 AND `mdl_course_modules_completion`.`userid`='".$idUtenteMoodle."'
+                 AND completionstate>=1
+                 ORDER BY `".DB_NAME."`.`lista_corsi_dettaglio`.`ordine`";
+    
+    $risultati = $dblink->get_results($sql_0002);
+    
+    $salvaUltimaEsecuzione = 0;
+    $stato = "Si";
+    $arrayOrdine = array();
+    
+    foreach ($risultati as $row) {
+        if($row['Completato'] == 'No'){
+            if($retStato){
+                return $stato = "Non Completato";
+            }else{
+                array_push($arrayOrdine, $row['ordine']);
+            }
+        }
+        
+        if($salvaUltimaEsecuzione == 0){
+            $salvaUltimaEsecuzione = $row['Data_Completamento'];
+            continue;
+        }
+        
+        $durata10percento = round($row['durata']*0.9);
+        
+        $dataDaVerificare = ($row['Data_Completamento'] - ($durata10percento*60));
+        
+        if($dataDaVerificare < $salvaUltimaEsecuzione){
+            if($retStato){
+                return $stato = "Da Verificare";
+            }else{
+                array_push($arrayOrdine, $row['ordine']);
+            }
+        }else{
+            $salvaUltimaEsecuzione = $row['Data_Completamento'];
+        }
+        
+    }
+    if($retStato){
+        return $stato;
+    }else{
+        return $arrayOrdine;
+    }
+}
 ?>

@@ -73,7 +73,7 @@ if (isset($_GET['idPrev'])) {
             <div class="col-md-6">
                 <div class="input-group">
                 <label>Seleziona Template E-Mail</label>
-                <?php print_select2("SELECT id as valore, oggetto as nome FROM lista_template_email WHERE nome LIKE 'richieste_%' ORDER BY oggetto ASC", "template_mail", "", "ricaricaTemplateMail", true); ?>
+                <?php print_select2("SELECT id as valore, IF(LENGTH(nome_alias)>0, nome_alias , nome) AS nome FROM lista_template_email WHERE nome LIKE 'richieste_%' ORDER BY oggetto ASC", "template_mail", "", "ricaricaTemplateMail", true); ?>
                 </div>
             </div>
         </div>

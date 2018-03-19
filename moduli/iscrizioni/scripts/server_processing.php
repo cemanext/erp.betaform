@@ -19,7 +19,7 @@ if(strpos($campoRicerca," ")!==false){
     }
 }
 
-if(isset($tabella) && $tabella=="lista_iscrizioni_partecipanti_completati" && $tabella!="null"){
+if(isset($tabella) && ($tabella=="lista_iscrizioni_partecipanti_completati" || $tabella=="verifica_corsi") && $tabella!="null"){
     if (!empty($_SESSION['intervallo_data_iscrizioni'])) {
         $intervallo_data = $_SESSION['intervallo_data_iscrizioni'];
         $data_in = before(' al ', $intervallo_data);
@@ -28,7 +28,7 @@ if(isset($tabella) && $tabella=="lista_iscrizioni_partecipanti_completati" && $t
         if($data_in == $data_out){
             $where_data_iscrizioni = " AND DATE(data_completamento) = '" . GiraDataOra($data_in) . "'";
         }else{
-            $where_data_iscrizioni = " AND data_completamento BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+            $where_data_iscrizioni = " AND DATE(data_completamento) BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
         }
     } else {
         $where_data_iscrizioni = " AND YEAR(data_completamento)=YEAR(CURDATE()) AND MONTH(data_completamento)=MONTH(CURDATE())";
@@ -174,6 +174,23 @@ switch($tabella){
         $tabella = "lista_iscrizioni";
         $campi_visualizzati = $table_listaIscrizioniPartecipantiCompletati['index']['campi'];
         $where = $table_listaIscrizioniPartecipantiCompletati['index']['where'].$where_data_iscrizioni;
+        if(!empty($arrayCampoRicerca)){
+            foreach ($arrayCampoRicerca as $campoRicerca) {
+                $where.= " AND (nome_corso LIKE '%".$campoRicerca."%' OR nome_classe LIKE '%".$campoRicerca."%'";
+                $where.= " OR data_inizio_iscrizione LIKE '%".$campoRicerca."%' OR data_fine_iscrizione LIKE '%".$campoRicerca."%'";
+                $where.= " OR stato_completamento LIKE '%".$campoRicerca."%' OR avanzamento_completamento LIKE '%".$campoRicerca."%'";
+                $where.= " OR cognome_nome_professionista LIKE '%".$campoRicerca."%')";
+            }
+        }
+        $groupby = "";
+        $ordine = $table_listaIscrizioniPartecipantiCompletati['index']['order'];
+    break;
+    
+    case 'verifica_corsi':
+        $tabella = "lista_iscrizioni";
+        $campi_visualizzati = "CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/iscrizioni/dettaglio.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',";
+        $campi_visualizzati.= $table_listaIscrizioniPartecipantiCompletati['index']['campi'];
+        $where = $table_listaIscrizioniPartecipantiCompletati['index']['where']." AND (stato_verifica LIKE 'Da Verificare' OR stato_verifica LIKE 'Non Completato') ".$where_data_iscrizioni;
         if(!empty($arrayCampoRicerca)){
             foreach ($arrayCampoRicerca as $campoRicerca) {
                 $where.= " AND (nome_corso LIKE '%".$campoRicerca."%' OR nome_classe LIKE '%".$campoRicerca."%'";

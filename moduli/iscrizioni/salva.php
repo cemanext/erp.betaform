@@ -38,6 +38,18 @@ if(isset($_GET['fn'])){
         break;
         
         
+        case 'settaVerificato':
+            $idIscrizione = $_GET['id'];
+            
+            $ok = $dblink->update("lista_iscrizioni", array("stato_verifica" => "Si"), array("id" => $idIscrizione));
+            
+            if($ok){
+                header("Location:".$referer."&ret=1");
+            }else{
+                header("Location:".$referer."&ret=0");
+            }
+        break;
+        
         case 'abilitaUtente':
             $idUtenteMoodle = $_GET['idUtenteMoodle'];
             $return = $moodle->abilitaUtenteMoodle($idUtenteMoodle);

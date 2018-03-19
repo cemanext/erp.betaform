@@ -197,6 +197,8 @@ function Stampa_HTML_Dettaglio_Anagrafica($tabella, $id) {
             //echo '--> '.$idUtente_per_iframe;
             echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="'.BASE_URL.'/libreria/automazioni/autoRecuperaCorsiUtentiMoodle_Multiplo.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
             echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="'.BASE_URL.'/libreria/automazioni/autoCorsiIniziati_Multiplo.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
+            echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="'.BASE_URL.'/libreria/automazioni/autoCorsiCompletati_Multiplo.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
+            echo '<iframe frameborder="0" border="0" width="100%" height="0px;" src="'.BASE_URL.'/libreria/automazioni/autoVerificaCorsiCompletati.php?idUtente='.$idUtente_per_iframe.'"></iframe>';
             
             echo '</div></div>';
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
@@ -257,7 +259,7 @@ IF(tipo LIKE 'Fattura',CONCAT('<span class=\"btn sbold uppercase btn-outline blu
             
             //AGGIUNGI NUOVO PREVENTIVO
             if($_SESSION['livello_utente'] == "betaadmin" || $_SESSION['livello_utente'] == "amministratore"){
-                echo '<CENTER><a href="' . BASE_URL . '/moduli/fatture/salva.php?tbl=lista_fatture&idProfessionista=' . $id . '&fn=nuovaFatturaProfessionista" class="btn green-meadow"><i class="fa fa-plus"></i>  NUOVA FATTURA</a></CENTER><br><br>';
+                echo '<CENTER><a href="' . BASE_URL . '/moduli/fatture/salva.php?tbl=lista_fatture&idProfessionista=' . $id . '&fn=nuovaFatturaProfessionista" class="btn green-meadow"><i class="fa fa-plus"></i>  NUOVA FATTURA</a>&nbsp;&nbsp;<a href="' . BASE_URL . '/moduli/fatture/salva.php?tbl=lista_fatture&idProfessionista=' . $id . '&fn=nuovaNoteDiCreditoProfessionista" class="btn red-intense"><i class="fa fa-plus"></i>  NUOVA NOTA DI CREDITO</a></CENTER><br><br>';
             }
             
             echo '</div></div>';
@@ -265,19 +267,31 @@ IF(tipo LIKE 'Fattura',CONCAT('<span class=\"btn sbold uppercase btn-outline blu
             /* (SELECT CONCAT(cognome, ' ', nome) FROM lista_professionisti WHERE id = id_professionista) AS 'Professionista', */
             $sql_0005 = "SELECT
             CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"" . BASE_URL . "/moduli/iscrizioni/dettaglio.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
-            CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"" . BASE_URL . "/moduli/corsi/printAttestatoPDF.php?idIscrizione=',`id`,'\" TARGET=\"_BLANK\" title=\"STAMPA\" alt=\"STAMPA\"><i class=\"fa fa-file-pdf-o\"></i></a>') AS 'PDF',
-            CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"" . BASE_URL . "/moduli/iscrizioni/inviaAttestato.php?idIscrizione=',id,'\" data-target=\"#ajax\" data-url=\"" . BASE_URL . "/moduli/fatture/inviafatt.php?idFatt=',id,'\" data-toggle=\"modal\" title=\"INVIA\" alt=\"INVIA\"><i class=\"fa fa-paper-plane\"></i></a>') AS 'Invia', 
+            IF(stato_verifica LIKE 'Da Verificare' OR stato_verifica LIKE 'Non Completato',  
+                CONCAT('<button class=\"btn btn-circle btn-icon-only red btn-outline\"><i class=\"fa fa-exclamation\"></i></button>'), 
+                IF(stato_completamento LIKE 'Completato' , 
+                    CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"" . BASE_URL . "/moduli/corsi/printAttestatoPDF.php?idIscrizione=',`id`,'\" TARGET=\"_BLANK\" title=\"STAMPA\" alt=\"STAMPA\"><i class=\"fa fa-file-pdf-o\"></i></a>'),
+                    ''
+                )
+            ) AS 'PDF',
+            IF(stato_verifica LIKE 'Da Verificare' OR stato_verifica LIKE 'Non Completato', 
+                '', 
+                IF(stato_completamento LIKE 'Completato' , 
+                    CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"" . BASE_URL . "/moduli/iscrizioni/inviaAttestato.php?idIscrizione=',id,'\" data-target=\"#ajax\" data-url=\"" . BASE_URL . "/moduli/fatture/inviafatt.php?idFatt=',id,'\" data-toggle=\"modal\" title=\"INVIA\" alt=\"INVIA\"><i class=\"fa fa-paper-plane\"></i></a>'), 
+                    ''
+                )
+            ) AS 'Invia', 
             (SELECT nome_prodotto FROM lista_corsi WHERE id = id_corso) AS 'Corso',
             (SELECT nome FROM lista_classi WHERE id = id_classe) AS 'Classe',
             data_inizio_iscrizione, data_fine_iscrizione,
             DATE(data_inizio) AS 'Data Inizio', 
             IF(data_completamento LIKE '000%',DATE(data_fine), DATE(data_completamento)) AS 'Data Fine', 
             stato, avanzamento_completamento AS 'Perc.',
-            CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" onclick=\"javascript: return confirm(\'Sei sicuro di rigenerare questo attestato ?\');\" href=\"" . BASE_URL . "/moduli/corsi/printAttestatoPDF.php?idIscrizione=',`id`,'&force=1\" TARGET=\"_BLANK\" title=\"FORZA RIGENERA\" alt=\"FORZA RIGENERA\"><i class=\"fa fa-repeat\"></i></a>') AS 'RIGENERA PDF',
+            IF(stato_verifica LIKE 'Da Verificare' OR stato_verifica LIKE 'Non Completato', '', CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" onclick=\"javascript: return confirm(\'Sei sicuro di rigenerare questo attestato ?\');\" href=\"" . BASE_URL . "/moduli/corsi/printAttestatoPDF.php?idIscrizione=',`id`,'&force=1\" TARGET=\"_BLANK\" title=\"FORZA RIGENERA\" alt=\"FORZA RIGENERA\"><i class=\"fa fa-repeat\"></i></a>')) AS 'RIGENERA PDF',
             id AS 'selezione'
             FROM lista_iscrizioni WHERE id_professionista = '$id' ORDER BY dataagg DESC";
             //stampa_table_static_basic($sql_0005, '', 'Iscrizioni Corsi', 'green-meadow', 'fa fa-university');
-            stampa_table_datatables_responsive($sql_0005, 'Iscrizioni Corsi', 'tabella_base5', 'green-meadow', 'fa fa-university');
+            stampa_table_datatables_responsive($sql_0005, 'Iscrizioni Corsi', 'tabella_base5', 'green-meadow');
             echo '</div>'
                 .'<div style="text-align: center; margin-bottom: 15px;"> 
                     <button id="associaProfessionista" type="button" class="btn btn-icon purple-studio" alt="CAMBIA PROFESSIONISTA" title="CAMBIA PROFESSIONISTA"><i class="fa fa-sign-in"></i> Cambia Proprietario del Corso</a></button>

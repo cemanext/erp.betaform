@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors', '1');
 include_once('../../config/connDB.php');
 include_once(BASE_ROOT.'config/confAccesso.php');
 

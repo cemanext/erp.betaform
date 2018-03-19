@@ -7,7 +7,29 @@ if(isset($_GET['fn'])){
         case "aggiungiCarrelloWeb":
            //print_r($_GET);
            $betaformazione_utente_carrello = $_GET['betaformazione_utente_carrello'];
-           $idProdotto = $_GET['idProdotto'];
+            
+           if(isset($_GET['idCampagna']) && !empty($_GET['idCampagna']) && strpos($_GET['idProdotto'], "|||")!==false){
+                $tmpProdotto = explode("|||", $_GET['idProdotto']);
+                $idProdotto = $tmpProdotto[0];
+                $tmpCampagna = explode("=", $tmpProdotto[1]);
+                $idCampagnaProdotto = $tmpCampagna[1];
+                
+                if(isset($_GET['idCampagna']) && !empty($_GET['idCampagna'])){
+                    $idCampagna = $_GET['idCampagna'];
+                }else{
+                    $idCampagna = 169;
+                }
+                
+           }else{
+                $idProdotto = $_GET['idProdotto'];
+                if(isset($_GET['idCampagna']) && !empty($_GET['idCampagna'])){
+                    $idCampagna = $_GET['idCampagna'];
+                    $idCampagnaProdotto = $_GET['idCampagna'];
+                }else{
+                    $idCampagna = 169;
+                    $idCampagnaProdotto = 169;
+                }
+           }
            if(isset($_GET['r'])){
                $sql_r0001 = "SELECT id FROM lista_ordini WHERE campo_20='".$betaformazione_utente_carrello."' AND (stato='In Corso' OR stato='In Attesa')";
                $rIdOrdine = $dblink->get_field($sql_r0001);
@@ -18,11 +40,7 @@ if(isset($_GET['fn'])){
            }else{
                $redirect = false;
            }
-           if(isset($_GET['idCampagna']) && !empty($_GET['idCampagna'])){
-                $idCampagna = $_GET['idCampagna'];
-           }else{
-                $idCampagna = 169;
-           }
+           
            $valore_del_cookie = $betaformazione_utente_carrello;
            $sql_0001 = "SELECT id FROM lista_ordini WHERE campo_20='".$valore_del_cookie."' AND stato='In Corso'";
            $conteggio_0001 = $dblink->num_rows($sql_0001);
@@ -33,6 +51,11 @@ if(isset($_GET['fn'])){
                 $dblink->query($sql_0002);
                 $idOrdine = $dblink->lastid();
            }else{
+                $sql_0051 = "UPDATE `lista_ordini` SET 
+                dataagg = NOW(),
+                id_campagna = '".$idCampagna."'
+                WHERE campo_20='".$valore_del_cookie."' AND stato='In Corso'";
+                $rs_0005 = $dblink->query($sql_0051);
                 //echo '<LI>$conteggio_0001 = '.$conteggio_0001.'</LI>';
                 //echo '<LI>$valore_del_cookie = '.$valore_del_cookie.'</LI>';   
                 $idOrdine = $dblink->get_field($sql_0001);
@@ -42,7 +65,7 @@ if(isset($_GET['fn'])){
            $sql_0001 = "SELECT id FROM lista_ordini WHERE campo_20='".$valore_del_cookie."' AND stato='In Corso'";
            $idOrdine = $dblink->get_field($sql_0001);
             
-           $sql_0004 = "INSERT INTO lista_ordini_dettaglio (id, id_ordine,dataagg, id_prodotto, quantita, stato) VALUES ('', '".$idOrdine."', NOW(), '".$idProdotto."',1, 'In Corso')";
+           $sql_0004 = "INSERT INTO lista_ordini_dettaglio (id, id_ordine,dataagg, id_prodotto, quantita, stato, id_campagna) VALUES ('', '".$idOrdine."', NOW(), '".$idProdotto."',1, 'In Corso', '".$idCampagnaProdotto."')";
            $rs_0004 = $dblink->query($sql_0004);
            //echo "<br>";
            $idOrdineDettaglio = $dblink->lastid();
@@ -56,8 +79,8 @@ if(isset($_GET['fn'])){
                 WHERE lista_ordini_dettaglio.id_prodotto = lista_prodotti.id AND lista_ordini_dettaglio.prezzo_prodotto <= 0";
                 $rs_0005 = $dblink->query($sql_0005);
                 //echo "<br>";
-                if($idCampagna > 0 && $idCampagna != 169){
-                    $resPromo = $dblink->get_row("SELECT * FROM lista_campagne WHERE id='".$idCampagna."'",true);
+                if($idCampagnaProdotto > 0 && $idCampagnaProdotto != 169){
+                    $resPromo = $dblink->get_row("SELECT * FROM lista_campagne WHERE id='".$idCampagnaProdotto."'",true);
                     $sql_0006 = "UPDATE `lista_ordini_dettaglio` SET 
                                 lista_ordini_dettaglio.prezzo_prodotto = '".$resPromo['prezzo_sconto']."',
                                 lista_ordini_dettaglio.quantita = 1
@@ -72,7 +95,7 @@ if(isset($_GET['fn'])){
                     $valProf = explode("=", $chiaveValore[0]);
                     $valAzienda = explode("=", $chiaveValore[1]);
                     $valPrezzo = $tmpDati[1];
-                    $sql_1005 = "UPDATE lista_ordini SET id_professionista = '".$valProf[1]."', id_azienda='".$valAzienda[1]."'
+                    $sql_1005 = "UPDATE lista_ordini SET dataagg = NOW(), id_professionista = '".$valProf[1]."', id_azienda='".$valAzienda[1]."'
                     WHERE campo_20='".$valore_del_cookie."' AND (stato='In Corso' OR stato='In Attesa')";
                     $rs_1005 = $dblink->query($sql_1005);
                     

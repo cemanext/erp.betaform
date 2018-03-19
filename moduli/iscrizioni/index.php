@@ -16,7 +16,7 @@ if (isset($_GET['tbl'])) {
     $tabella = $_GET['tbl'];
 }
 
-if(isset($tabella) && ($tabella=="lista_iscrizioni_partecipanti_completati" or $tabella=="lista_iscrizioni_configurazioni")){
+if(isset($tabella) && ($tabella=="lista_iscrizioni_partecipanti_completati" || $tabella=="lista_iscrizioni_configurazioni" || $tabella == 'verifica_corsi')){
     if (!empty($_GET['intervallo_data'])) {
         $intervallo_data = $_GET['intervallo_data'];
         $_SESSION['intervallo_data_iscrizioni'] = $_GET['intervallo_data'];
@@ -138,7 +138,7 @@ if(isset($tabella) && ($tabella=="lista_iscrizioni_partecipanti_completati" or $
                     <!-- BEGIN PAGE BAR -->
                     <?php include(BASE_ROOT . '/assets/page_bar.php'); ?>
                     <!-- END PAGE BAR -->
-                    <?php if(isset($tabella) && ($tabella=="lista_iscrizioni_partecipanti_completati" or $tabella=="lista_iscrizioni_configurazioni")){ ?>
+                    <?php if(isset($tabella) && ($tabella=="lista_iscrizioni_partecipanti_completati" || $tabella=="lista_iscrizioni_configurazioni" || $tabella == 'verifica_corsi')){ ?>
                     <div class="clearfix"></div>
                     <div class="row" style="margin-top: 10px; margin-bottom: -20px;">
                         <form action="?" class="form-horizontal form-bordered" method="GET" id="formIntervallo" name="formIntervallo">

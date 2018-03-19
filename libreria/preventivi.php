@@ -208,7 +208,7 @@ function creaPreventivoPDF($idPrev, $echo = false) {
                 $rowCalendario = $dblink->get_row($sql_calendario,true);
                 
                 if($rowCalendario['id_professionista']<=0){
-                    $sql_cliente = "SELECT calendario.id, calendario.nome, calendario.cognome, calendario.indirizzo, calendario.cap, calendario.citta, calendario.provincia FROM calendario INNER JOIN lista_preventivi
+                    $sql_cliente = "SELECT calendario.id, calendario.nome, calendario.cognome FROM calendario INNER JOIN lista_preventivi
                     ON calendario.id=lista_preventivi.id_calendario WHERE lista_preventivi.id='" . $id_preventivo . "'";
                 }else if($rowCalendario['id_azienda']<=0){
                     $sql_cliente = "SELECT lista_professionisti.id, lista_professionisti.cognome,lista_professionisti.nome,

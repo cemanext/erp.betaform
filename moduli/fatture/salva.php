@@ -11,6 +11,24 @@ $referer = recupera_referer();
 
 if (isset($_GET['fn'])) {
     switch ($_GET['fn']) {
+        case 'nuovaNoteDiCreditoProfessionista':
+            $idProfessionista = $_GET['idProfessionista'];
+            //echo '<li>$idProfessionista = '.$idProfessionista.'</li>';
+            $sql_00001 = "INSERT INTO lista_fatture (id, dataagg, scrittore, id_professionista, tipo, stato) VALUES ('',NOW(), '".addslashes($_SESSION['cognome_nome_utente'])."', '".$idProfessionista."', 'Nota di Credito', 'In Attesa di Emissione')";
+            $ok = true;
+            $dblink->begin();
+            $ok = $dblink->query($sql_00001);
+                $lastId=$dblink->insert_id();
+                if($ok){
+                    $ok = 1;
+                    $dblink->commit();
+                }else{
+                    $ok = 0;
+                    $dblink->rollback();
+                }
+            header("Location: ".BASE_URL."/moduli/fatture/dettaglio.php?tbl=lista_fatture&id=".$lastId); 
+        break;
+        
         case 'nuovaFatturaProfessionista':
         $idProfessionista = $_GET['idProfessionista'];
         //echo '<li>$idProfessionista = '.$idProfessionista.'</li>';
@@ -470,7 +488,53 @@ if (isset($_GET['fn'])) {
             } else {
                 //echo '<li>Errore: nuovoCodiceFattura !</li>';
             }
-            break;
+        break;
+        
+        case 'emettiNotaDiCredito':
+            $idFattura = $_GET['idFatturaEmettere'];
+            $codSezionale = $_GET['codSezionale'];
+
+            if (nuovoCodiceFattura($idFattura, $codSezionale)) {
+                $fattura_nuova = nuovoCodiceFattura($idFattura, $codSezionale);
+                $sql_007 = "UPDATE lista_fatture SET
+                dataagg = NOW(),
+                data_creazione = CURDATE(),
+                data_scadenza = CURDATE(),
+                codice = '" . $fattura_nuova . "',
+                codice_ricerca = CONCAT('" . $fattura_nuova . SEPARATORE_FATTURA ."',sezionale),
+                scrittore = '" . addslashes($_SESSION['cognome_nome_utente']) . "',
+                cognome_nome_agente = (SELECT CONCAT(lista_password.cognome,' ', lista_password.nome) FROM lista_password WHERE lista_password.id = lista_fatture.id_agente),
+                cognome_nome_professionista = (SELECT CONCAT(lista_professionisti.cognome,' ', lista_professionisti.nome) FROM lista_professionisti WHERE lista_professionisti.id = lista_fatture.id_professionista),
+                ragione_sociale_azienda = (SELECT CONCAT(lista_aziende.ragione_sociale,' ', lista_aziende.forma_giuridica) FROM lista_aziende WHERE lista_aziende.id = lista_fatture.id_azienda),
+                nome_campagna = (SELECT lista_campagne.nome FROM lista_campagne WHERE lista_campagne.id = lista_fatture.id_campagna),
+                banca_pagamento = (SELECT lista_fatture_banche.nome FROM lista_fatture_banche WHERE lista_fatture_banche.id = lista_fatture.id_fatture_banche),
+                stato='Nota di Credito Totale'
+                WHERE id ='" . $idFattura . "'
+                AND sezionale = '" . $codSezionale."'";
+                $rs_007 = $dblink->query($sql_007);
+                if ($rs_007) {
+                    $sql_007_1 = "UPDATE lista_fatture_dettaglio SET
+                    dataagg = NOW(),
+                    tipo = 'Nota di Credito',
+                    codice_fattura = '" . $fattura_nuova . "',
+                    scrittore = '" . addslashes($_SESSION['cognome_nome_utente']) . "',
+                    stato='Nota di Credito Totale'
+                    WHERE id_fattura ='" . $idFattura . "'";
+                    $rs_007_1 = $dblink->query($sql_007_1);
+                    if ($rs_007_1) {
+                        $sql1 = "INSERT INTO calendario (`id`, `id_professionista`, `id_azienda`, `id_preventivo`, `id_fattura`, `dataagg`, `datainsert`, `orainsert`, `data`, `ora`, `etichetta`, `oggetto`, `messaggio`, `mittente`, `destinatario`, `priorita`, stato)
+                        SELECT '', `id_professionista`, `id_azienda`, `id_preventivo`, `id`, NOW(), NOW(), NOW(), CURDATE(), TIME(NOW()), 'Nota di Credito', CONCAT('Nota di Credito n ', codice ,''), CONCAT('Nota di Credito n ', codice ,': Emessa il ',NOW()), '" . addslashes($_SESSION['cognome_nome_utente']) . "', '" . addslashes($_SESSION['cognome_nome_utente']) . "', 'Normale', 'Fatto'
+                        FROM lista_fatture WHERE id='" . $idFattura . "'";
+                        $rs1 = $dblink->query($sql1);
+                        if ($rs1) {
+                            header("Location:" . $referer . "");
+                        }
+                    }
+                }
+            } else {
+                //echo '<li>Errore: nuovoCodiceFattura !</li>';
+            }
+        break;
 
         case "fatturaPagataTotaleCosto":
             $idCosto = $_GET['idCosto'];

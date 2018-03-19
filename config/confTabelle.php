@@ -2,6 +2,69 @@
 //include_once(BASE_ROOT . 'config/confAccesso.php');
 //include_once(BASE_ROOT . 'config/confDebug.php');
 
+/** TABELLA lista_telefonate  **/
+$table_listaTelefonate = array( //CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_telefonate&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
+//                              //CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"duplica.php?tbl=lista_telefonate&id=',id,'\" title=\"DUPLICA\" alt=\"DUPLICA\"><i class=\"fa fa-copy\"></i></a>') AS 'fa-copy',
+                               //CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"cancella.php?tbl=lista_telefonate&id=',id,'\" title=\"ELIMINA\" alt=\"ELIMINA\"><i class=\"fa fa-trash\"></i></a>') AS 'fa-trash'
+                "index" => array("campi" => "
+                                CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"modifica.php?tbl=lista_telefonate&id=',id,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>') AS 'fa-edit',
+                                stato, dataagg, (SELECT CONCAT(cognome,' ', nome) AS nome FROM lista_password WHERE livello NOT LIKE 'cliente' AND id = id_password LIMIT 1) AS commerciale, codice, codice_interno, codice_esterno, 
+                                data_chiamata_inizio, data_chiamata_fine, durata_chiamata, mittente,
+                                destinatario, campo_1, note",
+                                "where" => "1 ".$where_lista_telefonate,
+                                "order" => "ORDER BY id DESC"),
+                "modifica" => array(
+                array(
+                "campo" => "id",
+                "tipo" => "hidden",
+                "etichetta" => "Id",
+                "readonly" => true
+                ),
+                array(
+                "campo" => "dataagg",
+                "tipo" => "hidden",
+                "etichetta" => "Dataagg",
+                "readonly" => true
+                ),
+                array(
+                "campo" => "scrittore",
+                "tipo" => "hidden",
+                "etichetta" => "Scrittore",
+                "readonly" => true
+                ),
+                array(
+                    "campo" => "stato",
+                    "tipo" => "select_static",
+                    "etichetta" => "Stato",
+                    "readonly" => false,
+                    "sql" => array("TerminatedByDst"=>"TerminatedByDst", "Non Attivo"=>"Non Attivo")
+                ),
+                array(  "campo" => "id_password",
+                        "tipo" => "select2",
+                        "etichetta" => "Commerciale",
+                        "readonly" => true,
+                        "sql" => "SELECT id AS valore, CONCAT(cognome,' ', nome) AS nome FROM lista_password WHERE livello NOT LIKE 'cliente' ORDER BY nome ASC"
+                ),
+                array(
+                "campo" => "mittente",
+                "tipo" => "input",
+                "etichetta" => "Mittente",
+                "readonly" => false
+                ),
+                array(
+                "campo" => "destinatario",
+                "tipo" => "input",
+                "etichetta" => "Destinatario",
+                "readonly" => false
+                ),
+                array(
+                "campo" => "note",
+                "tipo" => "text",
+                "etichetta" => "Note",
+                "readonly" => false
+                ))
+        );
+
 /** TABELLA lista_obiezioni  **/
 $table_listaObiezioni = array( //CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"dettaglio.php?tbl=lista_obiezioni&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
                                //CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"cancella.php?tbl=lista_richieste_stati&id=',id,'\" title=\"ELIMINA\" alt=\"ELIMINA\"><i class=\"fa fa-trash\"></i></a>') AS 'fa-trash'
@@ -848,10 +911,10 @@ $table_listaPassword = array( //CONCAT('<a class=\"btn btn-circle btn-icon-only 
                     ),
                 array(  "campo" => "numerico_1",
                         "tipo" => "numerico",
-                        "etichetta" => "Numerico 1",
+                        "etichetta" => "Numero Interno",
                         "readonly" => false
                     ),
-                array(  "campo" => "numerico_2",
+                /*array(  "campo" => "numerico_2",
                         "tipo" => "numerico",
                         "etichetta" => "Numerico 2",
                         "readonly" => false
@@ -870,7 +933,7 @@ $table_listaPassword = array( //CONCAT('<a class=\"btn btn-circle btn-icon-only 
                         "tipo" => "numerico",
                         "etichetta" => "Numerico 5",
                         "readonly" => false
-                    ),
+                    ),*/
                 array(  "campo" => "id_moodle_user",
                     "tipo" => "numerico",
                     "etichetta" => "ID MOODLE",
@@ -3112,6 +3175,16 @@ $table_listaIscrizioniPartecipanti = array(
                         "default" => "",
                         "attivo" => false
                 ),
+                array(  "campo" => "data_completamento",
+                        "tipo" => "confronto_data",
+                        "etichetta" => "Data Completamento",
+                        "readonly" => false,
+                        "like" => false,
+                        "uguale" => false,
+                        "maggiore" => false,
+                        "default" => "",
+                        "attivo" => false
+                ),
                 array(  "campo" => "avanzamento_completamento",
                         "tipo" => "input",
                         "etichetta" => "Avanzamento %",
@@ -4668,6 +4741,11 @@ $table_listaTemplateEmail = array(
                 "campo" => "nome",
                 "tipo" => "input",
                 "etichetta" => "Nome",
+                "readonly" => false),
+    array(
+                "campo" => "nome_alias",
+                "tipo" => "input",
+                "etichetta" => "Nome Alias",
                 "readonly" => false),
     array(
                 "campo" => "mittente",

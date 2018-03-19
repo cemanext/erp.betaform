@@ -37,7 +37,8 @@ echo '<li>DB_NAME = '.DB_NAME.'</li>';
         
         echo '<li>$idIscrizione = '.$idIscrizione.'</li>';
         //inviaCorsoCompletato
-        $ret = inviaEmailCorsoCompletato($idIscrizione,false);
+        //$ret = inviaEmailCorsoCompletato($idIscrizione,false);
+        $ret = true;
         echo '<li>$ret = '.$ret.'</li>';
         //$ret = false;
         

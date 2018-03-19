@@ -29,9 +29,18 @@ if(strpos($campoRicerca," ")!==false){
 
 $where_data_calendario = "";
 $where_data_calendario_inserimento = "";
+$where_data_telefonata = "";
+$where_telefonate = "";
 
-if($_GET['tbl']=="lista_esami_corsi_commerciali" && $_GET['tbl']!="" && $_GET['whrStato']!="null"){
+if(($_GET['tbl']=="lista_esami_corsi_commerciali" || $_GET['tbl']=="lista_telefonate") && $_GET['tbl']!="" && $_GET['whrStato']!="null"){
     if (!empty($_SESSION['intervallo_data'])) {
+        
+        if($_GET['tbl']=="lista_telefonate"){
+            $where_telefonate.= ($_SESSION['commerciale_idComm']>0 ? " AND id_password = '".$_SESSION['commerciale_idComm']."' " : "");
+            $where_telefonate.= ($_SESSION['commerciale_idMitt']>0 ? " AND mittente = '".$_SESSION['commerciale_idMitt']."' " : "");
+        }
+        
+        
         $intervallo_data = $_SESSION['intervallo_data'];
         $data_in = GiraDataOra(before(' al ', $intervallo_data));
         $data_out = GiraDataOra(after(' al ', $intervallo_data));
@@ -41,17 +50,20 @@ if($_GET['tbl']=="lista_esami_corsi_commerciali" && $_GET['tbl']!="" && $_GET['w
             $where_data_calendario_inserimento = " AND DATE(datainsert) = '" . $data_in . "'";
             $where_data_calendario_iscritto = " AND DATE(data_iscrizione) = '" . $data_in . "'";
             $where_data_calendario_fattura = " AND DATE(data_creazione) = '" . $data_in . "'";
+            $where_data_telefonata = " AND DATE(data_chiamata_inizio) = '" . $data_in . "'";
         }else{
-            $where_data_calendario = " AND data BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
-            $where_data_calendario_inserimento = " AND datainsert BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
-            $where_data_calendario_iscritto = " AND data_iscrizione BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
-            $where_data_calendario_fattura = " AND data_creazione BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
+            $where_data_calendario = " AND DATE(data) BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
+            $where_data_calendario_inserimento = " AND DATE(datainsert) BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
+            $where_data_calendario_iscritto = " AND DATE(data_iscrizione) BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
+            $where_data_calendario_fattura = " AND DATE(data_creazione) BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
+            $where_data_telefonata = " AND DATE(data_chiamata_inizio) BETWEEN  '" . $data_in . "' AND  '" . $data_out . "'";
         }
     } else {
         $where_data_calendario = " AND YEAR(data)=YEAR(CURDATE()) AND MONTH(data)=MONTH(CURDATE())";
         $where_data_calendario_inserimento = " AND YEAR(datainsert)=YEAR(CURDATE()) AND MONTH(datainsert)=MONTH(CURDATE())";
         $where_data_calendario_iscritto = " AND YEAR(data_iscrizione)=YEAR(CURDATE()) AND MONTH(data_iscrizione)=MONTH(CURDATE())";
         $where_data_calendario_fattura = " AND YEAR(data_creazione)=YEAR(CURDATE()) AND MONTH(data_creazione)=MONTH(CURDATE())";
+        $where_data_telefonata = " AND YEAR(data_chiamata_inizio)=YEAR(CURDATE()) AND MONTH(data_chiamata_inizio)=MONTH(CURDATE())";
     }
 }
 
@@ -144,6 +156,24 @@ switch($funzione){
 
     default:
         switch ($tabella) {
+            case "lista_telefonate":
+                $campi_visualizzati = $table_listaTelefonate['index']['campi'];
+                $where = $table_listaTelefonate['index']['where'].$where_telefonate.$where_data_telefonata;
+                if(!empty($arrayCampoRicerca)){
+                    foreach ($arrayCampoRicerca as $campoRicerca) {
+                        $campoRicerca = $dblink->filter($campoRicerca);
+                        $where.= " AND (mittente LIKE '%".$campoRicerca."%' OR destinatario LIKE '%".$campoRicerca."%'";
+                        $where.= " OR id_password IN (SELECT id FROM lista_password WHERE (nome LIKE '%".$campoRicerca."%' OR cognome LIKE '%".$campoRicerca."%') AND livello NOT LIKE 'cliente')";
+                        $where.= " OR dataagg LIKE '%".$campoRicerca."%' OR codice LIKE '%".$campoRicerca."%'";
+                        $where.= " OR codice_interno LIKE '%".$campoRicerca."%' OR codice_esterno LIKE '%".$campoRicerca."%'";
+                        $where.= " OR data_chiamata_inizio LIKE '%".$campoRicerca."%' OR data_chiamata_fine LIKE '%".$campoRicerca."%'";
+                        $where.= " OR durata_chiamata LIKE '%".$campoRicerca."%' OR stato LIKE '%".$campoRicerca."%')";
+                    }
+                }
+                $gruppo = "";
+                $ordine = $table_listaTelefonate['index']['order'];
+            break;
+        
             case "lista_esami_corsi_commerciali":
                 $tabella = "calendario";
                 $campi_visualizzati = $table_listaEsamiCorsiCommerciali['index']['campi'];

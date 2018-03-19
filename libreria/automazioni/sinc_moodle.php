@@ -180,6 +180,21 @@ switch ($_GET['fn']) {
                     $urlImmagine = "";
                 }
                 
+                $path = BASE_URL."/media/immagini_shop/".$corso['betaformazione_courseid']."/".$rowImmagine['filename'];
+                if(file_exists($path)){
+                    $urlImmagineSave = $path;
+                }else{
+                    if(file_exists($urlImmagine)){
+                        if(move_uploaded_file($urlImmagine, $path)){
+                            $urlImmagineSave = $path;
+                        }else{
+                            $urlImmagineSave = $urlImmagine; 
+                        }
+                    }else{
+                        $urlImmagineSave = $urlImmagine;
+                    }
+                }
+                
                 $nomeCategoria = $dblink->get_row("SELECT name FROM ".MOODLE_DB_NAME.".mdl_course_categories WHERE id='".$corso['category']."' LIMIT 1");
                 $nomeCategoria = $nomeCategoria[0];
                 
@@ -199,7 +214,7 @@ switch ($_GET['fn']) {
                         "codice" => $corso['betaformazione_courseid'],
                         "codice_esterno" => $corso['id'],
                         "tempo_1" => $corso['time_to_complete'],
-                        "url_immagine" => $urlImmagine
+                        "url_immagine" => $urlImmagineSave
                     );
 
                     $where = array(
@@ -229,7 +244,7 @@ switch ($_GET['fn']) {
                         "codice" => $corso['betaformazione_courseid'],
                         "codice_esterno" => $corso['id'],
                         "tempo_1" => $corso['time_to_complete'],
-                        "url_immagine" => $urlImmagine
+                        "url_immagine" => $urlImmagineSave
                     );
 
                     $dblink->insert("lista_prodotti", $insert);
@@ -318,6 +333,21 @@ switch ($_GET['fn']) {
                 $urlImmagine = "";
             }
             
+            $path = BASE_URL."/media/immagini_shop/".$corso['betaformazione_courseid']."/".$rowImmagine['filename'];
+            if(file_exists($path)){
+                $urlImmagineSave = $path;
+            }else{
+                if(file_exists($urlImmagine)){
+                    if(move_uploaded_file($urlImmagine, $path)){
+                        $urlImmagineSave = $path;
+                    }else{
+                        $urlImmagineSave = $urlImmagine; 
+                    }
+                }else{
+                    $urlImmagineSave = $urlImmagine;
+                }
+            }
+            
             $nomeCategoria = $dblink->get_row("SELECT name FROM ".MOODLE_DB_NAME.".mdl_course_categories WHERE id='".$corso['category']."' LIMIT 1");
             $nomeCategoria = $nomeCategoria[0];
             
@@ -337,7 +367,7 @@ switch ($_GET['fn']) {
                     "codice" => $corso['betaformazione_courseid'],
                     "codice_esterno" => $corso['id'],
                     "tempo_1" => $corso['time_to_complete'],
-                    "url_immagine" => $urlImmagine
+                    "url_immagine" => $urlImmagineSave
                 );
 
                 $where = array(
@@ -367,7 +397,7 @@ switch ($_GET['fn']) {
                     "codice" => $corso['betaformazione_courseid'],
                     "codice_esterno" => $corso['id'],
                     "tempo_1" => $corso['time_to_complete'],
-                    "url_immagine" => $urlImmagine
+                    "url_immagine" => $urlImmagineSave
                 );
 
                 $dblink->insert("lista_prodotti", $insert);

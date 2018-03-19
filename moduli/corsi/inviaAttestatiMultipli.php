@@ -29,9 +29,9 @@ if (isset($_POST['intervallo_data'])) {
     }
     
     if($data_in == $data_out){
-        $where_intervallo = " AND data_completamento = '" . GiraDataOra($data_in) . "'";
+        $where_intervallo = " AND DATE(data_completamento) = '" . GiraDataOra($data_in) . "'";
     }else{
-        $where_intervallo = " AND data_completamento BETWEEN '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo = " AND DATE(data_completamento) BETWEEN '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
     }
     
 } else {
@@ -159,22 +159,24 @@ if (isset($_POST['intervallo_data'])) {
                 $titolo = 'Invio Fatture Multiplo';
                 
                 
-                $dblink->query("CREATE TEMPORARY TABLE iscrizioniCompletate(SELECT * FROM lista_iscrizioni 
-                WHERE stato_completamento LIKE  'Completato' AND stato_invio_attestato NOT LIKE 'In Attesa di Invio' AND stato_invio_attestato NOT LIKE 'Inviato' AND id_fattura>0)");
+                $dblink->query("CREATE TEMPORARY TABLE iscrizioniCompletate(SELECT *, (SELECT lista_corsi.codice FROM lista_corsi WHERE lista_corsi.id = lista_iscrizioni.id_corso) AS codice_corso FROM lista_iscrizioni 
+                WHERE stato_completamento LIKE  'Completato' AND stato_invio_attestato NOT LIKE 'In Attesa di Invio' AND stato_invio_attestato NOT LIKE 'Inviato' AND id_fattura>0 $where_intervallo)");
                 $dblink->query("CREATE TEMPORARY TABLE iscrizioniPagate(SELECT lista_iscrizioni.id_fattura AS id_fattura_iscr 
                 FROM lista_iscrizioni 
                 INNER JOIN lista_fatture  ON lista_iscrizioni.id_fattura = lista_fatture.id
                 WHERE stato_completamento LIKE  'Completato' AND stato_invio_attestato NOT LIKE 'In Attesa di Invio' AND stato_invio_attestato NOT LIKE 'Inviato'
-                AND lista_fatture.stato LIKE 'Pagata%' AND id_fattura>0)");
+                AND lista_fatture.stato LIKE 'Pagata%' AND id_fattura>0 $where_intervallo)");
                 $dblink->query("CREATE TEMPORARY TABLE totaleIscrizioni(SELECT * FROM iscrizioniCompletate INNER JOIN iscrizioniPagate 
                 ON iscrizioniCompletate.id_fattura=iscrizioniPagate.id_fattura_iscr)");
                 
-                
+                //CONCAT('<span class=\"btn sbold uppercase btn-outline red\">',nome_corso,'</span>') AS nome_corso,
                 $sql_0001 = "SELECT DISTINCT
-                CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/iscrizioni/dettaglio.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',  
+                CONCAT('<a class=\"btn btn-circle btn-icon-only yellow btn-outline\" href=\"".BASE_URL."/moduli/iscrizioni/dettaglio.php?tbl=lista_iscrizioni_partecipanti&id=',id,'\" title=\"DETTAGLIO\" alt=\"DETTAGLIO\"><i class=\"fa fa-search\"></i></a>') AS 'fa-search',
+                IF(stato_verifica LIKE 'Da Verificare', CONCAT('<button class=\"btn btn-circle btn-icon-only red-intense btn-outline\"><i class=\"fa fa-exclamation\"></i></button>'),
+                    IF(stato_verifica LIKE 'Si', CONCAT('<button class=\"btn btn-circle btn-icon-only green-jungle btn-outline\"><i class=\"fa fa-check\"></i></button>'), CONCAT('<button class=\"btn btn-circle btn-icon-only grey btn-outline\"><i class=\"fa fa-cogs\"></i></button>'))) AS Verifica,
                 CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" href=\"".BASE_URL."/moduli/corsi/printAttestatoPDF.php?idIscrizione=',id,'\" title=\"ATTESTATO\" alt=\"ATTESTATO\" target=\"_blank\"><i class=\"fa fa-file-pdf-o\"></i></a>') AS 'fa-file-pdf-o', dataagg, scrittore,
                 CONCAT('<span class=\"btn sbold uppercase btn-outline blue-steel\">',cognome_nome_professionista,'</span>') AS cognome_nome_professionista, 
-                CONCAT('<span class=\"btn sbold uppercase btn-outline red\">',nome_corso,'</span>') AS nome_corso, 
+                codice_corso, 
                 nome_classe,
                 data_completamento, stato_completamento AS Stato, 
                 (SELECT codice_ricerca FROM lista_fatture WHERE id=id_fattura) AS 'Cod. Fatt.', (SELECT stato FROM lista_fatture WHERE id=id_fattura) AS Stato_Fattura, id AS selezione

@@ -13,7 +13,7 @@ function stampa_bootstrap_form_horizontal($tabella,$id,$titolo,$action="".BASE_U
             $table_listaIscrizioniPartecipanti, $table_listaCosti, $table_listaFatture,$table_listaFattureDettaglio, $table_documentiAttestati,
             $table_listaProdottiTipologie, $table_listaProdottiCategorie, $table_listaProdottiGruppi, $table_listaTemplateEmail,
             $table_listaPasswordUtenti, $table_listaDocenti, $table_listaAule, $table_listaCorsiConfigurazioni,
-            $table_listaProvvigioni, $table_listaObiezioni;
+            $table_listaProvvigioni, $table_listaObiezioni, $table_listaTelefonate;
 
    if($action==""){
        $action="".BASE_URL."/libreria/salva.php";
@@ -33,6 +33,14 @@ function stampa_bootstrap_form_horizontal($tabella,$id,$titolo,$action="".BASE_U
     }
 
     switch($tabella){
+        case 'lista_telefonate':
+            $arrayReturn['tabella'] = "lista_telefonate";
+            $arrayReturn['tbl'] = "lista_telefonate";
+            $arrayReturn = get_campi_tabella($table_listaTelefonate['modifica'], $arrayReturn);
+            $arrayReturn['where'] = " `id` =".$id;
+            $arrayReturn['titolo'] = 'Modifica Telefonata';
+        break;
+    
         case 'lista_obiezioni':
             $arrayReturn['tabella'] = "lista_obiezioni";
             $arrayReturn['tbl'] = "lista_obiezioni";

@@ -2,7 +2,8 @@
 
 /** FUNZIONI DI CROCCO */
 function Stampa_HTML_index_Commerciali($tabella){
-    global $table_listaCommerciali, $table_listaConsuntivoVendite, $where_lista_consuntivo_vendite, $table_listaEsamiCorsiCommerciali;
+    global $table_listaCommerciali, $table_listaConsuntivoVendite, $where_lista_consuntivo_vendite,
+            $table_listaEsamiCorsiCommerciali, $table_listaTelefonate;
 
     switch($tabella){
     
@@ -15,6 +16,16 @@ function Stampa_HTML_index_Commerciali($tabella){
             $limit = "LIMIT 1";
             $sql_0001 = "SELECT ".$campi_visualizzati." FROM ".$tabella." WHERE $where $ordine $limit";
             stampa_table_datatables_ajax($sql_0001, "datatable_ajax", $titolo, '', '', false);        
+        break;
+    
+        case 'lista_telefonate':
+            $tabella = "lista_telefonate";
+            $campi_visualizzati = $table_listaTelefonate['index']['campi'];
+            $where = $table_listaTelefonate['index']['where'];
+            $ordine = $table_listaTelefonate['index']['order'];
+            $titolo = 'Elenco Telefonate';
+            $sql_0001 = "SELECT ".$campi_visualizzati." FROM ".$tabella." WHERE $where $ordine LIMIT 1";
+            stampa_table_datatables_ajax($sql_0001, "datatable_ajax", $titolo, '', '', false);
         break;
     
         case 'lista_consuntivo_vendite':

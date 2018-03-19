@@ -141,6 +141,17 @@ function Stampa_HTML_index_Iscrizioni($tabella){
             stampa_table_datatables_ajax($sql_0001, "datatable_ajax", $titolo, '', '', false);
             //stampa_table_datatables_responsive($sql_0001, $titolo, 'tabella_base');
         break;
+    
+        case 'verifica_corsi':
+            $tabella = "lista_iscrizioni";
+            $campi_visualizzati = "'fa-search',".$table_listaIscrizioniPartecipantiCompletati['index']['campi'];
+            $where = $table_listaIscrizioniPartecipantiCompletati['index']['where'];
+            $ordine = $table_listaIscrizioniPartecipantiCompletati['index']['order'];
+            $titolo = 'Elenco Corsi Completati per Partecipante da Verificare';
+            $sql_0001 = "SELECT ".$campi_visualizzati." FROM ".$tabella." WHERE $where $ordine LIMIT 1";
+            stampa_table_datatables_ajax($sql_0001, "datatable_ajax", $titolo, '', '', false);
+            //stampa_table_datatables_responsive($sql_0001, $titolo, 'tabella_base');
+        break;
     }
 }
 
@@ -247,6 +258,7 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
                     $tipoAbbonamento = $row_00006['abbonamento'];
                     $dataCompletamento = $row_00006['data_completamento'];
                     $statoIscrizione = $row_00006['stato'];
+                    $statoVerificaIscrizione = $row_00006['stato_verifica'];
                 }
             }
 
@@ -254,7 +266,6 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
             //echo '<h1>$idUtenteMoodle = '.$idUtenteMoodle.'</h1>';
             //echo '<h1>$id_corso_moodle = '.$id_corso_moodle.'</h1>';
             //echo '<h1>$statoIscrizione = '.$statoIscrizione.'</h1>';
-
 
             $percentuale_corso_utente = recupero_percentuale_avanzamento_corso_utente($idUtenteMoodle, $id_corso_moodle, true);
             $sql_007_aggionro_percentuale = "UPDATE lista_iscrizioni
@@ -462,25 +473,47 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
 */
 
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
+            
+            if($statoVerificaIscrizione != "Si" && $statoVerificaIscrizione != "No"){
+                $retsId = verificaTimingModuliCorso($id_moodle, $idUtenteMoodle, false);
+
+                $ifStr = "";
+
+                if(!empty($retsId)){
+                    foreach ($retsId as $retId) {
+                        $ifStr.= "`lista_corsi_dettaglio`. `ordine` = '$retId' OR ";
+                    }
+                    $ifStr = substr($ifStr, 0, -3);
+                }else{
+                    $ifStr = "`lista_corsi_dettaglio`. `ordine` = '0'";
+                }
+            }else{
+                $ifStr = "`lista_corsi_dettaglio`. `ordine` = '0'";
+            }
+            
             $sql_0002 = "SELECT
            `lista_corsi_dettaglio`. `ordine`,
              CONCAT('<h3>', `lista_corsi_dettaglio`. `nome`,'</h3>') AS 'Modulo',
                `lista_corsi_dettaglio`. `modname` AS 'Tipo',
-               IF(completionstate>=1,'Si','No') AS 'Completato',
+               IF($ifStr, 'Verifica', IF(completionstate>=1,'Si','No')) AS 'Completato',
+            FROM_UNIXTIME(`mdl_course_modules_completion`.timemodified - ((`lista_corsi_dettaglio`. `durata`*0.9) * 60)) AS 'Data Inizio Minima',
             FROM_UNIXTIME(`mdl_course_modules_completion`.timemodified) AS 'Data Completamento',
             `lista_corsi_dettaglio`. `durata`,
             id_modulo, `lista_corsi_dettaglio`.instance
             FROM ".MOODLE_DB_NAME." .`mdl_course_modules_completion`
             INNER JOIN ".MOODLE_DB_NAME." .`mdl_course_modules` ON ".MOODLE_DB_NAME." .`mdl_course_modules_completion`. `coursemoduleid` = `mdl_course_modules` .id
             INNER JOIN ".MOODLE_DB_NAME." .`mdl_scorm` ON ".MOODLE_DB_NAME." .`mdl_scorm`.`id`=`mdl_course_modules`.`instance`
-            INNER JOIN `betaform_erp`.`lista_corsi_dettaglio` ON `betaform_erp`.`lista_corsi_dettaglio`.id_modulo = `mdl_course_modules` .id
-            AND `mdl_course_modules`.`course`='".$id_moodle."'
+            INNER JOIN `".DB_NAME."`.`lista_corsi_dettaglio` ON `".DB_NAME."`.`lista_corsi_dettaglio`.id_modulo = `mdl_course_modules` .id
+            WHERE `mdl_course_modules`.`course`='".$id_moodle."'
             AND `mdl_course_modules_completion`.`userid`='".$idUtenteMoodle."'
             AND completionstate>=1
-            ORDER BY `betaform_erp`.`lista_corsi_dettaglio`.`ordine`";
+            ORDER BY `".DB_NAME."`.`lista_corsi_dettaglio`.`ordine`";
             $rs_00002 = $dblink->num_rows($sql_0002);
             if($rs_00002>=1){
                 stampa_table_static_basic($sql_0002, '', 'Moduli Completati', 'green-jungle');
+            }
+            if($_SESSION['livello_utente'] == "betaadmin" || $_SESSION['livello_utente'] == "amministratore"){
+                echo '<CENTER><a href="' . BASE_URL . '/moduli/iscrizioni/salva.php?tbl=lista_iscrizioni_partecipanti&id=' . $id . '&fn=settaVerificato" onclick="javascript: return confirm(\'Sei sicuro di impostare questo corso a verificato?\');" class="btn green-meadow"><i class="fa fa-check"></i>  VERIFICATO</a></CENTER><br><br>';
             }
             /*
               (SELECT (FROM_UNIXTIME(`mdl_scorm_scoes_track`.timemodified)) AS 'data_completamento' FROM ".MOODLE_DB_NAME.".`mdl_scorm_scoes_track`
@@ -500,7 +533,7 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
             INNER JOIN ".MOODLE_DB_NAME." .`mdl_course_modules` ON  ".MOODLE_DB_NAME." .`mdl_course_modules_completion`. `coursemoduleid` = `mdl_course_modules` .id
             INNER JOIN ".MOODLE_DB_NAME." .`mdl_scorm` ON ".MOODLE_DB_NAME." .`mdl_scorm`.`id`=`mdl_course_modules`.`instance`
             INNER JOIN ".MOODLE_DB_NAME.".`mdl_scorm_scoes_track` ON ".MOODLE_DB_NAME." .`mdl_scorm`.`id`=`mdl_scorm_scoes_track`.`scormid`
-            INNER JOIN `betaform_erp`.`lista_corsi_dettaglio` ON `betaform_erp`.`lista_corsi_dettaglio`.id_modulo = `mdl_course_modules` .id
+            INNER JOIN `".DB_NAME."`.`lista_corsi_dettaglio` ON `".DB_NAME."`.`lista_corsi_dettaglio`.id_modulo = `mdl_course_modules` .id
             WHERE `mdl_course_modules_completion`.`userid`='".$idUtenteMoodle."'
             AND ".MOODLE_DB_NAME.".`mdl_scorm_scoes_track`.`userid` ='".$idUtenteMoodle."'
             AND `mdl_course_modules`.`course`='".$id_moodle."'
@@ -525,7 +558,7 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
             FROM ".MOODLE_DB_NAME." .`mdl_course_modules_completion`
             INNER JOIN ".MOODLE_DB_NAME." .`mdl_course_modules` ON ".MOODLE_DB_NAME." .`mdl_course_modules_completion`. `coursemoduleid` = `mdl_course_modules` .id
             INNER JOIN ".MOODLE_DB_NAME." .`mdl_scorm` ON ".MOODLE_DB_NAME." .`mdl_scorm`.`id`=`mdl_course_modules`.`instance`
-            INNER JOIN `betaform_erp`.`lista_corsi_dettaglio` ON `betaform_erp`.`lista_corsi_dettaglio`.id_modulo = `mdl_course_modules` .id
+            INNER JOIN `".DB_NAME."`.`lista_corsi_dettaglio` ON `".DB_NAME."`.`lista_corsi_dettaglio`.id_modulo = `mdl_course_modules` .id
             INNER JOIN ".MOODLE_DB_NAME.".mdl_quiz ON ".MOODLE_DB_NAME.".mdl_quiz.course = `mdl_course_modules`.`course`
             INNER JOIN ".MOODLE_DB_NAME.".mdl_quiz_grades ON mdl_quiz_grades.quiz = ".MOODLE_DB_NAME.".mdl_quiz.id
             AND `mdl_course_modules`.`course`='".$id_moodle."'
@@ -533,7 +566,7 @@ function Stampa_HTML_Dettaglio_Iscrizioni($tabella, $id) {
             AND `mdl_course_modules_completion`.`userid`='".$idUtenteMoodle."'
             AND `mdl_quiz_grades`.`userid`='".$idUtenteMoodle."'
             AND `lista_corsi_dettaglio`. `modname`='quiz'
-            ORDER BY `betaform_erp`.`lista_corsi_dettaglio`.`ordine`";
+            ORDER BY `".DB_NAME."`.`lista_corsi_dettaglio`.`ordine`";
 
             
             $sql_0002 = " SELECT CONCAT('<h3>',name,'</h3>') AS 'Quiz', intro,  mdl_grade_items.grademax, mdl_grade_items.gradepass, 

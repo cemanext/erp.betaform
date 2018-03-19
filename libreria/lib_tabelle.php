@@ -117,6 +117,8 @@ function stampa_table_datatables_responsive($query, $titolo = '', $stile = '', $
                     case "corso disabilitato":
                     case "ticket nuovo":
                     case "nota di credito":
+                    case "nota di credito totale":
+                    case "nota di credito parziale":
                         $rowTable .= '<td style="text-align:center; vertical-align:middle;"><span class="badge bold bg-red-thunderbird bg-font-red-thunderbird"> ' . $column . ' </span></td>';
                     break;
 
@@ -236,6 +238,7 @@ function stampa_table_static_basic($query, $stile, $titolo, $colore_tabella = CO
 
                     case "in attesa":
                     case "in corso":
+                    case "verifica":
                     case "in lavorazione":
                     case "in attesa di controllo":
                     case "in attesa di emissione":
@@ -262,6 +265,8 @@ function stampa_table_static_basic($query, $stile, $titolo, $colore_tabella = CO
                     case "corso disabilitato":
                     case "ticket nuovo":
                     case "nota di credito":
+                    case "nota di credito totale":
+                    case "nota di credito parziale":
                         $rowTable .= '<td style="text-align:center; vertical-align:middle;"><span class="badge bold bg-red-thunderbird bg-font-red-thunderbird"> ' . $column . ' </span></td>';
                     break;
 

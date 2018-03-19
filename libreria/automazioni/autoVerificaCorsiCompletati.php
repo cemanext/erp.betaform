@@ -20,20 +20,25 @@ if (DISPLAY_DEBUG) {
 }
 
 global $dblink, $log;
-/*
-// AGGIORNO ID UTENTE MOODLE
-$sql_0005 = "UPDATE lista_iscrizioni, lista_password 
-            SET lista_iscrizioni.id_utente_moodle = lista_password.id_moodle_user 
-            WHERE lista_password.id_professionista = lista_iscrizioni.id_professionista 
-            AND lista_iscrizioni.id_utente_moodle<=0";
-$dblink->query($sql_0005);
-*/
 
-$sql_004 = "SELECT lista_iscrizioni.id, lista_iscrizioni.id_professionista, lista_iscrizioni.id_utente_moodle,
+
+if(isset($_GET['idUtente'])){
+    $idUtente = $_GET['idUtente'];
+    if(DISPLAY_DEBUG) echo '<li style="color:green;">$idUtente = '.$idUtente.'</li>';
+    
+    $sql_004 = "SELECT lista_iscrizioni.id, lista_iscrizioni.id_professionista, lista_iscrizioni.id_utente_moodle,
         lista_corsi.id_corso_moodle, lista_iscrizioni.id_corso, lista_iscrizioni.id_classe 
         FROM lista_iscrizioni  INNER JOIN lista_corsi
         ON lista_corsi.id=lista_iscrizioni.id_corso
-        WHERE lista_iscrizioni.stato = 'In Corso' OR (avanzamento_completamento >= '80' AND lista_iscrizioni.stato NOT LIKE '%Configurazione%' AND lista_iscrizioni.stato NOT LIKE '%Completato%' AND lista_iscrizioni.stato NOT LIKE '%Scaduto%' AND lista_iscrizioni.stato NOT LIKE '%Disatti%')";
+        WHERE id_utente_moodle = '".$idUtente."' AND lista_iscrizioni.stato LIKE 'Completato' AND (stato_verifica = '' OR stato_verifica LIKE 'No') ORDER BY data_completamento DESC ";
+}else{
+    $sql_004 = "SELECT lista_iscrizioni.id, lista_iscrizioni.id_professionista, lista_iscrizioni.id_utente_moodle,
+        lista_corsi.id_corso_moodle, lista_iscrizioni.id_corso, lista_iscrizioni.id_classe 
+        FROM lista_iscrizioni  INNER JOIN lista_corsi
+        ON lista_corsi.id=lista_iscrizioni.id_corso
+        WHERE lista_iscrizioni.stato LIKE 'Completato' AND (stato_verifica = '' OR stato_verifica LIKE 'No') ORDER BY data_completamento DESC LIMIT 300"; //ORDER BY data_completamento DESC 
+}
+
 $rowsIscrizioni = $dblink->get_results($sql_004);
 
 foreach ($rowsIscrizioni as $rowIscrizione) {
@@ -78,12 +83,12 @@ foreach ($rowsIscrizioni as $rowIscrizione) {
             $updateIscrizione = array(
                 "dataagg" => date("Y-m-d H:i:s"),
                 "scrittore"=>$dblink->filter("autoCorsiCompletati"),
-                "stato" => "Completato",
-                "data_completamento" => date("Y-m-d H:i:s", $rowCompleto['timemodified']),
+                //"stato" => "Completato",
+                //"data_completamento" => date("Y-m-d H:i:s", $rowCompleto['timemodified']),
                 "avanzamento_completamento" => $percentuale_corso_utente,
                 "stato_verifica" => $statoVerifica,
                 //"data_fine" => date("Y-m-d H:i:s", $rowCompleto['timemodified']),
-                "stato_completamento" => "Completato"
+                //"stato_completamento" => "Completato"
             );
             
             if(!empty($rowConfig)){

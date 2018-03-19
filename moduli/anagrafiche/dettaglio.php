@@ -198,7 +198,10 @@ if (isset($_GET['id'])) {
                     //$('#summernote_1').summernote({height: 300});
                     //API:
                     //var sHTML = $('#summernote_1').code(); // get code
-                    $('.wysihtml5').destroy();
+                    $(".wysihtml5-toolbar").remove();
+                    $(".wysihtml5-sandbox").remove();
+                    $("input[name='_wysihtml5_mode']").remove();
+                    $(".wysihtml5").show();
                     //$('#summernote_1').destroy(); // destroy
                 }
 
@@ -218,8 +221,9 @@ if (isset($_GET['id'])) {
             $(document).ready(function() {
                 ComponentsEditors.init();
                 
-                $('#ajax').on('hidden.bs.modal', function () {
+                $('#ajax').on('hidden.bs.modal', function (e) {
                     ComponentsEditors.destroy();
+                    $(e.target).removeData('bs.modal');
                 });
             });
             

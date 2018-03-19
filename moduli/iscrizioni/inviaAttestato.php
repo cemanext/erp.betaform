@@ -26,18 +26,38 @@ if (isset($_GET['idIscrizione'])) {
     $row = $dblink->get_row($sql, true);
 
     $idProfessionsta = $row['id_professionista'];
-    $idIscrizione = $row['idIscrizione'];
+    $idIscrizione = $row['id'];
+    $idCorso = $row['id_corso'];
+    $dataCompletamento = $row['data_completamento'];
+    $idClasse = $row['id_classe'];
 
     $sql_proff = "SELECT * FROM lista_professionisti WHERE id='" . $idProfessionsta . "'";
     $rowProff = $dblink->get_row($sql_proff,true);
 
+    $professione = $rowProfessionista['professione'];
+    
     $emailDesti = $rowProff['email'];
+    
+    $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND id_classe = '$idClasse' AND (((data_inizio<='$dataCompletamento' OR data_inizio='00-00-0000') AND (data_fine>='$dataCompletamento' OR data_fine='00-00-0000')) OR (data_inizio='00-00-0000' OR data_fine='00-00-0000')) ORDER BY data_fine DESC, data_inizio DESC", true);
+    if(empty($rowCostiConfig)){
+        $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND titolo LIKE 'Base' ORDER BY data_fine DESC, data_inizio DESC", true);
+    }
+    
+    $crediti = $rowCostiConfig['crediti'];
+    $durata = $rowCostiConfig['durata_corso'];
+    $codiceAccreditamento = $rowCostiConfig['codice_accreditamento'];
+    $idAttestato = $rowCostiConfig['id_attestato'];
+    $titolo = $rowCostiConfig['titolo'];
+    $messaggio = $rowCostiConfig['email_messaggio'];
+    $mittente = $rowCostiConfig['email_mittente'];
+    $firma = $rowCostiConfig['firma'];
      
     $dest = $emailDesti;
     $dest_cc = '';
     $dest_bcc = '';
     $ogg = "Invio Attestato Corso - ".$row['nome_corso'];
-    $mess = EMAIL_TESTO_CONFIGURAZIONE_ATTESTATO;
+    $mess = (strlen($messaggio) > 0 ? $messaggio : EMAIL_TESTO_CONFIGURAZIONE_ATTESTATO);
+    $mitt = (strlen($mittente) > 0 ? $mittente : $mitt);
     
     $mess = str_replace("_XXX_NOME_XXX_",$rowProff['nome'],$mess);
     $mess = str_replace("_XXX_COGNOME_XXX_",$rowProff['cognome'],$mess);
@@ -106,12 +126,18 @@ if (isset($_GET['idIscrizione'])) {
 
         </div>
         <div class="modal-footer">
-            <button type="button" data-dismiss="modal" class="btn dark btn-outline">Annulla</button>
+            <button type="button" id="AnnullaInviaAttestato" name="AnnullaInviaAttestato" data-dismiss="modal" class="btn dark btn-outline">Annulla</button>
             <button type="submit" name="Invia" value="Invia" class="btn green">Invia</button>
         </div>
 </form>
 <script type="text/javascript">
     $(document).ready(function () {
         ComponentsEditors.init();
+        
+        $('#AnnullaInviaAttestato').on( "click", function(event) {
+            event.preventDefault();
+            ComponentsEditors.destroy();
+        });
+        
     });
 </script>

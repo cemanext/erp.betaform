@@ -18,8 +18,16 @@ if (isset($_GET['tbl'])) {
     $tabella = 'lista_password';
 }
 
-if(isset($_GET['tbl']) && $_GET['tbl']=="lista_esami_corsi_commerciali"){
+if(isset($_GET['tbl']) && ($_GET['tbl']=="lista_esami_corsi_commerciali" || $_GET['tbl']=="lista_telefonate")){
     if (!empty($_GET['intervallo_data'])) {
+        
+        if($_GET['tbl']=="lista_telefonate"){
+            $_SESSION['commerciale_idComm'] = ($_GET['idComm']>0 ? $_GET['idComm'] : "");
+            $_SESSION['commerciale_idMitt'] = ($_GET['idMitt']>0 ? $_GET['idMItt'] : "");
+            $_GET['idComm'] = ($_GET['idComm']>0 ? $_GET['idComm'] : "");
+            $_GET['idMitt'] = ($_GET['idMitt']>0 ? $_GET['idMItt'] : "");
+        }
+        
         $intervallo_data = $_GET['intervallo_data'];
         $_SESSION['intervallo_data'] = $_GET['intervallo_data'];
         $data_in = before(' al ', $intervallo_data);
@@ -60,10 +68,18 @@ if(isset($_GET['tbl']) && $_GET['tbl']=="lista_esami_corsi_commerciali"){
         //$tmp_in = explode("-",$richiestaAperta['data']);
         //$setDataCalIn = $tmp_in[1]."/".$tmp_in[2]."/".$tmp_in[0];
         $setDataCalIn = date("d-m-Y");
+        $_GET['idMitt'] = "";
+        $_GET['idComm'] = "";
+        $_SESSION['commerciale_idComm'] = "";
+        $_SESSION['commerciale_idMitt'] = "";
     }
 }else{
     $_SESSION['intervallo_data'] = null;
     unset($_SESSION['intervallo_data']);
+    $_SESSION['commerciale_idComm'] = null;
+    unset($_SESSION['commerciale_idComm']);
+    $_SESSION['commerciale_idMitt'] = null;
+    unset($_SESSION['commerciale_idMitt']);
 }
 ?>
 <!DOCTYPE html>
@@ -140,12 +156,12 @@ if(isset($_GET['tbl']) && $_GET['tbl']=="lista_esami_corsi_commerciali"){
                     <!-- BEGIN PAGE BAR -->
                     <?php include(BASE_ROOT . '/assets/page_bar.php'); ?>
                     <!-- END PAGE BAR -->
-                    <?php if(isset($_GET['tbl']) && $_GET['tbl']=="lista_esami_corsi_commerciali"){ ?>
+                    <?php if(isset($_GET['tbl']) && ($_GET['tbl']=="lista_esami_corsi_commerciali" || $_GET['tbl']=="lista_telefonate")){ ?>
                     <div class="clearfix"></div>
+                    <form action="?" class="form-horizontal form-bordered" method="GET" id="formIntervallo" name="formIntervallo">
                     <div class="row" style="margin-top: 10px; margin-bottom: -20px;">
-                        <form action="?" class="form-horizontal form-bordered" method="GET" id="formIntervallo" name="formIntervallo">
-                            <input type="hidden" name="tbl" id="whrStato" value="<?=$_GET['tbl']?>">
-                            <input type="hidden" name="idMenu" id="idMenu" value="<?=$_GET['idMenu']?>">
+                        <input type="hidden" name="tbl" id="whrStato" value="<?=$_GET['tbl']?>">
+                        <input type="hidden" name="idMenu" id="idMenu" value="<?=$_GET['idMenu']?>">
                         <div class="col-md-6">
                                 <div class="form-body">
                                     <div class="form-group">
@@ -162,8 +178,18 @@ if(isset($_GET['tbl']) && $_GET['tbl']=="lista_esami_corsi_commerciali"){
                                 </div>
                         </div>
                         <div class="col-md-6" style="vertical-align: middle;"><center>Risultati <?= $titolo_intervallo; ?></center></div>
-                        </form>
                     </div>
+                    <div class="clearfix"></div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <?=print_select2("SELECT id as valore, CONCAT(cognome,' ', nome) as nome FROM lista_password WHERE stato='Attivo' AND livello LIKE 'commerciale' ORDER BY cognome, nome ASC", "idComm", $_GET['idComm'], "", false, 'tooltips select_commerciale-allow-clear', 'data-container="body" data-placement="top" data-original-title="SELEZIONA COMMERCIALE"') ?>
+                        </div>
+                        <div class="col-md-6">
+                            <?=print_select2("SELECT id AS valore, mittente AS nome FROM lista_telefonate GROUP BY mittente ORDER BY mittente ASC", "idMitt", $_GET['idMitt'], "", false, 'tooltips select_mittente-allow-clear', 'data-container="body" data-placement="top" data-original-title="SELEZIONA MITTENTE"'); ?>
+                        </div>
+                    </div>
+                    </form>
+                    
                     <?php } ?>
                     <!-- START PAGE TITLE -->
                     <?php
@@ -253,7 +279,7 @@ if(isset($_GET['tbl']) && $_GET['tbl']=="lista_esami_corsi_commerciali"){
                     document.formIntervallo.submit();
                 });
 
-                $('#intervallo_data').on('change', function(ev, picker) {
+                $('#intervallo_data, #idComm, #idMitt').on('change', function(ev, picker) {
                     document.formIntervallo.submit();
                 });
 
