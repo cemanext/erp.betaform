@@ -95,7 +95,19 @@ if(isset($_GET['fn'])){
                     $valProf = explode("=", $chiaveValore[0]);
                     $valAzienda = explode("=", $chiaveValore[1]);
                     $valPrezzo = $tmpDati[1];
-                    $sql_1005 = "UPDATE lista_ordini SET dataagg = NOW(), id_professionista = '".$valProf[1]."', id_azienda='".$valAzienda[1]."'
+                    $idAgente = $tmpDati[2];
+                    $idCalendario = $tmpDati[3];
+                    if($idAgente > 0){
+                        $updateAgente = ", id_agente = '$idAgente'";
+                    }else{
+                        $updateAgente = "";
+                    }
+                    if($idCalendario > 0){
+                        $updateCalendario = ", id_calendario = '$idCalendario'";
+                    }else{
+                        $updateCalendario = "";
+                    }
+                    $sql_1005 = "UPDATE lista_ordini SET dataagg = NOW(), id_professionista = '".$valProf[1]."', id_azienda='".$valAzienda[1]."' $updateAgente $updateCalendario
                     WHERE campo_20='".$valore_del_cookie."' AND (stato='In Corso' OR stato='In Attesa')";
                     $rs_1005 = $dblink->query($sql_1005);
                     
@@ -403,26 +415,55 @@ if(isset($_GET['fn'])){
                 $rowOrdine = $dblink->get_row("SELECT * FROM lista_ordini WHERE campo_20='".$valore_del_cookie."' AND id_professionista='$id_utente' AND (stato='In Corso' OR stato='In Attesa')", true);
                 
                 if(!empty($rowOrdine) && $rowOrdine['id_professionista']>0 && $rowOrdine['id_azienda']>0 && $rowOrdine['imponibile']>0){
-                    $idOrdine = $rowOrdine['id'];
-                    $rowOrdine['id_ordine'] = $rowOrdine['id'];
-                    //$rowOrdine['stato'] = "In Attesa";
-                    $rowOrdine['dataagg'] = date("Y-m-d H:i:s");
-                    $rowOrdine['data_iscrizione'] = date("Y-m-d");
-                    $rowOrdine['scrittore'] = $dblink->filter("carrelloWeb");
-                    $rowOrdine['stato'] = "Venduto";
-                    $rowOrdine['id_agente'] = "37784";
-                    $rowOrdine['sezionale'] = "01";
-                    $rowOrdine['id_sezionale'] = "2";
-                    unset($rowOrdine['id']);
-                    unset($rowOrdine['notifica_email']);
-                    $ok = $ok && $dblink->insert("lista_preventivi", $rowOrdine);
-                    $idPrev = $dblink->lastid();
+                    if($rowOrdine['id_calendario']>0){
+                        $ordineDaCommerciale = true;
+                        $idOrdine = $rowOrdine['id'];
+                        $idPrev = $dblink->get_field("SELECT id_preventivo FROM calendario WHERE id = '".$rowOrdine['id_calendario']."'");
+                        $updatePrev = array(
+                            "id_ordine" => $rowOrdine['id'],
+                            "dataagg" => date("Y-m-d H:i:s"),
+                            "data_iscrizione" => date("Y-m-d"),
+                            "scrittore" => $dblink->filter("carrelloWeb"),
+                            "stato" => $dblink->filter("Venduto"),
+                            "campo_20" => $valore_del_cookie,
+                            "sezionale" => "00",
+                            "id_sezionale" => "3",
+                            "id_professionista" => $id_utente,
+                            "id_azienda" => $id_azienda,
+                        );
+                        $ok = $ok && $dblink->update("lista_preventivi", $updatePrev, array("id" => $idPrev));
+                        
+                        $updateCal = array(
+                            "dataagg" => date("Y-m-d H:i:s"),
+                            "scrittore" => $dblink->filter("carrelloWeb"),
+                            "stato" => $dblink->filter("Venduto"),
+                            "id_professionista" => $id_utente,
+                            "id_azienda" => $id_azienda,
+                        );
+                        $ok = $ok && $dblink->update("calendario", $updateCal, array("id" => $rowOrdine['id_calendario']));
+                    }else{
+                        $ordineDaCommerciale = false;
+                        $idOrdine = $rowOrdine['id'];
+                        $rowOrdine['id_ordine'] = $rowOrdine['id'];
+                        //$rowOrdine['stato'] = "In Attesa";
+                        $rowOrdine['dataagg'] = date("Y-m-d H:i:s");
+                        $rowOrdine['data_iscrizione'] = date("Y-m-d");
+                        $rowOrdine['scrittore'] = $dblink->filter("carrelloWeb");
+                        $rowOrdine['stato'] = "Venduto";
+                        $rowOrdine['id_agente'] = "37784";
+                        $rowOrdine['sezionale'] = "01";
+                        $rowOrdine['id_sezionale'] = "2";
+                        unset($rowOrdine['id']);
+                        unset($rowOrdine['notifica_email']);
+                        $ok = $ok && $dblink->insert("lista_preventivi", $rowOrdine);
+                        $idPrev = $dblink->lastid();
+                    }
                     if($ok){
                         $ok = $ok && $dblink->update("lista_ordini", array("stato" => "Chiuso", "data_iscrizione"=>date("Y-m-d")), array("id" => $idOrdine));
 
                         $rowOrdineDettagli = $dblink->get_results("SELECT * FROM lista_ordini_dettaglio WHERE id_ordine='".$idOrdine."' AND quantita>0");
                         foreach ($rowOrdineDettagli as $rowOrdineDettaglio) {
-                            if($ok){
+                            if($ok && !$ordineDaCommerciale){
                                 unset($rowOrdineDettaglio['id']);
                                 unset($rowOrdineDettaglio['id_ordine']);
                                 unset($rowOrdineDettaglio['url_immagine']);
@@ -446,7 +487,7 @@ if(isset($_GET['fn'])){
                             }
                         }
                         if($ok){
-                            $ok = $ok && $dblink->update("lista_ordini", array("campo_20" => "", "id_agente"=>"37784"), array("id" => $idOrdine));
+                            $ok = $ok && $dblink->update("lista_ordini", array("campo_20" => ""), array("id" => $idOrdine));
                             $ok = $ok && $dblink->update("lista_ordini_dettaglio", array("stato" => "Chiuso"), array("id_ordine" => $idOrdine));
                         }
                     }else{

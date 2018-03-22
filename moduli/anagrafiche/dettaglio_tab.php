@@ -764,6 +764,9 @@ if($richiestaReadonly===false){
                                                             <!--<input type="hidden" name="codice" id="codice" value="<?php echo $codice; ?>" class="form-control" readonly/>-->
                                                             <input type="hidden" name="dataagg" id="dataagg" value="<?php echo date("Y-m-d H:i:s"); ?>" class=form-control" readonly/>
                                                             <input type="hidden" name="scrittore" id="scrittore" value="<?php echo $_SESSION['cognome_nome_utente']; ?>" class="form-control" readonly/>
+                                                            <?php if($_SESSION['livello_utente']=='commerciale'){
+                                                                print_hidden("calendario_txt_dataagg_commerciale", date("d-m-Y H:i:s"), true);
+                                                            }?>
                                                             <!--<input type="hidden" name="wIdCommessaTLM" id="wIdCommessaTLM" value="<?php echo $_SESSION['idCommessaTLM']; ?>" class="form-control" />
                                                             <input type="hidden" name="wIdProcessoTLM" id="wIdProcessoTLM" value="<?php echo $_SESSION['idProcessoTLM']; ?>" class="form-control" />-->
                                                             
@@ -1033,6 +1036,56 @@ if($richiestaReadonly===false){
         <script src="<?= BASE_URL ?>/assets/pages/scripts/ui-bootbox.min.js" type="text/javascript"></script>
         <script src="<?= BASE_URL ?>/moduli/anagrafiche/scripts/funzioni.js" type="text/javascript"></script>
 
+        <script type="text/javascript">
+            var ComponentsEditors = function () {
+
+                var handleWysihtml5 = function () {
+                    if (!jQuery().wysihtml5) {
+                        return;
+                    }
+
+                    if ($('.wysihtml5').size() > 0) {
+                        $('.wysihtml5').wysihtml5({
+                            "stylesheets": ["/assets/global/plugins/bootstrap-wysihtml5/wysiwyg-color.css"]
+                        });
+                    }
+                }
+
+                var handleWysihtml5Destroy = function () {
+                    //$('#summernote_1').summernote({height: 300});
+                    //API:
+                    //var sHTML = $('#summernote_1').code(); // get code
+                    $(".wysihtml5-toolbar").remove();
+                    $(".wysihtml5-sandbox").remove();
+                    $("input[name='_wysihtml5_mode']").remove();
+                    $(".wysihtml5").show();
+                    //$('#summernote_1').destroy(); // destroy
+                }
+
+                return {
+                    //main function to initiate the module
+                    init: function () {
+                        handleWysihtml5();
+                    },
+                    
+                    destroy: function () {
+                        handleWysihtml5Destroy();
+                    }
+                };
+
+            }();
+            
+            $(document).ready(function() {
+                ComponentsEditors.init();
+                
+                $('#ajax').on('hidden.bs.modal', function (e) {
+                    ComponentsEditors.destroy();
+                    $(e.target).removeData('bs.modal');
+                });
+            });
+            
+        </script>
+        
         <div id="myModalCodiceFiscale" class="modal fade">
             <div class="modal-dialog">
                <div class="modal-content">

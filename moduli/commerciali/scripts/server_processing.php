@@ -92,6 +92,25 @@ switch($funzione){
         $ordine = "ORDER BY dataagg DESC";
     break;
     
+    case "tabella5":
+        $campi_visualizzati = "data_chiamata_inizio,
+                        data_chiamata_fine,
+                        durata_chiamata,
+                        mittente,
+                        destinatario,
+                        stato";
+        $where = "1";
+        $where.= " AND id_password=" . $id."";
+        if(!empty($arrayCampoRicerca)){
+            foreach ($arrayCampoRicerca as $campoRicerca) {
+                $where.= " AND (data_chiamata_inizio LIKE '%".$campoRicerca."%' OR data_chiamata_fine LIKE '%".$campoRicerca."%'";
+                $where.= " OR durata_chiamata LIKE '%".$campoRicerca."%' OR mittente LIKE '%".$campoRicerca."%'";
+                $where.= " OR destinatario LIKE '%".$campoRicerca."%' OR stato LIKE '%".$campoRicerca."%')";
+            }
+        }
+        $ordine = "ORDER BY data_chiamata_inizio DESC";
+    break;
+    
     case "tabella2":
         $campi_visualizzati = "CONCAT('<a class=\"btn btn-circle btn-icon-only green btn-outline\" href=\"".BASE_URL."/moduli/anagrafiche/dettaglio_tab.php?tbl=calendario&id=',id,'\" title=\"SCHEDA\" alt=\"SCHEDA\"><i class=\"fa fa-book\"></i></a>') AS 'fa-book',
                         CONCAT((SELECT CONCAT(cognome,' ', nome) FROM lista_password WHERE id = id_agente),' (',id_agente,')') AS 'Commerciale',

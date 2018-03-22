@@ -499,6 +499,8 @@ function stampa_table_static_basic_input($tabella, $query, $stile, $titolo, $col
                         default:
                             if (strpos(strtolower($column), "fa-")) {
                                 $rowTable .=  '<td style="text-align:center; vertical-align:middle;">' . $column . '</td>';
+                            } else if(strpos(strtolower($column), "style")) {
+                                $rowTable .=  '<td style="text-align:center; vertical-align:middle;">' . print_input("txt_" . $record . "_" . $nome_colonna, strip_tags($column), $nome_colonna, $allReadonly, false) . '</td>';
                             } else {
                                 $rowTable .=  '<td style="text-align:center; vertical-align:middle;">' . print_input("txt_" . $record . "_" . $nome_colonna, $column, $nome_colonna, $allReadonly, false) . '</td>';
                             }

@@ -598,6 +598,7 @@ if(isset($_GET['fn'])){
         
         case "CaricaTemplate":
             $idTemplate = $_GET['id'];
+            $idPreventivo = $_GET['idPrev'];
             $idProfessionista = $_GET['idProf'];
             
             $row = $dblink->get_row("SELECT * FROM lista_template_email WHERE id ='$idTemplate'",true);
@@ -606,12 +607,28 @@ if(isset($_GET['fn'])){
             
             $rowProf = $dblink->get_row("SELECT * FROM lista_professionisti WHERE id ='$idProfessionista'",true);
             
+            $sql = "SELECT codice, id_agente, id_campagna, id_calendario FROM lista_preventivi WHERE id='" . $idPreventivo . "'";
+            list($codice, $id_agente, $id_campagna, $id_calendario) = $dblink->get_row($sql);
+            
+            $id_azienda =  ottieniIdAzienda($idProfessionista);
+
+            $rowDettaglioPrev = $dblink->get_row("SELECT * FROM lista_preventivi_dettaglio WHERE id_preventivo = '".$idPreventivo."'", true);
+
+            $variabili = base64_encode("/carrello/dati-utente-partecipante/?betaformazione_utente_id=$idProfessionista&betaformazione_fatturazione_id=$id_azienda|".$rowDettaglioPrev['prezzo_prodotto']."|".$id_agente."|".$id_calendario);
+
+            $linkShop = "<a href=\"".WP_DOMAIN_NAME."/carrello/?a=".$rowDettaglioPrev['id_prodotto']."&c=".$id_campagna."&r=$variabili\">Voglio sottoscrivere l'offerta</a><br /><br />Oppure copia e incolla questo link:<br>".WP_DOMAIN_NAME."/carrello/?a=".$rowDettaglioPrev['id_prodotto']."&c=".$id_campagna."&r=$variabili";
+
+            $dettaglioOfferta = "<b>OFFERTA PROPOSTA</b><br>".$rowDettaglioPrev['nome_prodotto']." - Euro ".$rowDettaglioPrev['prezzo_prodotto']." (".round($rowDettaglioPrev['prezzo_prodotto']*(($rowDettaglioPrev['iva_prodotto']/100)+1),2)." ivato)";
+            
+            
             $row['messaggio'] = html_entity_decode($row['messaggio']);
             $rowComm['firma_email'] = html_entity_decode($rowComm['firma_email']);
             
             $row['messaggio'] = str_replace("_XXX_COGNOME_XXX_", $rowProf['cognome'], $row['messaggio']);
             $row['messaggio'] = str_replace("_XXX_NOME_XXX_", $rowProf['nome'], $row['messaggio']);
             $row['messaggio'] = str_replace("_XXX_FIRMA_MAIL_XXX_", $rowComm['firma_email'], $row['messaggio']);
+            $row['messaggio'] = str_replace("_XXX_DETTAGLIO_OFFERTA_XXX_", $dettaglioOfferta, $row['messaggio']);
+            $row['messaggio'] = str_replace("_XXX_LINK_SHOP_ONLINE_XXX_", $linkShop, $row['messaggio']);
             
             echo json_encode($row);
         break;

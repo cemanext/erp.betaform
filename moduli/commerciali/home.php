@@ -8,11 +8,13 @@ require_once(BASE_ROOT.'config/confPermessi.php');
 if(isset($_POST['id_agente']) && $_POST['id_agente']>0){
     $id_agente = $_POST['id_agente'];
     $whereCommerciale = "AND id_agente='".$_POST['id_agente'] ."'";
+    $whereCommercialePass = "AND ag.id='".$_POST['id_agente'] ."'";
     $whereCommercialeAll = "AND lp.id_agente='".$_POST['id_agente'] ."'";
     $whereCommercialeFattAll = "AND lf.id_agente='".$_POST['id_agente'] ."'";
 }else{
     $id_agente = "";
     $whereCommerciale = "";
+    $whereCommercialePass = "";
     $whereCommercialeAll = "";
     $whereCommercialeFattAll = "";
 }
@@ -48,18 +50,22 @@ if (isset($_POST['intervallo_data'])) {
     
     if($data_in == $data_out){
         $where_intervalloCal = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND DATE(datainsert) = '" . GiraDataOra($data_in) . "'";
-        $where_intervallo_cal = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND DATE(dataagg) = '" . GiraDataOra($data_in) . "'";
+        $where_intervallo_cal = " $whereTmkRinnovi $whereTmkNegativi AND DATE(dataagg_commerciale) = '" . GiraDataOra($data_in) . "'";
+        $where_intervallo_cal_attribuite = " $whereTmkRinnovi $whereTmkNegativi AND DATE(dataadd_commerciale) = '" . GiraDataOra($data_in) . "'";
         $where_intervallo_cal_richiami = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND DATE(datainsert) = '" . GiraDataOra($data_in) . "'";
+        $where_intervallo_tel = " AND DATE(data_chiamata_inizio) = '" . GiraDataOra($data_in) . "'";
         $where_intervallo = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND sezionale NOT LIKE 'FREE' AND DATE(data_iscrizione) = '" . GiraDataOra($data_in) . "'";
         $where_intervallo_all = " $whereCommercialeAll $whereTmkRinnoviAll $whereTmkNegativiAll AND sezionale NOT LIKE 'FREE' AND DATE(lp.data_iscrizione)  =  '" . GiraDataOra($data_in) . "'";
         $where_intervallo_negativo_all = " $whereCommercialeAll $whereTmkRinnoviAll $whereTmkNegativiAll AND sezionale NOT LIKE 'FREE' AND DATE(lp.data_iscrizione)  =  '" . GiraDataOra($data_in) . "'";
     }else{
-        $where_intervallo_cal = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND dataagg BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
-        $where_intervallo_cal_richiami = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND datainsert BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
-        $where_intervalloCal = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND datainsert BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
-        $where_intervallo = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND sezionale NOT LIKE 'FREE' AND data_iscrizione BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
-        $where_intervallo_all = " $whereCommercialeAll $whereTmkRinnoviAll $whereTmkNegativiAll AND sezionale NOT LIKE 'FREE' AND lp.data_iscrizione BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
-        $where_intervallo_negativo_all = " $whereCommercialeAll $whereTmkRinnoviAll $whereTmkNegativiAll AND sezionale NOT LIKE 'FREE' AND lp.data_iscrizione BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo_cal = " $whereTmkRinnovi $whereTmkNegativi AND DATE(dataagg_commerciale) BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo_cal_attribuite = " $whereTmkRinnovi $whereTmkNegativi AND DATE(dataadd_commerciale) BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo_cal_richiami = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND DATE(datainsert) BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo_tel = " AND DATE(data_chiamata_inizio) BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervalloCal = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND DATE(datainsert) BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND sezionale NOT LIKE 'FREE' AND DATE(data_iscrizione) BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo_all = " $whereCommercialeAll $whereTmkRinnoviAll $whereTmkNegativiAll AND sezionale NOT LIKE 'FREE' AND DATE(lp.data_iscrizione) BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo_negativo_all = " $whereCommercialeAll $whereTmkRinnoviAll $whereTmkNegativiAll AND sezionale NOT LIKE 'FREE' AND DATE(lp.data_iscrizione) BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
     }
     
     if("01-".date("m-Y")." al ".date("t-m-Y") == $intervallo_data){
@@ -93,8 +99,10 @@ if (isset($_POST['intervallo_data'])) {
     $whereTmkNegativiAll = " AND lp.id_campagna != 181 ";*/
     
     $where_intervalloCal = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND YEAR(datainsert)=YEAR(CURDATE()) AND MONTH(datainsert)=MONTH(CURDATE()) AND DAY(datainsert)=DAY(CURDATE())";
-    $where_intervallo_cal = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND YEAR(dataagg)=YEAR(CURDATE()) AND MONTH(dataagg)=MONTH(CURDATE()) AND DAY(dataagg)=DAY(CURDATE())";
-    $where_intervallo_cal_richiami = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND YEAR(datainsert)=YEAR(CURDATE()) AND MONTH(datainsert)=MONTH(CURDATE()) AND DAY(datainsert)=DAY(CURDATE())";
+    $where_intervallo_cal = " $whereTmkRinnovi $whereTmkNegativi AND YEAR(dataagg_commerciale)=YEAR(CURDATE()) AND MONTH(dataagg_commerciale)=MONTH(CURDATE()) AND DAY(dataagg_commerciale)=DAY(CURDATE())";
+    $where_intervallo_cal_attribuite = " $whereTmkRinnovi $whereTmkNegativi AND YEAR(dataadd_commerciale)=YEAR(CURDATE()) AND MONTH(dataadd_commerciale)=MONTH(CURDATE()) AND DAY(dataadd_commerciale)=DAY(CURDATE())";
+    $where_intervallo_cal_richiami = " $whereTmkRinnovi $whereTmkNegativi AND YEAR(datainsert)=YEAR(CURDATE()) AND MONTH(datainsert)=MONTH(CURDATE()) AND DAY(datainsert)=DAY(CURDATE())";
+    $where_intervallo_tel = " AND YEAR(data_chiamata_inizio)=YEAR(CURDATE()) AND MONTH(data_chiamata_inizio)=MONTH(CURDATE()) AND DAY(data_chiamata_inizio)=DAY(CURDATE())";
     $where_intervallo = " $whereCommerciale $whereTmkRinnovi $whereTmkNegativi AND sezionale NOT LIKE 'FREE' AND YEAR(data_iscrizione)=YEAR(CURDATE()) AND MONTH(data_iscrizione)=MONTH(CURDATE()) AND DAY(data_iscrizione)=DAY(CURDATE())";
     $where_intervallo_all = " $whereCommercialeAll $whereTmkRinnoviAll $whereTmkNegativiAll AND sezionale NOT LIKE 'FREE' AND YEAR(lp.data_iscrizione)=YEAR(CURDATE()) AND MONTH(lp.data_iscrizione)=MONTH(CURDATE()) AND DAY(lp.data_iscrizione)=DAY(CURDATE())";
     $where_intervallo_negativo_all = " $whereCommercialeAll $whereTmkRinnoviAll $whereTmkNegativiAll AND sezionale NOT LIKE 'FREE' AND YEAR(lp.data_iscrizione)=YEAR(CURDATE()) AND MONTH(lp.data_iscrizione)=MONTH(CURDATE()) AND DAY(lp.data_iscrizione)=DAY(CURDATE())";
@@ -133,7 +141,7 @@ if (isset($_POST['intervallo_data'])) {
         $whereTmkNegativiFattAll = "";
     }else{
         $whereTmkNegativiFatt = " AND lista_fatture.id_campagna != 181 ";
-        $whereTmkNegativiAllFatt = " AND lf.id_campagna != 181 ";
+        $whereTmkNegativiFattAll = " AND lf.id_campagna != 181 ";
     }
     
     if($data_in == $data_out){
@@ -141,9 +149,9 @@ if (isset($_POST['intervallo_data'])) {
         $where_intervallo_fatture_all = " $whereCommercialeFattAll $whereTmkRinnoviFattAll $whereTmkNegativiAll AND DATE(lf.data_creazione)  =  '" . GiraDataOra($data_in) . "'";
         $where_intervallo_fatture_pagamento_all = " $whereCommercialeFattAll $whereTmkRinnoviFattAll $whereTmkNegativiAll AND DATE(lf.data_pagamento)  =  '" . GiraDataOra($data_in) . "'";
     }else{
-        $where_intervallo_fatture = " $whereCommerciale $whereTmkRinnoviFatt $whereTmkNegativi AND lista_fatture.data_creazione BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
-        $where_intervallo_fatture_all = " $whereCommercialeFattAll $whereTmkRinnoviFattAll $whereTmkNegativiAll AND lf.data_creazione BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
-        $where_intervallo_fatture_pagamento_all = " $whereCommercialeFattAll $whereTmkRinnoviFattAll $whereTmkNegativiAll AND lf.data_pagamento BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo_fatture = " $whereCommerciale $whereTmkRinnoviFatt $whereTmkNegativi AND DATE(lista_fatture.data_creazione) BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo_fatture_all = " $whereCommercialeFattAll $whereTmkRinnoviFattAll $whereTmkNegativiAll AND DATE(lf.data_creazione) BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
+        $where_intervallo_fatture_pagamento_all = " $whereCommercialeFattAll $whereTmkRinnoviFattAll $whereTmkNegativiAll AND DATE(lf.data_pagamento) BETWEEN  '" . GiraDataOra($data_in) . "' AND  '" . GiraDataOra($data_out) . "'";
     }
     
     if("01-".date("m-Y")." al ".date("t-m-Y") == $intervallo_data){
@@ -264,7 +272,7 @@ if (isset($_POST['intervallo_data'])) {
                                                 </span>
                                             </div>
                                         </div>
-                                        <div class="col-md-3" style="vertical-align: middle;"><center><small>Risultati <?= $titolo_intervallo; ?></small></center></div>
+                                        <div class="col-md-9" style="vertical-align: middle;"><center><small>Risultati <?= $titolo_intervallo; ?></small></center></div>
                                     </div>
                                 </div>
                         </div>
@@ -415,9 +423,11 @@ if (isset($_POST['intervallo_data'])) {
                             
                             $sql_0020 = "CREATE TEMPORARY TABLE stat_commerciali_home_2 (SELECT CONCAT(ag.cognome,' ',ag.nome) as Commerciale, 
                             (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato LIKE 'Mai Contattato' OR ca.stato LIKE 'Richiamare') AND ca.id_agente=ag.id $whereTmkRinnovi) AS Richiami,
-                            (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato NOT LIKE 'Fatto' AND ca.stato NOT LIKE 'Chiusa%') AND ca.id_agente=ag.id $where_intervallo_cal_richiami) AS Richieste_Attribuite,
+                            (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato NOT LIKE 'Fatto' AND ca.stato NOT LIKE 'Chiusa%') AND ca.id_agente=ag.id $where_intervallo_cal_attribuite) AS Richieste_Attribuite,
                             (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND (ca.stato LIKE 'Mai Contattato' OR ca.stato LIKE 'Richiamare') AND ca.id_agente=ag.id $where_intervallo_cal_richiami) AS Tel_Richiami,
                             (SELECT COUNT(*) AS conteggio FROM calendario AS ca WHERE etichetta='Nuova Richiesta' AND ca.id_agente=ag.id $where_intervallo_cal) AS telgestite,
+                            (SELECT SUM(TIME_TO_SEC(durata_chiamata)) AS conteggio FROM lista_telefonate as lt WHERE LENGTH(lt.mittente) > 5 AND lt.id_password=ag.id $where_intervallo_tel) AS telminuti,
+                            (SELECT COUNT(*) AS conteggio FROM lista_telefonate as lt WHERE LENGTH(lt.mittente) > 5 AND lt.id_password=ag.id $where_intervallo_tel) AS teltotali,
                             (SELECT COUNT(*) AS conteggio_gestite FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Negativo') AND lp.id_agente=ag.id $where_intervallo_negativo_all) AS Negativo,
                             (SELECT COUNT(*) AS conteggio_venduti FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Venduto' OR lp.stato LIKE 'Chiuso') AND lp.id_agente=ag.id $where_intervallo_all) AS Iscritti,
                             (SELECT IF(SUM(lp.imponibile)>0, SUM(lp.imponibile), 0) AS conteggio_preventivi FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Venduto' OR lp.stato LIKE 'Chiuso') AND lp.id_agente=ag.id $where_intervallo_all) AS Iscritto_Lordo,
@@ -425,10 +435,10 @@ if (isset($_POST['intervallo_data'])) {
                             (SELECT IF(SUM(lp.imponibile)>0, SUM(lp.imponibile), 0) AS conteggio_preventivi FROM lista_preventivi AS lp WHERE (lp.stato LIKE 'Venduto' OR lp.stato LIKE 'Chiuso') AND lp.id_agente=ag.id $where_intervallo_all) AS Iscritto_Netto,
                             (SELECT IF(SUM(lf.imponibile)>0, SUM(lf.imponibile), 0) AS fatture_incassate FROM lista_fatture AS lf WHERE (lf.stato LIKE 'Pagata') AND lf.id_agente=ag.id $where_intervallo_fatture_pagamento_all) AS Incassato,
                             (SELECT IF(SUM(lf.imponibile)>0, SUM(lf.imponibile), 0) AS fatture_da_incassate FROM lista_fatture AS lf WHERE (lf.stato LIKE 'In Attesa') AND lf.id_agente=ag.id ) AS Da_Incassare
-                            FROM lista_password AS ag WHERE ag.livello='commerciale' AND ag.stato = 'Attivo');";
+                            FROM lista_password AS ag WHERE ag.livello='commerciale' AND ag.stato = 'Attivo' $whereCommercialePass);";
                             $dblink->query($sql_0020, true);
                             
-                            $sql_0021 = "CREATE TEMPORARY TABLE stat_commerciali_home_totale (SELECT Commerciale, Richiami, Richieste_Attribuite, telgestite AS 'Tel_Gestite',"
+                            $sql_0021 = "CREATE TEMPORARY TABLE stat_commerciali_home_totale (SELECT Commerciale, Richiami, Richieste_Attribuite, telgestite AS 'Tel_Gestite', SEC_TO_TIME(telminuti) AS 'Tot_Min_Telefonate', teltotali AS 'Tot_Telefonate', SUBSTR(SEC_TO_TIME(telminuti/teltotali),2,7) AS 'Media_Min_Telefonate',"
                                     . " Iscritti, Iscritto_Lordo, Iscritto_Annulato, (Iscritto_Netto-Iscritto_Annulato) AS Iscritto_Netto, IF(Iscritti>0,ROUND((Richieste_Attribuite)/Iscritti, 2),0) AS Realizzato,"
                                     . " IF(Iscritto_Netto>0, ROUND(Iscritto_Netto/(Iscritti),2), 0) AS Media_part_su_Fattura, Incassato, Da_Incassare"
                                     . " FROM stat_commerciali_home_2);";

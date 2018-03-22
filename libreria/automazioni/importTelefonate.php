@@ -11,7 +11,7 @@ if (DISPLAY_DEBUG) {
     echo '<hr>';
 }
 
-$filename="crd.log";
+$filename="cdr.log";
             
 if(!is_dir(BASE_ROOT . "media/lista_telefonate")){
     mkdir(BASE_ROOT . "media/lista_telefonate", 0777);

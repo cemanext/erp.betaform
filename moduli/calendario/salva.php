@@ -22,7 +22,7 @@ if(isset($_GET['fn'])){
             
             $row_0002 = $dblink->get_row("SELECT stato FROM calendario WHERE id='".$_POST['txt_id_calendario']."'", true);
             if($row_0002['stato']=="In Attesa di Controllo"){
-                $dblink->update("calendario", array("stato"=>"Mai Contattato"), array("id"=>$_POST['txt_id_calendario']));
+                $dblink->update("calendario", array("stato"=>"Mai Contattato", "dataadd_commerciale" => date("Y-m-d H:i:s")), array("id"=>$_POST['txt_id_calendario']));
             }
             
             $ok = $ok && $dblink->update("calendario", array("dataagg" => date("Y-m-d H:i:s"),"scrittore" => $dblink->filter($_SESSION['cognome_nome_utente']), "id_agente"=>$row_0001["id_agente"], "destinatario"=>$row_0001["cognome_nome_agente"]), array("id"=>$_POST['txt_id_calendario']));
@@ -68,7 +68,11 @@ if(isset($_GET['fn'])){
                 $row_0001 = $dblink->get_row("SELECT id as id_agente, CONCAT(cognome,' ', nome) as destinatario FROM lista_password WHERE id='".$id_agente."'", true);
                 $row_0001["dataagg"] = date("Y-m-d H:i:s");
                 $row_0001["scrittore"] = $dblink->filter($_SESSION['cognome_nome_utente']);
-
+                $row_0001["dataadd_commerciale"] = date("Y-m-d H:i:s");
+                if($_SESSION['livello_utente']=='commerciale'){
+                    $updateCalendario["dataagg_commerciale"] = date("Y-m-d H:i:s");
+                }
+                
                 $ok = $ok && $dblink->update("calendario", $row_0001, array("id"=>$id_calendario));
 
                 //$ok = $ok && $dblink->update("lista_preventivi", array("dataagg" => date("Y-m-d H:i:s"), "scrittore" => $dblink->filter($_SESSION['cognome_nome_utente']), "id_calendario"=>$insetIdCalendario, "id_agente"=>$id_agente), array("id_calendario"=>$id_calendario));
@@ -83,6 +87,10 @@ if(isset($_GET['fn'])){
                 $row_0001["dataagg"] = date("Y-m-d H:i:s");
                 $row_0001["scrittore"] = $dblink->filter($_SESSION['cognome_nome_utente']);
                 $row_0001["stato"] = "Mai Contattato";
+                $row_0001["dataadd_commerciale"] = date("Y-m-d H:i:s");
+                if($_SESSION['livello_utente']=='commerciale'){
+                    $updateCalendario["dataagg_commerciale"] = date("Y-m-d H:i:s");
+                }
 
                 $ok = $ok && $dblink->update("calendario", $row_0001, array("id"=>$id_calendario));
                 if($ok) header("Location:".BASE_URL."/moduli/anagrafiche/dettaglio_tab.php?tbl=calendario&id=$id_calendario&res=4");
@@ -107,7 +115,7 @@ if(isset($_GET['fn'])){
                     $row_0001["scrittore"] = $dblink->filter($_SESSION['cognome_nome_utente']);
                     $row_0002 = $dblink->get_row("SELECT stato FROM calendario WHERE id='".$id_calendario."'", true);
                     if($row_0002['stato']=="In Attesa di Controllo"){
-                        $dblink->update("calendario", array("stato"=>"Mai Contattato"), array("id"=>$id_calendario));
+                        $dblink->update("calendario", array("stato"=>"Mai Contattato", "dataadd_commerciale" => date("Y-m-d H:i:s")), array("id"=>$id_calendario));
                     }
                     $ok = $ok && $dblink->update("calendario", array("dataagg" => date("Y-m-d H:i:s"),"scrittore" => $dblink->filter($_SESSION['cognome_nome_utente']), "id_agente"=>$row_0001["id_agente"], "destinatario"=>$row_0001["cognome_nome_agente"]), array("id"=>$id_calendario));
                 }

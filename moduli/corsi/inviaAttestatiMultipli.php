@@ -178,7 +178,8 @@ if (isset($_POST['intervallo_data'])) {
                 CONCAT('<span class=\"btn sbold uppercase btn-outline blue-steel\">',cognome_nome_professionista,'</span>') AS cognome_nome_professionista, 
                 codice_corso, 
                 nome_classe,
-                data_completamento, stato_completamento AS Stato, 
+                data_completamento, stato_completamento AS Stato,
+                IF(stato_verifica LIKE 'Da Verificare' OR stato_verifica LIKE 'Non Completato', '', CONCAT('<a class=\"btn btn-circle btn-icon-only red btn-outline\" onclick=\"javascript: return confirm(\'Sei sicuro di rigenerare questo attestato ?\');\" href=\"" . BASE_URL . "/moduli/corsi/printAttestatoPDF.php?idIscrizione=',`id`,'&force=1\" TARGET=\"_BLANK\" title=\"FORZA RIGENERA\" alt=\"FORZA RIGENERA\"><i class=\"fa fa-repeat\"></i></a>')) AS 'RIGENERA PDF',
                 (SELECT codice_ricerca FROM lista_fatture WHERE id=id_fattura) AS 'Cod. Fatt.', (SELECT stato FROM lista_fatture WHERE id=id_fattura) AS Stato_Fattura, id AS selezione
                 FROM totaleIscrizioni WHERE 1 $where_intervallo";
                 stampa_table_static_basic($sql_0001, '', 'Invio Attestati Multipli', '', 'fa fa-handshake-o');

@@ -39,7 +39,7 @@ function creaAttestatoPDF($idIscrizione, $echo = false, $forzaRigenerazione = fa
         $n = 0;
         
         foreach ($explodeProfessione as $valoreProfessione) {
-            $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND LCASE(professione) = LCASE('$valoreProfessione') AND (((data_inizio<='$dataCompletamento' OR data_inizio='00-00-0000') AND (data_fine>='$dataCompletamento' OR data_fine='00-00-0000')) OR (data_inizio='00-00-0000' OR data_fine='00-00-0000')) ORDER BY data_fine DESC, data_inizio DESC", true);
+            $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND LCASE(professione) = LCASE('$valoreProfessione') AND professione!='' AND (((data_inizio<='$dataCompletamento' OR data_inizio='00-00-0000') AND (data_fine>='$dataCompletamento' OR data_fine='00-00-0000')) OR (data_inizio='00-00-0000' OR data_fine='00-00-0000')) ORDER BY data_fine DESC, data_inizio DESC", true);
             if(empty($rowCostiConfig)){
                 $rowCostiConfig = $dblink->get_row("SELECT * FROM lista_corsi_configurazioni WHERE id_corso = '$idCorso' AND titolo LIKE 'Base' ORDER BY data_fine DESC, data_inizio DESC", true);
             }

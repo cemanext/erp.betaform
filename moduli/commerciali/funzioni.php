@@ -58,7 +58,8 @@ function Stampa_HTML_Dettaglio_Commerciali($tabella, $id) {
     switch ($tabella) {
         case 'lista_password':
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
-            $sql_0001 = "SELECT CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"modifica.php?id=',id,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>') AS 'fa-edit',  `livello`, `nome`, `cognome`, `cellulare`, `email`, `stato` 
+            $sql_0001 = "SELECT CONCAT('<a class=\"btn btn-circle btn-icon-only blue btn-outline\" href=\"modifica.php?id=',id,'\" title=\"MODIFICA\" alt=\"MODIFICA\"><i class=\"fa fa-edit\"></i></a>') AS 'fa-edit', 
+            `livello`, `nome`, `cognome`, `cellulare`, `email`, numerico_1 AS Interno, `stato` 
             FROM lista_password WHERE id=" . $id;
             stampa_table_static_basic($sql_0001, '', 'Commerciale', '');
             echo '</div></div>';
@@ -175,6 +176,20 @@ function Stampa_HTML_Dettaglio_Commerciali($tabella, $id) {
             echo '</div><div style="text-align: center; margin-bottom: 15px;"> 
                     <button id="associaCommerciale" type="button" class="btn btn-icon purple-studio" alt="ASSOCIA COMMERCIALE" title="ASSOCIA COMMERCIALE"><i class="fa fa-sign-in"></i> Associa Commerciale</a></button>
                 </div></div>';
+            
+            echo '<div class="row"><div class="col-md-12 col-sm-12">';
+            $sql_0006 = "SELECT 
+                        data_chiamata_inizio,
+                        data_chiamata_fine,
+                        durata_chiamata,
+                        mittente,
+                        destinatario,
+                        stato
+                        FROM `lista_telefonate` 
+                        WHERE 1 $id_password=" . $id." ORDER BY data_chiamata_inizio DESC LIMIT 1";
+            
+            stampa_table_datatables_ajax($sql_0006, "#datatable_ajax_5", 'Telefonate', 'datatable_ajax_5', 'yellow-gold');
+            echo '</div></div>';
             
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
             

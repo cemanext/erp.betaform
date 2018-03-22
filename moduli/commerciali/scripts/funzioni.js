@@ -617,6 +617,62 @@ var TableDatatablesAjaxCommerciali = function () {
         });
     }
     
+    var initTableAjaxCommerciali5 = function () {
+        var table = $('#datatable_ajax_5');
+
+        var oTable = table.dataTable({
+            // Internationalisation. For more info refer to http://datatables.net/manual/i18n
+
+            "processing": true,
+            "serverSide": true,
+
+            // Or you can use remote translation file
+            "language": {
+               url: '//cdn.datatables.net/plug-ins/1.10.12/i18n/Italian.json'
+            },
+
+            // setup buttons extentension: http://datatables.net/extensions/buttons/
+            buttons: [
+              { extend: 'print', className: 'btn white btn-outline' },
+              { extend: 'copy', className: 'btn white btn-outline' },
+              { extend: 'pdf', className: 'btn white btn-outline' },
+              { extend: 'excel', className: 'btn white btn-outline ' },
+              { extend: 'csv', className: 'btn white btn-outline ' }
+            ],
+
+            // setup responsive extension: http://datatables.net/extensions/responsive/
+            responsive: false,
+
+            "ajax": {
+                "url": BASE_URL_HOST+"/moduli/commerciali/scripts/server_processing.php?tbl=lista_telefonate&fn=tabella5&id="+$.urlParam('id'), // ajax source
+            },
+
+            "ordering": true,
+            "order": [
+                [1, 'desc']
+            ],
+
+            "lengthMenu": [
+                [10, 25, 30, 50, 100, 250, -1],
+                [10, 25, 30, 50, 100, 250, 'Tutti'] // change per page values here
+            ],
+            // set the initial value
+            "pageLength": 10,
+            
+            "columnDefs": [
+                {"className": "dt-center", "targets": "_all"},
+                {"orderable": true}
+            ],
+
+            "dom": "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
+
+            // Uncomment below line("dom" parameter) to fix the dropdown overflow issue in the datatable cells. The default datatable layout
+            // setup uses scrollable div(table-scrollable) with overflow:auto to enable vertical scroll(see: assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js).
+            // So when dropdowns used the scrollable div should be removed.
+            //"dom": "<'row' <'col-md-12'T>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
+        });
+    }
+    
     var initTableAjaxCommerciali = function () {
         var table = $('#datatable_ajax');
 
@@ -681,6 +737,7 @@ var TableDatatablesAjaxCommerciali = function () {
             initTableAjaxCommerciali2();
             initTableAjaxCommerciali3();
             initTableAjaxCommerciali4();
+            initTableAjaxCommerciali5();
         }
 
     };
@@ -778,7 +835,7 @@ var TabelleCommercialiHome = function () {
           responsive: false,
 
           "order": [
-              [7, 'desc']
+              [10, 'desc']
           ],
 
           "lengthMenu": [
@@ -797,13 +854,40 @@ var TabelleCommercialiHome = function () {
           
           "footerCallback": function ( row, data, start, end, display ) {
                 var api = this.api(), data;
-
+                
+                var toHHMMSS = (secs) => {
+                    var sec_num = parseInt(secs, 10)
+                    var hours   = Math.floor(sec_num / 3600)
+                    var minutes = Math.floor(sec_num / 60) % 60
+                    var seconds = sec_num % 60    
+                    return hours + ":" + minutes + ":" + seconds
+                }
+                    
                 // Remove the formatting to get integer data for summation
                 var intVal = function ( i ) {
-                    return typeof i === 'string' ?
+                    
+                    if(typeof i === 'string'){
+                        //console.log(typeof i + ' val: '+i);
+                        var indexI = i.indexOf(":");
+                        if( indexI > 0 ){
+                            var a = i.split(':'); // split it at the colons
+
+                            // minutes are worth 60 seconds. Hours are worth 60 minutes.
+                            var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+                            //console.log(typeof seconds +' Secondi: '+seconds);
+                            i = seconds;
+                            //console.log(typeof i + ' val: '+i);
+                        }
+                    }
+                    
+                    var ret = typeof i === 'string' ?
                         i.replace(/[\$,]/g, '')*1 :
                         typeof i === 'number' ?
                             i : 0;
+                            
+                    //console.log(typeof i + ' val: '+i);
+                    
+                    return ret;
                 };
                 
                 // Update footer
@@ -811,7 +895,8 @@ var TabelleCommercialiHome = function () {
                     'TOTALE'
                 );
 
-                for (i = 1; i < 8; i++) { 
+                for (i = 1; i < 11; i++) { 
+                    if(i == 6) continue;
                     // Total over all pages
                     /*total = api
                         .column( i )
@@ -821,22 +906,42 @@ var TabelleCommercialiHome = function () {
                         }, 0 );*/
 
                     // Total over this page
-                    pageTotal = api
+                    
+
+                    if(i == 4){
+                        pageTotal = api
                         .column( i, { page: 'current'} )
                         .data()
                         .reduce( function (a, b) {
                             return intVal(a) + intVal(b);
                         }, 0 );
-
-
-                    /* +' ('+ total +')'*/
-                    $( api.column( i ).footer() ).html(
-                        pageTotal
-                    );
+                        
+                        //console.log('Totale Sec: '+pageTotal);
+                        
+                        $( api.column( i ).footer() ).html(
+                            toHHMMSS(pageTotal)
+                        );
+                    }else{
+                        pageTotal = api
+                        .column( i, { page: 'current'} )
+                        .data()
+                        .reduce( function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0 );
+                        
+                        if(i == 10){
+                            pageTotal = round(pageTotal, 2);
+                        }
+                        
+                        /* +' ('+ total +')'*/
+                        $( api.column( i ).footer() ).html(
+                            pageTotal
+                        );
+                    }
                 }
                 
                 pageTotal = api
-                    .column( 10, { page: 'current'} )
+                    .column( 13, { page: 'current'} )
                     .data()
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
@@ -844,12 +949,12 @@ var TabelleCommercialiHome = function () {
 
 
                 /* +' ('+ total +')'*/
-                $( api.column( 10 ).footer() ).html(
-                    pageTotal
+                $( api.column( 13 ).footer() ).html(
+                    round(pageTotal, 2)
                 );
 
                 pageTotal = api
-                    .column( 11, { page: 'current'} )
+                    .column( 14, { page: 'current'} )
                     .data()
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
@@ -857,9 +962,10 @@ var TabelleCommercialiHome = function () {
 
 
                 /* +' ('+ total +')'*/
-                $( api.column( 11 ).footer() ).html(
+                $( api.column( 14 ).footer() ).html(
                     pageTotal
                 );
+        
             }
       });
   }

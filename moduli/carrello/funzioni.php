@@ -49,7 +49,7 @@ switch ($tabella) {
     case 'lista_ordini':
             echo '<div class="row"><div class="col-md-12 col-sm-12">';
             
-            $sql_0001 = "SELECT id, dataagg, sezionale, codice, campo_20, (SELECT nome FROM lista_campagne WHERE id = id_campagna LIMIT 1) AS nome_campagna, stato FROM lista_ordini WHERE id=" . $id;
+            $sql_0001 = "SELECT id, dataagg, sezionale, codice, campo_20, (SELECT nome FROM lista_campagne WHERE id = id_campagna LIMIT 1) AS nome_campagna, (SELECT CONCAT(cognome,' ',nome) FROM lista_password WHERE id = id_agente LIMIT 1) AS commerciale, stato FROM lista_ordini WHERE id=" . $id;
             stampa_table_static_basic($sql_0001, '', 'Ordine', '');
              
             $sql_0001 = "SELECT id_ordine, nome_prodotto, prezzo_prodotto, iva_prodotto, quantita, (SELECT nome FROM lista_campagne WHERE id = id_campagna LIMIT 1) AS nome_campagna, note FROM lista_ordini_dettaglio WHERE id_ordine=" . $id;

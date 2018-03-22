@@ -136,6 +136,13 @@ $sql_0020 = "UPDATE lista_campagne
             WHERE data_fine < CURDATE() AND data_fine != '0000-00-00' ";
 $dblink->query($sql_0020);
 
+// AGGIORNO ID UTENTE MOODLE
+$sql_0021 = "UPDATE lista_corsi, lista_prodotti 
+            SET lista_corsi.codice = lista_prodotti.codice 
+            WHERE lista_prodotti.id = lista_corsi.id_prodotto 
+            AND lista_corsi.codice = ''";
+$dblink->query($sql_0021);
+
 if (DISPLAY_DEBUG) echo "END: ".date("H:i:s");
 
 ?>

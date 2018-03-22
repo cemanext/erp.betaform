@@ -29,8 +29,8 @@ if (isset($_GET['idPrev'])) {
         $mitt = MAIL_DA_INVIA_PREVENTIVO;
     }
 
-    $sql = "SELECT codice FROM lista_preventivi WHERE id='" . $_GET['idPrev'] . "'";
-    list($codice) = $dblink->get_row($sql);
+    $sql = "SELECT codice, id_agente, id_campagna FROM lista_preventivi WHERE id='" . $_GET['idPrev'] . "'";
+    list($codice, $id_agente, $id_campagna) = $dblink->get_row($sql);
 
     $n_progetto = str_replace("/", "-", $codice);
     $filename = PREFIX_FILE_PDF_PREVENTIVO . $_GET['idPrev'] . ".pdf";
@@ -41,29 +41,55 @@ if (isset($_GET['idPrev'])) {
     $sql_prev = "SELECT email, id_calendario, lista_professionisti.id FROM lista_professionisti INNER JOIN lista_preventivi ON lista_professionisti.id=lista_preventivi.id_professionista WHERE lista_preventivi.id='" . $id_Preventivo . "'";
     list($emailDesti, $id_calendario, $id_professionista) = $dblink->get_row($sql_prev);
 
-//echo '<h1>$emailDesti = '.$emailDesti.'</h1>';
-
+    
     if (strlen($emailDesti) <= 1) {
 
         $sql_prev = "SELECT id_calendario FROM lista_preventivi WHERE id='" . $id_Preventivo . "'";
         list($id_calendario) = $dblink->get_row($sql_prev);
-
-//echo '<h1>$id_calendario = '.$id_calendario.'</h1>';
-
+        
         $sql_prev_cal = "SELECT campo_5 FROM calendario WHERE id='" . $id_calendario . "'";
         list($emailDesti) = $dblink->get_row($sql_prev_cal);
     }
 
-//echo '<h1>$emailDesti = '.$emailDesti.'</h1>';
+    $rowTemplate = $dblink->get_row("SELECT * FROM lista_template_email WHERE id = '19'",true);
+    
     $dest = $emailDesti;
     $dest_cc = '';
     $dest_bcc = '';
-    $ogg = MAIL_OGGETTO_INVIA_PREVENTIVO;
-    $mess = MAIL_TESTO_INVIA_PREVENTIVO;
+    if(strlen($rowTemplate['oggetto'])>0){
+        $ogg = $rowTemplate['oggetto'];
+    }else{
+        $ogg = MAIL_OGGETTO_INVIA_PREVENTIVO;
+    }
+    if(strlen($rowTemplate['messaggio'])>0){
+        $mess = $rowTemplate['messaggio'];
+    }else{
+        $mess = MAIL_TESTO_INVIA_PREVENTIVO;
+    }
+    
+    if($numPrevDett > 0){
+        $rowProfessionista = $dblink->get_row("SELECT * FROM lista_professionisti WHERE id='".$id_professionista."'", true);
+
+        $id_azienda =  ottieniIdAzienda($id_professionista);
+
+        $rowDettaglioPrev = $dblink->get_row("SELECT * FROM lista_preventivi_dettaglio WHERE id_preventivo = '".$_GET['idPrev']."'", true);
+        
+        $variabili = base64_encode("/carrello/dati-utente-partecipante/?betaformazione_utente_id=$id_professionista&betaformazione_fatturazione_id=$id_azienda|".$rowDettaglioPrev['prezzo_prodotto']."|".$id_agente."|".$id_calendario);
+
+        $linkShop = "<a href=\"".WP_DOMAIN_NAME."/carrello/?a=".$rowProdotto['id']."&c=".$id_campagna."&r=$variabili\">Voglio sottoscrivere l'offerta</a><br /><br />Oppure copia e incolla questo link:<br>".WP_DOMAIN_NAME."/carrello/?a=".$rowDettaglioPrev['id_prodotto']."&c=".$id_campagna."&r=$variabili";
+
+        $dettaglioOfferta = "<b>OFFERTA PROPOSTA</b><br>".$rowDettaglioPrev['nome_prodotto']." - Euro ".$rowDettaglioPrev['prezzo_prodotto']." (".round($rowDettaglioPrev['prezzo_prodotto']*(($rowDettaglioPrev['iva_prodotto']/100)+1),2)." ivato)";
+    }else{
+        $linkShop = "";
+        $dettaglioOfferta = "";
+    }
+    
     
     $rowComm = $dblink->get_row("SELECT * FROM lista_password WHERE id ='".$_SESSION['id_utente']."'",true);
     $rowComm['firma_email'] = html_entity_decode($rowComm['firma_email']);
     $mess = str_replace("_XXX_FIRMA_MAIL_XXX_", $rowComm['firma_email'], $mess);
+    $mess = str_replace("_XXX_LINK_SHOP_ONLINE_XXX_", $linkShop, $mess);
+    $mess = str_replace("_XXX_DETTAGLIO_OFFERTA_XXX_", $dettaglioOfferta, $mess);
 }
 ?>
 <form action="salva.php?fn=inviaEmailPreventivo" method="post" enctype="multipart/form-data" class="form">
@@ -73,7 +99,7 @@ if (isset($_GET['idPrev'])) {
             <div class="col-md-6">
                 <div class="input-group">
                 <label>Seleziona Template E-Mail</label>
-                <?php print_select2("SELECT id as valore, IF(LENGTH(nome_alias)>0, nome_alias , nome) AS nome FROM lista_template_email WHERE nome LIKE 'richieste_%' ORDER BY oggetto ASC", "template_mail", "", "ricaricaTemplateMail", true); ?>
+                <?php print_select2("SELECT id as valore, IF(LENGTH(nome_alias)>0, nome_alias , nome) AS nome FROM lista_template_email WHERE nome LIKE 'richieste_%' ORDER BY oggetto ASC", "template_mail", "19", "ricaricaTemplateMail", true); ?>
                 </div>
             </div>
         </div>
@@ -155,7 +181,7 @@ if (isset($_GET['idPrev'])) {
         var id = selettore.id;
         var idTemplate = $("#"+id).val();
         
-        var posting = jQuery.post( BASE_URL_HOST+"/moduli/preventivi/salva.php?fn=CaricaTemplate&id="+idTemplate+"&idProf=<?=$id_professionista?>");
+        var posting = jQuery.post( BASE_URL_HOST+"/moduli/preventivi/salva.php?fn=CaricaTemplate&id="+idTemplate+"&idProf=<?=$id_professionista?>&idPrev=<?=$id_Preventivo?>");
         posting.done(function(data) {
             
             obj = JSON.parse(data);
