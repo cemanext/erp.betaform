@@ -259,7 +259,7 @@ IF(tipo LIKE 'Fattura',CONCAT('<span class=\"btn sbold uppercase btn-outline blu
             
             //AGGIUNGI NUOVO PREVENTIVO
             if($_SESSION['livello_utente'] == "betaadmin" || $_SESSION['livello_utente'] == "amministratore"){
-                echo '<CENTER><a href="' . BASE_URL . '/moduli/fatture/salva.php?tbl=lista_fatture&idProfessionista=' . $id . '&fn=nuovaFatturaProfessionista" class="btn green-meadow"><i class="fa fa-plus"></i>  NUOVA FATTURA</a>&nbsp;&nbsp;<a href="' . BASE_URL . '/moduli/fatture/salva.php?tbl=lista_fatture&idProfessionista=' . $id . '&fn=nuovaNoteDiCreditoProfessionista" class="btn red-intense"><i class="fa fa-plus"></i>  NUOVA NOTA DI CREDITO</a></CENTER><br><br>';
+                echo '<center><a href="' . BASE_URL . '/moduli/fatture/salva.php?tbl=lista_fatture&idProfessionista=' . $id . '&fn=nuovaFatturaProfessionista" class="btn green-meadow"><i class="fa fa-plus"></i>  NUOVA FATTURA</a>&nbsp;&nbsp;<a href="' . BASE_URL . '/moduli/fatture/salva.php?tbl=lista_fatture&idProfessionista=' . $id . '&fn=nuovaNoteDiCreditoProfessionista" class="btn red-intense"><i class="fa fa-plus"></i>  NUOVA NOTA DI CREDITO</a></center><br><br>';
             }
             
             echo '</div></div>';

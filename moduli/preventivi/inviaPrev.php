@@ -76,7 +76,7 @@ if (isset($_GET['idPrev'])) {
         
         $variabili = base64_encode("/carrello/dati-utente-partecipante/?betaformazione_utente_id=$id_professionista&betaformazione_fatturazione_id=$id_azienda|".$rowDettaglioPrev['prezzo_prodotto']."|".$id_agente."|".$id_calendario);
 
-        $linkShop = "<a href=\"".WP_DOMAIN_NAME."/carrello/?a=".$rowProdotto['id']."&c=".$id_campagna."&r=$variabili\">Voglio sottoscrivere l'offerta</a><br /><br />Oppure copia e incolla questo link:<br>".WP_DOMAIN_NAME."/carrello/?a=".$rowDettaglioPrev['id_prodotto']."&c=".$id_campagna."&r=$variabili";
+        $linkShop = "<a href=\"".WP_DOMAIN_NAME."/carrello/?a=".$rowDettaglioPrev['id_prodotto']."&c=".$id_campagna."&r=$variabili\">Voglio sottoscrivere l'offerta</a><br /><br />Oppure copia e incolla questo link:<br>".WP_DOMAIN_NAME."/carrello/?a=".$rowDettaglioPrev['id_prodotto']."&c=".$id_campagna."&r=$variabili";
 
         $dettaglioOfferta = "<b>OFFERTA PROPOSTA</b><br>".$rowDettaglioPrev['nome_prodotto']." - Euro ".$rowDettaglioPrev['prezzo_prodotto']." (".round($rowDettaglioPrev['prezzo_prodotto']*(($rowDettaglioPrev['iva_prodotto']/100)+1),2)." ivato)";
     }else{

@@ -35,7 +35,7 @@ foreach ($rowsFatture as $rowFattura) {
             $partitaIVA = "";
         }
         $riga = "";
-        /*
+        
         $riga .= "00000";       // TRF-DITTA
         $riga .= "3";           // TRF-VERSIONE
         $riga .= "0";           // TRF-TARC
@@ -245,7 +245,7 @@ foreach ($rowsFatture as $rowFattura) {
         
         $righe.=$riga."\r\n";
         
-        */
+        
         // Pagamento
         if(!empty($rsDatiPagamento)){
             $riga = "";

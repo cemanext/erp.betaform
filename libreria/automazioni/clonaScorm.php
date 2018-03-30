@@ -4,15 +4,16 @@ include_once('../../config/connDB.php');
 if (isset($_POST) && !empty($_POST) && !empty($_POST['idSorgente'])
     && !empty($_POST['idDestinatario']) && !empty($_POST['idLastScorm']) && !empty($_POST['idCorso'])) {
     //OPERAZIONE
+    $ok = true;
     $idCorso = $_POST['idCorso'];
     $idInstance = $_POST['idLastScorm'];
     $idSorgente = $_POST['idSorgente'];
     $idDestinatario = $_POST['idDestinatario'];
     
-    echo $sql_0001 = "SELECT id, id_modulo, instance FROM lista_corsi_dettaglio WHERE id_corso_moodle='$idCorso' AND id_modulo = '".$idInstance."' ORDER BY ordine ASC ";
+    $sql_0001 = "SELECT id, id_modulo, instance FROM lista_corsi_dettaglio WHERE id_corso_moodle='$idCorso' AND id_modulo = '".$idInstance."' ORDER BY ordine ASC ";
     $row_0001 = $dblink->get_row($sql_0001, true);
 
-    $sql_0002 = "SELECT id_modulo, instance, modname FROM lista_corsi_dettaglio WHERE id_corso_moodle='$idCorso' AND id < '".$row_0001['id']."' ORDER BY ordine DESC";
+    $sql_0002 = "SELECT id_modulo, instance, modname FROM lista_corsi_dettaglio WHERE id_corso_moodle='$idCorso' AND id <= '".$row_0001['id']."' ORDER BY ordine DESC";
     $rs_0002 = $dblink->get_results($sql_0002);
     
     $saveScorm = array();
@@ -24,21 +25,22 @@ if (isset($_POST) && !empty($_POST) && !empty($_POST['idSorgente'])
         $saveScorm[$row_0002['modname']]['itemid'][] = $row_0002['id_modulo'];
     }
     
-    print_r($saveScorm);
+    //print_r($saveScorm);
     
     foreach($saveScorm['scorm']['instance'] as $key => $value){
-        duplicateWhereWhithReplace(MOODLE_DB_NAME.".mdl_scorm_scoes_track","userid = '".$idSorgente."' AND scormid = '".$value."'", '', '' , array("userid" => $idDestinatario), $value);
+        $ok = $ok && duplicateWhereWhithReplace(MOODLE_DB_NAME.".mdl_scorm_scoes_track","userid = '".$idSorgente."' AND scormid = '".$value."'", '', '' , array("userid" => $idDestinatario), $value);
         //echo $dblink->get_query();
         //echo "<br>";
     }
     
     //echo "<hr>";
+    echo "<h1>Processo Completato !</h1>";
     
-    foreach($saveScorm['quiz']['instance'] as $key => $value){
+    /*foreach($saveScorm['quiz']['instance'] as $key => $value){
         duplicateWhereWhithReplace(MOODLE_DB_NAME.".mdl_quiz_attempts","userid = '".$idSorgente."' AND quiz = '".$value."'", '', '' , array("userid" => $idDestinatario), $value);
         //echo $dblink->get_query();
         //echo "<br>";
-    }
+    }*/
     
     
 } else {
@@ -205,6 +207,9 @@ if (isset($_POST) && !empty($_POST) && !empty($_POST['idSorgente'])
 function duplicateWhereWhithReplace( $table, $where = "", $limit = '', $orderby = '', $replace = array(), $instance = '')
 {
     global $dblink;
+    
+    $ok = true;
+    
     $sql = "SELECT * FROM ". $table ."";
     if( !empty( $where ) )
     {
@@ -219,17 +224,19 @@ function duplicateWhereWhithReplace( $table, $where = "", $limit = '', $orderby 
         $sql .= ' LIMIT '. $limit;
     }
     //echo $sql = str_replace("betaform_tenant_dev.", "betaform_tenant.", $sql);
-    echo "<br>";
+    //echo "<br>";
     $res = $dblink->get_results($sql);
     //$first = true;
     if($table == "".MOODLE_DB_NAME.".mdl_quiz_attempts"){
-        $dblink->deleteWhere($table, "userid = '".$replace['userid']."' AND quiz = '".$instance."'");
-        echo $dblink->get_query();
-        echo "<br><br>";
+        //$dblink->deleteWhere($table, "userid = '".$replace['userid']."' AND quiz = '".$instance."'");
+        //echo $dblink->get_query();
+        //echo "<br><br>";
     }else{
-        $dblink->deleteWhere($table, "userid = '".$replace['userid']."' AND scormid = '".$instance."'");
-        echo $dblink->get_query();
-        echo "<br><br>";
+        if(!$dblink->num_rows("SELECT * FROM $table WHERE userid = '".$replace['userid']."' AND scormid = '".$instance."' AND element = 'cmi.core.lesson_status' AND value = 'completed'")){
+            $ok = $ok && $dblink->deleteWhere($table, "userid = '".$replace['userid']."' AND scormid = '".$instance."'");
+            //echo $dblink->get_query();
+            //echo "<br><br>";
+        }
     }
 
     foreach ($res as $value) {
@@ -260,25 +267,25 @@ function duplicateWhereWhithReplace( $table, $where = "", $limit = '', $orderby 
        
         
         if($table == "".MOODLE_DB_NAME.".mdl_quiz_attempts"){
-            $uniqueVuota = ottieni_unique_id();
+            /*$uniqueVuota = ottieni_unique_id();
             
             $insert['uniqueid'] = $uniqueVuota;
             $sql = crea_sql_insert($table, $insert);
             echo $sql;
             echo "<br><br>";
-            $dblink->query($sql);
+            $dblink->query($sql);*/
             /*$lastid = $dblink->lastid();
             $dblink->update($table, array("uniqueid" => $lastid), array("id" => $lastid));
             echo $dblink->get_query();
             echo "<br><br>";*/
         }else{
             $sql = crea_sql_insert($table, $insert);
-            echo $sql;
-            echo "<br><br>";
-            $dblink->query($sql);
+            //echo $sql;
+            //echo "<br><br>";
+            $ok = $ok && $dblink->query($sql);
         }
     }
-    
+    return $ok;
 }
 
 function ottieni_unique_id($idnuovo = 1){
