@@ -28,7 +28,7 @@ if (isset($_POST) && !empty($_POST) && !empty($_POST['idSorgente'])
     //print_r($saveScorm);
     
     foreach($saveScorm['scorm']['instance'] as $key => $value){
-        $ok = $ok && duplicateWhereWhithReplace(MOODLE_DB_NAME.".mdl_scorm_scoes_track","userid = '".$idSorgente."' AND scormid = '".$value."'", '', '' , array("userid" => $idDestinatario), $value);
+        duplicateWhereWhithReplace(MOODLE_DB_NAME.".mdl_scorm_scoes_track","userid = '".$idSorgente."' AND scormid = '".$value."'", '', '' , array("userid" => $idDestinatario), $value);
         //echo $dblink->get_query();
         //echo "<br>";
     }
@@ -233,7 +233,7 @@ function duplicateWhereWhithReplace( $table, $where = "", $limit = '', $orderby 
         //echo "<br><br>";
     }else{
         if(!$dblink->num_rows("SELECT * FROM $table WHERE userid = '".$replace['userid']."' AND scormid = '".$instance."' AND element = 'cmi.core.lesson_status' AND value = 'completed'")){
-            $ok = $ok && $dblink->deleteWhere($table, "userid = '".$replace['userid']."' AND scormid = '".$instance."'");
+            $dblink->deleteWhere($table, "userid = '".$replace['userid']."' AND scormid = '".$instance."'");
             //echo $dblink->get_query();
             //echo "<br><br>";
         }
@@ -282,10 +282,10 @@ function duplicateWhereWhithReplace( $table, $where = "", $limit = '', $orderby 
             $sql = crea_sql_insert($table, $insert);
             //echo $sql;
             //echo "<br><br>";
-            $ok = $ok && $dblink->query($sql);
+            $dblink->query($sql);
         }
     }
-    return $ok;
+    //return $ok;
 }
 
 function ottieni_unique_id($idnuovo = 1){

@@ -514,9 +514,10 @@ $table_listaProfessionisti = array(
                         "forza_valore_default" => true
                     ),
                 array(  "campo" => "numerico_1",
-                        "tipo" => "hidden",
-                        "etichetta" => "Numerico 1",
-                        "readonly" => false
+                        "tipo" => "select_static",
+                        "etichetta" => "Black List",
+                        "readonly" => false,
+                        "sql" => array("1"=>"SI", "0"=>"NO")
                     ),
                 array(  "campo" => "numerico_2",
                         "tipo" => "hidden",
@@ -693,6 +694,17 @@ $table_listaProfessionisti = array(
                             "maggiore" => false,
                             "default" => "",
                             "attivo" => false
+                        ),
+                    array(  "campo" => "numerico_1",
+                            "tipo" => "select_static",
+                            "etichetta" => "Black List",
+                            "readonly" => false,
+                            "like" => false,
+                            "uguale" => true,
+                            "maggiore" => false,
+                            "default" => "",
+                            "attivo" => true,
+                            "sql" => array("1" => "NO", "0"=>"SI")
                         ),
                     array(  "campo" => "note",
                             "tipo" => "input",
@@ -1514,6 +1526,28 @@ $table_calendario = array(
                         "maggiore" => false,
                         "default" => "",
                         "attivo" => false
+                    ),
+                array(  "campo" => "campo_13",
+                        "tipo" => "select_static",
+                        "etichetta" => "Privacy",
+                        "readonly" => false,
+                        "like" => false,
+                        "uguale" => true,
+                        "maggiore" => false,
+                        "default" => "",
+                        "attivo" => true,
+                        "sql" => array("1" => "SI", "0"=>"NO")
+                    ),
+                array(  "campo" => "campo_14",
+                        "tipo" => "select_static",
+                        "etichetta" => "Privacy Promo",
+                        "readonly" => false,
+                        "like" => false,
+                        "uguale" => true,
+                        "maggiore" => false,
+                        "default" => "",
+                        "attivo" => true,
+                        "sql" => array("1" => "SI", "0"=>"NO")
                     ))
             );
 

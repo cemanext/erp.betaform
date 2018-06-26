@@ -40,9 +40,15 @@ foreach ($rowsFatture as $rowFattura) {
         $riga .= "3";           // TRF-VERSIONE
         $riga .= "0";           // TRF-TARC
         
+        if($datiFatturazione['forma_giuridica'] == "Libero Professionista"){
+            $ragione_sociale = $datiFatturazione['ragione_sociale'];
+        }else{
+            $ragione_sociale = $datiFatturazione['ragione_sociale']." ".$datiFatturazione['forma_giuridica'];
+        }
+        
         //Dati cliente fornitore
         $riga .= "00000";       // TRF-COD-CLIFOR
-        $riga .= aggiungiSpaziAllaStringa(html_entity_decode($datiFatturazione['ragione_sociale']." ".$datiFatturazione['forma_giuridica'],ENT_QUOTES), 32);  //TRF-RASO
+        $riga .= aggiungiSpaziAllaStringa(html_entity_decode($ragione_sociale,ENT_QUOTES), 32);  //TRF-RASO
         $riga .= aggiungiSpaziAllaStringa(html_entity_decode($datiFatturazione['indirizzo'],ENT_QUOTES), 30);  //TRF-IND
         $riga .= aggiungiSpaziAllaStringa($datiFatturazione['cap'], 5);  //TRF-CAP
         $riga .= aggiungiSpaziAllaStringa(html_entity_decode($datiFatturazione['citta'],ENT_QUOTES), 25);  //TRF-CITTA
@@ -51,7 +57,7 @@ foreach ($rowsFatture as $rowFattura) {
         $riga .= aggiungiSpaziAllaStringa($partitaIVA, 11);  //TRF-PIVA
         $riga .= aggiungiSpaziAllaStringa(verificaSePersonaFisica($datiFatturazione['codice_fiscale']), 1);  //TRF-PF
         if(verificaSePersonaFisica($datiFatturazione['codice_fiscale']) == "S"){
-            $riga .= aggiungiSpaziAllaStringa(strpos($datiFatturazione['ragione_sociale'], " "), 2, true, "0", false);  //TRF-DIVIDE
+            $riga .= aggiungiSpaziAllaStringa((strpos($datiFatturazione['ragione_sociale'], " ")+1), 2, true, "0", false);  //TRF-DIVIDE
         }else{
             $riga .= aggiungiSpaziAllaStringa("00", 2, true, "0", false);  //TRF-DIVIDE
         }
@@ -237,7 +243,7 @@ foreach ($rowsFatture as $rowFattura) {
         $riga .= aggiungiSpaziAllaStringa("", 1, false);  //TRF-ART21-ANAG
         $riga .= aggiungiSpaziAllaStringa("", 1, false);  //TRF-ART21-IVA
         $riga .= aggiungiSpaziAllaStringa("", 1, false);  //TRF-RIF-FATTURA
-        $riga .= aggiungiSpaziAllaStringa("", 1, false);  //TRF-RISERVATO-B
+        $riga .= aggiungiSpaziAllaStringa("S", 1, false);  //TRF-RISERVATO-B
         $riga .= aggiungiSpaziAllaStringa("", 1, false);  //TRF-MASTRO-CF
         $riga .= aggiungiSpaziAllaStringa("", 1, false);  //TRF-MOV-PRIVATO
         $riga .= aggiungiSpaziAllaStringa("", 1, false);  //TRF-SPESE-MEDICHE
@@ -247,7 +253,7 @@ foreach ($rowsFatture as $rowFattura) {
         
         
         // Pagamento
-        if(!empty($rsDatiPagamento)){
+        /*if(!empty($rsDatiPagamento)){
             $riga = "";
             $riga .= "00001";       // TRF-DITTA
             $riga .= "3";           // TRF-VERSIONE
@@ -289,7 +295,7 @@ foreach ($rowsFatture as $rowFattura) {
             $riga .= aggiungiSpaziAllaStringa("", (7002-strlen($riga)+1), true); //SPAZIO VUOTO ???
 
             $righe.=$riga."\r\n";
-        }
+        }*/
     }
     
 }

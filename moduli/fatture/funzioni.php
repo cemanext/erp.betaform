@@ -297,7 +297,9 @@ function Stampa_HTML_Dettaglio_Fatture($tabella,$id){
                 FROM lista_fatture_dettaglio INNER JOIN lista_fatture ON lista_fatture_dettaglio.id_fattura = lista_fatture.id
                 WHERE lista_fatture_dettaglio.id_azienda = '" . $idAzienda."'
                 AND lista_fatture.id_azienda = '" . $idAzienda."'
-                AND lista_fatture.stato='In Attesa di Emissione' 
+                AND lista_fatture.stato = 'In Attesa di Emissione' 
+                AND lista_fatture.sezionale NOT LIKE '%CN%' 
+                AND lista_fatture_dettaglio.codice_preventivo NOT LIKE '%CN%' 
                 AND lista_fatture_dettaglio.stato NOT LIKE 'Accorpata'
                 ORDER BY codice_preventivo ASC";
                 stampa_table_static_basic($sql_0001, '', 'Dettaglio Fatture', '', 'fa fa-exclamation-triangle');

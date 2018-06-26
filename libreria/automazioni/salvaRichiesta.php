@@ -36,6 +36,16 @@ if(isset($_POST)){
         
         if(!empty($_POST['privacy'])){
             $adMessaggio.= "\\nAcconsente Privacy: SI";
+            $privacy = "1";
+        }else{
+            $privacy = "0";
+        }
+
+        if(!empty($_POST['privacy_2'])){
+            $adMessaggio.= "\\nAcconsente Comunicazioni Commerciali: SI";
+            $privacyPromo = "1";
+        }else{
+            $privacyPromo = "0";
         }
         
         $insert = array(
@@ -70,7 +80,8 @@ if(isset($_POST)){
             "campo_9" => $dblink->filter($codiceUtente),
             "campo_11" => strip_tags($dblink->filter($_POST['professione'])),
             "campo_12" => $dblink->filter($_POST['ora_contatto']),
-            "campo_13" => $dblink->filter($_POST['privacy']),
+            "campo_13" => $dblink->filter($privacy),
+            "campo_14" => $dblink->filter($privacyPromo),
             "nome" => $dblink->filter($_POST['nome']),
             "cognome" => $dblink->filter($_POST['cognome']),
             "telefono" => $dblink->filter($_POST['telefono']),

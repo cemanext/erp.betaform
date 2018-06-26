@@ -485,7 +485,12 @@ function stampa_bootstrap_form_horizontal($tabella,$id,$titolo,$action="".BASE_U
             case "data":
                 echo "<label class=\"col-md-$colNum control-label\">".$arrayReturn['campi_etichette'][$key]."</label>
                         <div class=\"col-md-$inputColNum\">";
-                        print_input_date($campo, GiraDataOra($row[$key]),$arrayReturn['campi_etichette'][$key],in_array($campo, $arrayCampiNonEditabili));
+                        if($row[$key]=="0000-00-00"){
+                            $row[$key] = "";
+                        }else{
+                            $row[$key] = GiraDataOra($row[$key]);
+                        }
+                        print_input_date($campo, $row[$key],$arrayReturn['campi_etichette'][$key],in_array($campo, $arrayCampiNonEditabili));
                     echo "</div>";
             break;
 
