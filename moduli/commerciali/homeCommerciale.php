@@ -3,6 +3,9 @@ include_once('../../config/connDB.php');
 include_once(BASE_ROOT . 'config/confAccesso.php');
 require_once(BASE_ROOT.'config/confPermessi.php');
 
+header("Location:".BASE_URL."/risultatiRicerca.php");
+die();
+
 //RECUPERO LA VARIABILE POST DAL FORM defaultrange
 
 if(isset($_POST['id_agente']) && $_POST['id_agente']>0){

@@ -232,7 +232,9 @@ class DB
      */
     public function query( $query , $resultSet = false)
     {
+    	$msc = microtime(true);
         $full_query = $this->link->query( $query );
+        $mscTime = microtime(true)-$msc;
         $this->last_query = $query;
         if( $this->link->error )
         {
@@ -241,6 +243,9 @@ class DB
         }
         else
         {
+        	if($mscTime > 1){
+        	$this->log_db_errors( "SCRITTORE: ".$_SESSION['cognome_nome_utente']." - TIME EXECUTION: ".$mscTime." s - ".($mscTime * 1000) . ' ms', $query );
+        	}
             if($resultSet){
                 return $full_query;
             }else{
@@ -496,7 +501,7 @@ class DB
 	   */
 	  public function begin()
 	  {
-		return \mysqli_begin_transaction($this->link);
+		//return \mysqli_begin_transaction($this->link);
 	  }
           
           /**
@@ -506,7 +511,7 @@ class DB
 	   */
 	  public function commit()
 	  {
-		return \mysqli_commit($this->link);
+		//return \mysqli_commit($this->link);
 	  }
           
           /**
@@ -516,7 +521,7 @@ class DB
 	   */
 	  public function rollback()
 	  {
-		return \mysqli_rollback($this->link);
+		//return \mysqli_rollback($this->link);
 	  }
     
 	/**

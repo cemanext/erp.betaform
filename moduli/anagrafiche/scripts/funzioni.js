@@ -97,6 +97,16 @@ $( document ).ready(function() {
         pulisciRefereStorico();
     }
     
+    if($.urlParam('res')=="7"){
+        toastr.success("La MAIL conferma dei dati è stata inviata al cliente!","Mail Inviata");
+        pulisciRefereStorico();
+    }
+    
+    if($.urlParam('res')=="8"){
+        toastr.warning("ERRORE nell\'invio della MAIL di conferma dei dati al cliente!","Errore Mail");
+        pulisciRefereStorico();
+    }
+    
     if($.urlParam('tbl')=="calendario"){
         var nome = $("#copiaNome").val();
         var cognome = $("#copiaCognome").val();

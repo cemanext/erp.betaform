@@ -20,7 +20,7 @@ function Stampa_HTML_index_Iscrizioni($tabella){
 
     $sql_0007 = "UPDATE lista_iscrizioni, lista_professionisti
     SET lista_iscrizioni.cognome_nome_professionista = CONCAT(lista_professionisti.cognome,' ', lista_professionisti.nome)
-    WHERE lista_iscrizioni.id_professionista = lista_professionisti.id";
+    WHERE lista_iscrizioni.id_professionista = lista_professionisti.id AND LENGTH(lista_iscrizioni.cognome_nome_professionista)<=0";
     $rs_00007 = $dblink->query($sql_0007);
 
     switch($tabella){

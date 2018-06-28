@@ -379,6 +379,7 @@ if(isset($_GET['fn'])){
             if($_SESSION['livello_utente']=='commerciale'){
                 $tuttiCampi['calendario']['id_agente'] = $_SESSION['id_utente'];
                 $tuttiCampi['calendario']['destinatario'] = $dblink->filter($_SESSION['cognome_nome_utente']);
+                $tuttiCampi['calendario']['dataadd_commerciale'] = date("Y-m-d H:i:s");
             }else{
                 $tuttiCampi['calendario']['id_agente'] = 0;
                 if($tuttiCampi['calendario']['id_professionista']>0){

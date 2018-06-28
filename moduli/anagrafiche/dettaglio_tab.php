@@ -143,13 +143,15 @@ switch ($tabella) {
     WHERE calendario.id_campagna>0
     AND calendario.id_prodotto<=0
     AND calendario.id_tipo_marketing<=0
-    AND calendario.id_campagna = lista_campagne.id";
+    AND calendario.id_campagna = lista_campagne.id
+    AND calendario.id = '".$idCalendario_daPassare."'";
     $rs_000010 = $dblink->query($sql_00010, true);
 
     //AGGIORNO ID_AGENTE SUL PREVENTIVO                
     $sql_00011 = "UPDATE lista_preventivi, calendario
     SET  lista_preventivi.id_agente = calendario.id_agente
-    WHERE lista_preventivi.id_agente<=0
+    WHERE lista_preventivi.id_agente<=0 AND calendario.id = '".$idCalendario_daPassare."' 
+    AND lista_preventivi.id_calendario = '".$idCalendario_daPassare."'
     AND calendario.id = lista_preventivi.id_calendario AND lista_preventivi.id_calendario > 0";
     $rs_000011 = $dblink->query($sql_00011, true);
 
@@ -213,7 +215,7 @@ switch ($tabella) {
                         
             $sql_0015 = "UPDATE lista_preventivi
             SET cognome_nome_professionista = (SELECT CONCAT(lista_professionisti.cognome,' ', lista_professionisti.nome) FROM lista_professionisti WHERE lista_professionisti.id = lista_preventivi.id_professionista) 
-            WHERE id_professionista > 0";
+            WHERE id_professionista > 0 AND lista_preventivi.id_calendario='".$idCalendario_daPassare."'";
             $dblink->query($sql_0015);
             
             $sql_0020 = "UPDATE calendario, lista_preventivi_dettaglio SET 
@@ -267,19 +269,21 @@ if(($id_agente_presente!=$_SESSION['id_utente'] && $livelloCommerciale) || $_SES
 }
 
 if($richiestaReadonly===false){
-    //AGGIORNO ID_AZIENDA SUL PREVENTIVO                
+    //AGGIORNO ID_AZIENDA SUL PREVENTIVO  
+    if($idCalendario_daPassare > 0){              
     $sql_00011_0000002 = "UPDATE lista_preventivi, calendario
     SET  lista_preventivi.id_azienda = calendario.id_azienda,
     calendario.id_preventivo = lista_preventivi.id
-    WHERE 1
+    WHERE lista_preventivi.id_calendario = '".$idCalendario_daPassare."' AND calendario.id = '".$idCalendario_daPassare."'
     AND lista_preventivi.id_calendario = calendario.id AND lista_preventivi.id_calendario > 0";
     $dblink->query($sql_00011_0000002);
+    }
     
     //AGGIORNO ID_AZIENDA E ID_PROFESSIONISTA  SUL PREVENTIVO_DETTAGLIO           
     $sql_00011_0000001 = "UPDATE lista_preventivi_dettaglio, lista_preventivi 
     SET  lista_preventivi_dettaglio.id_azienda = lista_preventivi.id_azienda,
      lista_preventivi_dettaglio.id_professionista = lista_preventivi.id_professionista
-    WHERE 1
+    WHERE lista_preventivi.id_calendario = '".$idCalendario_daPassare."' 
     AND lista_preventivi_dettaglio.id_preventivo = lista_preventivi.id";
     $dblink->query($sql_00011_0000001);
 }
@@ -451,15 +455,15 @@ if($richiestaReadonly===false){
                                                                     <div class="row" style="margin-bottom:10px;">
 
                                                                         <div class="col-md-4">
-                                                                            <input name="<?=$tabellaProfessionista?>_txt_cellulare" id="<?=$tabellaProfessionista?>_txt_cellulare" type="text" class="form-control tooltips" placeholder="Cellulare" value="<?php echo $row_00001['cellulare']; ?>" data-container="body" data-placement="top" data-original-title="CELLULARE"> </div>
+                                                                            <input name="<?=$tabellaProfessionista?>_txt_cellulare" id="<?=$tabellaProfessionista?>_txt_cellulare" type="<?php if($row_00004['campo_13']=="1" && $row_00004['campo_15']=="1"){ echo "text"; }else{ echo "password"; } ?>" class="form-control tooltips" placeholder="Cellulare" value="<?php echo $row_00001['cellulare']; ?>" data-container="body" data-placement="top" data-original-title="CELLULARE"> </div>
 
                                                                         <div class="col-md-4" style="padding: 0px;">
                                                                             <div class="input-group">
                                                                                 <span class="input-group-addon" style="background-color: #fff;"><a href="tel:<?=$row_00001['telefono']?>" target="_blank"><i class="fa fa-phone-square font-grey-mint"></i></a></span>
-                                                                                <input name="<?=$tabellaProfessionista?>_txt_telefono" id="<?=$tabellaProfessionista?>_txt_telefono" type="text" class="form-control tooltips" placeholder="Telefono" value="<?php echo $row_00001['telefono']; ?>" data-container="body" data-placement="top" data-original-title="TELEFONO"></div></div>
+                                                                                <input name="<?=$tabellaProfessionista?>_txt_telefono" id="<?=$tabellaProfessionista?>_txt_telefono" type="<?php if($row_00004['campo_13']=="1" && $row_00004['campo_15']=="1"){ echo "text"; }else{ echo "password"; } ?>" class="form-control tooltips" placeholder="Telefono" value="<?php echo $row_00001['telefono']; ?>" data-container="body" data-placement="top" data-original-title="TELEFONO"></div></div>
 
                                                                         <div class="col-md-4">
-                                                                            <input name="<?=$tabellaProfessionista?>_txt_fax" id="<?=$tabellaProfessionista?>_txt_fax" type="text" class="form-control tooltips" placeholder="Fax" value="<?php echo $row_00001['fax']; ?>" data-container="body" data-placement="top" data-original-title="FAX"> </div>
+                                                                            <input name="<?=$tabellaProfessionista?>_txt_fax" id="<?=$tabellaProfessionista?>_txt_fax" type="<?php if($row_00004['campo_13']=="1" && $row_00004['campo_15']=="1"){ echo "text"; }else{ echo "password"; } ?>" class="form-control tooltips" placeholder="Fax" value="<?php echo $row_00001['fax']; ?>" data-container="body" data-placement="top" data-original-title="FAX"> </div>
                                                                     </div>
 
                                                                     <div class="row" style="margin-bottom:10px;">
@@ -474,7 +478,7 @@ if($richiestaReadonly===false){
                                                                             <!-- INIZIO /btn-group -->
                                                                             <div class="input-group">
                                                                                 <span class="input-group-addon" style="background-color: #fff;"><i class="fa fa-envelope font-grey-mint"></i></span>
-                                                                                <input name="<?=$tabellaProfessionista?>_txt_email" id="<?=$tabellaProfessionista?>_txt_email" type="text" class="form-control tooltips" placeholder="Email" value="<?php echo strtolower($row_00001['email']); ?>" data-container="body" data-placement="top" data-original-title="EMAIL">
+                                                                                <input name="<?=$tabellaProfessionista?>_txt_email" id="<?=$tabellaProfessionista?>_txt_email" type="<?php if($row_00004['campo_13']=="1" && $row_00004['campo_15']=="1"){ echo "text"; }else{ echo "password"; } ?>" class="form-control tooltips" placeholder="Email" value="<?php echo strtolower($row_00001['email']); ?>" data-container="body" data-placement="top" data-original-title="EMAIL">
                                                                                 <!--<div class="input-group-btn">
                                                                                     <button type="button" class="btn grey-mint dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Azioni
                                                                                         <i class="fa fa-angle-down"></i>
@@ -511,17 +515,6 @@ if($richiestaReadonly===false){
                                                                                 . "FROM lista_preventivi "
                                                                                 . "WHERE id_calendario= '" . $idCalendario_daPassare . "' AND stato='In Attesa' ORDER BY dataagg DESC";
                                                                         $row_0006 = $dblink->get_row($sql_0006,true);
-                                                                        ?>
-                                                                        <div class="form-actions right">
-                                                                            <div class="row">
-                                                                                <div class="col-md-offset-3 col-md-9">
-                                                                                    <a href="<?=BASE_URL?>/moduli/preventivi/inviaPrev.php?idPrev=<?=$row_0006['id']?>" class="btn btn-icon btn-outline yellow" data-target="#ajax" data-url="<?=BASE_URL?>/moduli/preventivi/inviaPrev.php?idPrev=<?=$row_0006['id']?>" data-toggle="modal" title="INVIA" alt="INVIA"><i class="fa fa-paper-plane"></i> INVIA MAIL</a>
-                                                                                    <button type="submit" class="btn btn-icon green-jungle"><i class="fa fa-check"></i> Salva</button>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <hr>
-                                                                        <?php
                                                                         
                                                                         $idPreventivo_daPassare = $row_0006['id'];
                                                                         
@@ -529,7 +522,25 @@ if($richiestaReadonly===false){
                                                                         FROM lista_preventivi_dettaglio
                                                                         WHERE id_calendario= '" . $idCalendario_daPassare . "'  AND id_preventivo= '" . $row_0006['id'] . "' AND id_prodotto!='0' ORDER BY dataagg DESC";
                                                                         $row_0022 = $dblink->get_row($sql_0022,true);
-                                                                                //stampa_table_datatables_responsive($sql_0001, 'Ordini', '', 'grey');
+                                                                        
+                                                                        ?>
+                                                                        <div class="form-actions right">
+                                                                            <div class="row">
+                                                                                <div class="col-md-offset-3 col-md-9">
+                                                                                    <?php if($row_00004['campo_13']=="1" && $row_00004['campo_15']=="1"){ ?>
+                                                                                    <a href="<?=BASE_URL?>/moduli/preventivi/inviaPrev.php?idPrev=<?=$row_0006['id']?>" class="btn btn-icon btn-outline yellow" data-target="#ajax" data-url="<?=BASE_URL?>/moduli/preventivi/inviaPrev.php?idPrev=<?=$row_0006['id']?>" data-toggle="modal" title="INVIA" alt="INVIA"><i class="fa fa-paper-plane"></i> INVIA MAIL</a>
+                                                                                    <?php }else{ ?>
+                                                                                        <a href="<?=BASE_URL?>/moduli/anagrafiche/salva.php?smt=<?=base64_encode($tabellaProfessionista."|".($id_professionista_presente>0 ? $id_professionista_presente : $id)."|1|".$row_0022['id_prodotto']."|".$idCalendario_daPassare)?>&idPrev=<?=$idPreventivo_daPassare?>&idProf=<?=$id_professionista_presente?>&fn=inviaMailConfermaDati" class="btn btn-icon yellow-gold" alt="INVIA CONFERMA DATI" title="INVIA CONFERMA DATI" style="margin-right: 10px"><i class="fa fa-shield"></i> INVIA CONFERMA DATI</a>
+                                                                                    <?php } ?>
+                                                                                    <button type="submit" class="btn btn-icon green-jungle"><i class="fa fa-check"></i> Salva</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <hr>
+                                                                        <?php
+                                                                        
+                                                                        
+                                                                        //stampa_table_datatables_responsive($sql_0001, 'Ordini', '', 'grey');
                                                                         
                                                                         if(!$livelloCommerciale){
                                                                             $titoloOrdiniInCorso = "Ordine: ".$row_0006['id']." - Imponibile: ".$row_0006['imponibile']." &euro; - Totale: ".round($row_0006['imponibile']*1.22, 2)." &euro;";
@@ -557,8 +568,12 @@ if($richiestaReadonly===false){
                                                                             <a href="salva.php?idCalendario=<?=$idCalendario_daPassare?>&idPrev=<?=$row_0006['id']?>&fn=NuovoDettaglioOrdineProfessionista" class="btn btn-icon green-jungle" alt="NUOVO ORDINE" title="NUOVO ORDINE" style="margin-right: 100px"><i class="fa fa-plus"></i> AGGIUNGI PRODOTTO</a>
                                                                             <?php }
                                                                             if((($id_professionista_presente>=0 && $livelloCommerciale) OR ($id_professionista_presente>=0 && !$livelloCommerciale)) && (($row_0022['id_prodotto']>0 && $livelloCommerciale) OR ($row_0022['id_prodotto']>0 && !$livelloCommerciale)) && !$richiestaReadonly){?>
-                                                                            <a href="salva.php?idPreventivo=<?=$row_0006['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoVenduto" class="btn btn-icon blue-steel" alt="ISCRITTO" title="ISCRITTO" style="margin-right: 10px"><i class="fa fa-check"></i> ISCRITTO</a>
-                                                                            <a href="salva.php?idPreventivo=<?=$row_0006['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoNegativo" class="btn btn-icon red-intense"  id='richiestaNegativa2' alt="NEGATIVO" title="NEGATIVO"><i class="fa fa-close"></i> NEGATIVO</a>
+                                                                                <?php if($row_00004['campo_13']=="1" && $row_00004['campo_15']=="1"){ ?>
+                                                                                    <a href="salva.php?idPreventivo=<?=$row_0006['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoVenduto" class="btn btn-icon blue-steel" alt="ISCRITTO" title="ISCRITTO" style="margin-right: 10px"><i class="fa fa-check"></i> ISCRITTO</a>
+                                                                                    <a href="salva.php?idPreventivo=<?=$row_0006['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoNegativo" class="btn btn-icon red-intense"  id='richiestaNegativa2' alt="NEGATIVO" title="NEGATIVO"><i class="fa fa-close"></i> NEGATIVO</a>
+                                                                                <?php }else{ ?>
+                                                                                    <a href="<?=BASE_URL?>/moduli/anagrafiche/salva.php?smt=<?=base64_encode($tabellaProfessionista."|".($id_professionista_presente>0 ? $id_professionista_presente : $id)."|1|".$row_0022['id_prodotto']."|".$idCalendario_daPassare)?>&idPrev=<?=$idPreventivo_daPassare?>&idProf=<?=$id_professionista_presente?>&fn=inviaMailConfermaDati" class="btn btn-icon yellow-gold" alt="INVIA CONFERMA DATI" title="INVIA CONFERMA DATI" style="margin-right: 10px"><i class="fa fa-shield"></i> INVIA CONFERMA DATI</a>
+                                                                                <?php } ?>
                                                                             <?php } ?>
                                                                             <hr>
                                                                         <?php
@@ -581,7 +596,11 @@ if($richiestaReadonly===false){
                                                                         <div class="form-actions right">
                                                                             <div class="row">
                                                                                 <div class="col-md-offset-3 col-md-9">
+                                                                                    <?php if($row_00004['campo_13']=="1" && $row_00004['campo_15']=="1"){ ?>
                                                                                     <a href="<?=BASE_URL?>/moduli/preventivi/inviaPrev.php?idPrev=<?=$row_0006['id']?>" class="btn btn-icon btn-outline yellow" data-target="#ajax" data-url="<?=BASE_URL?>/moduli/preventivi/inviaPrev.php?idPrev=<?=$row_0006['id']?>" data-toggle="modal" title="INVIA" alt="INVIA"><i class="fa fa-paper-plane"></i> INVIA MAIL</a>
+                                                                                    <?php }else{ ?>
+                                                                                    <a href="<?=WP_DOMAIN_NAME?>/conferma-dati-forniti/?smt=<?=base64_encode($tabellaProfessionista."|".($id_professionista_presente>0 ? $id_professionista_presente : $id)."|1|".$row_0022['id_prodotto']."|".$idCalendario_daPassare)?>" target="_blank" class="btn btn-icon yellow-gold" alt="INVIA CONFERMA DATI" title="INVIA CONFERMA DATI" style="margin-right: 10px"><i class="fa fa-shield"></i> INVIA CONFERMA DATI</a>
+                                                                                    <?php } ?>
                                                                                     <button type="submit" class="btn btn-icon green-jungle"><i class="fa fa-check"></i> Salva</button>
                                                                                 </div>
                                                                             </div>
@@ -607,6 +626,7 @@ if($richiestaReadonly===false){
 
                                                                 </div>
                                                                 <!-- END PERSONAL INFO TAB -->
+                                                                <?php if($id_professionista_presente>0){ ?>
                                                                 <div class="tab-pane" id="tab_azienda">
                                                                     <!-- START AZIENDA INFO TAB -->
                                                                     <div class="row" style="margin-bottom:10px;">
@@ -745,9 +765,10 @@ if($richiestaReadonly===false){
                                                                     echo '</div></div>';
                                                                     ?>
                                                                 </div>
-                                                                
+                                                                <?php } ?>
                                                             </div>
-                                                            <?php if(!$richiestaReadonlyCommerciale){ ?>
+                                                            <?php
+                                                            if(!$richiestaReadonlyCommerciale){ ?>
                                                             <div class="form-actions right">
                                                                 <div class="row">
                                                                     <div class="col-md-offset-3 col-md-9">
@@ -907,12 +928,14 @@ if($richiestaReadonly===false){
                                             <?php }*/ ?>
                                             
                                             <?php if($_SESSION['livello_utente']!='assistenza' && (($id_professionista_presente>=0 && $livelloCommerciale && !$richiestaReadonlyCommerciale) OR ($id_professionista_presente>=0 && !$livelloCommerciale)) && (($row_0021['id_prodotto']>0 && $livelloCommerciale && !$richiestaReadonlyCommerciale) OR ($row_0021['id_prodotto']>0 && !$livelloCommerciale)) && ($statoAttuale=="Richiamare" || $statoAttuale=="Mai Contattato")){ ?>
-                                            <a href="salva.php?idPreventivo=<?=$row_0019['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoVenduto" class="btn btn-icon blue-steel" alt="ISCRITTO" title="ISCRITTO" style="margin-right: 10px"><i class="fa fa-check"></i> ISCRITTO</a>
-                                            <a href="salva.php?idPreventivo=<?=$row_0019['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoNegativo" id='richiestaNegativa1' class="btn btn-icon red-intense" alt="NEGATIVO" title="NEGATIVO"><i class="fa fa-close"></i> NEGATIVO</a>
-                                            <hr>
-                                                <?php if($id_professionista_presente>0){ ?>
-                                                    <a href="salva.php?idCalendario=<?=$idCalendario_daPassare?>&fn=ripristinaContatto" class="btn btn-icon grey-mint" alt="RIPORTA A CONTATTO" title="RIPORTA A CONTATTO"><i class="fa fa-exclamation-circle"></i> RIPORTA A CONTATTO</a>
+                                                <?php if($row_00004['campo_13']=="1" && $row_00004['campo_15']=="1"){ ?>
+                                                    <a href="salva.php?idPreventivo=<?=$row_0019['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoVenduto" class="btn btn-icon blue-steel" alt="ISCRITTO" title="ISCRITTO" style="margin-right: 10px"><i class="fa fa-check"></i> ISCRITTO</a>
+                                                    <a href="salva.php?idPreventivo=<?=$row_0019['id']?>&idCalendario=<?=$idCalendario_daPassare?>&fn=preventivoNegativo" id='richiestaNegativa1' class="btn btn-icon red-intense" alt="NEGATIVO" title="NEGATIVO"><i class="fa fa-close"></i> NEGATIVO</a>
                                                     <hr>
+                                                    <?php if($id_professionista_presente>0){ ?>
+                                                        <a href="salva.php?idCalendario=<?=$idCalendario_daPassare?>&fn=ripristinaContatto" class="btn btn-icon grey-mint" alt="RIPORTA A CONTATTO" title="RIPORTA A CONTATTO"><i class="fa fa-exclamation-circle"></i> RIPORTA A CONTATTO</a>
+                                                        <hr>
+                                                    <?php } ?>
                                                 <?php } ?>
                                             <?php } ?>
                                             

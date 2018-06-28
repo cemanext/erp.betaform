@@ -1538,9 +1538,9 @@ $table_calendario = array(
                         "attivo" => true,
                         "sql" => array("1" => "SI", "0"=>"NO")
                     ),
-                array(  "campo" => "campo_14",
+                array(  "campo" => "campo_15",
                         "tipo" => "select_static",
-                        "etichetta" => "Privacy Promo",
+                        "etichetta" => "Termini Utilizzo",
                         "readonly" => false,
                         "like" => false,
                         "uguale" => true,
@@ -1548,6 +1548,27 @@ $table_calendario = array(
                         "default" => "",
                         "attivo" => true,
                         "sql" => array("1" => "SI", "0"=>"NO")
+                    ),
+                array(  "campo" => "campo_14",
+                        "tipo" => "select_static",
+                        "etichetta" => "Consenso Commerciale",
+                        "readonly" => false,
+                        "like" => false,
+                        "uguale" => true,
+                        "maggiore" => false,
+                        "default" => "",
+                        "attivo" => true,
+                        "sql" => array("1" => "SI", "0"=>"NO")
+                    ),
+                array(  "campo" => "campo_16",
+                        "tipo" => "input",
+                        "etichetta" => "IP ADDRESS",
+                        "readonly" => false,
+                        "like" => true,
+                        "uguale" => false,
+                        "maggiore" => false,
+                        "default" => "",
+                        "attivo" => false
                     ))
             );
 

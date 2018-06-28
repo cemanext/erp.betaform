@@ -3,7 +3,8 @@ include_once($_SERVER['DOCUMENT_ROOT'].dirname($_SERVER[PHP_SELF]).'/config/conn
 include_once(BASE_ROOT.'config/confAccesso.php');
 include_once(BASE_ROOT.'config/confPermessi.php');
 if(strtolower($_SESSION['livello_utente'])=='commerciale'){
-    header("Location:".BASE_URL."/moduli/commerciali/homeCommerciale.php?idMenu=34");
+    //header("Location:".BASE_URL."/moduli/commerciali/homeCommerciale.php?idMenu=34");
+    header("Location:".BASE_URL."/risultatiRicerca.php");
     die();
 }elseif(strtolower($_SESSION['livello_utente'])=='assistenza'){
     header("Location:".BASE_URL."/risultatiRicerca.php");

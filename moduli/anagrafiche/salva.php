@@ -189,8 +189,8 @@ if(isset($_GET['fn'])){
             $ok = true;
             $dblink->begin();
             $row = $dblink->get_row( "SELECT * FROM ".$_GET['tbl']." WHERE id = '".$_GET['id']."'", true);
-            $ok = $ok && $dblink->update($_GET['tbl'], array("dataagg" => date("Y-m-d H:i:s"), "scrittore" => $_SESSION['cognome_nome_utente'], "tipo"=>""), array("id_azienda" => $_GET['id_azienda']));
-            $ok = $ok && $dblink->update($_GET['tbl'], array("dataagg" => date("Y-m-d H:i:s"), "scrittore" => $_SESSION['cognome_nome_utente'], "tipo"=>"Predefinito"), array("id" => $_GET['id']));
+            $ok = $ok && $dblink->update($_GET['tbl'], array("dataagg" => date("Y-m-d H:i:s"), "scrittore" => $dblink->filter($_SESSION['cognome_nome_utente']), "tipo"=>""), array("id_azienda" => $_GET['id_azienda']));
+            $ok = $ok && $dblink->update($_GET['tbl'], array("dataagg" => date("Y-m-d H:i:s"), "scrittore" => $dblink->filter($_SESSION['cognome_nome_utente']), "tipo"=>"Predefinito"), array("id" => $_GET['id']));
             
             $update = array(
                 "dataagg" => date("Y-m-d H:i:s"),
@@ -427,7 +427,7 @@ if(isset($_GET['fn'])){
                 $ok = $ok && $dblink->update("lista_preventivi_dettaglio", $update, array("id"=>$insertId), 1);
             }else{
                 $sql_0001 = "INSERT INTO lista_preventivi_dettaglio (dataagg, id_preventivo, id_prodotto, quantita, id_campagna, id_calendario, scrittore, stato, id_professionista, id_sezionale, sezionale)
-                            SELECT NOW(), '".$id_preventivo."',  id_prodotto, '1', id_campagna, id, '".addslashes($_SESSION['cognome_nome_utente'])."', 'In Attesa' , `id_professionista`, (SELECT IF(id_sezionale = 8, id_sezionale, 3) FROM lista_campagne WHERE id = id_campagna), (SELECT IF(id_sezionale = 8, 'FREE', '00') FROM lista_campagne WHERE id = id_campagna)
+                            SELECT NOW(), '".$id_preventivo."',  id_prodotto, '1', id_campagna, id, '".$dblink->filter($_SESSION['cognome_nome_utente'])."', 'In Attesa' , `id_professionista`, (SELECT IF(id_sezionale = 8, id_sezionale, 3) FROM lista_campagne WHERE id = id_campagna), (SELECT IF(id_sezionale = 8, 'FREE', '00') FROM lista_campagne WHERE id = id_campagna)
                             FROM calendario WHERE id=".$id_calendario." AND calendario.etichetta='Nuova Richiesta'";
                 $ok = $ok && $dblink->query($sql_0001);
             }
@@ -1260,6 +1260,401 @@ if(isset($_GET['fn'])){
                 $dblink->rollback();
             }
             
+            
+            header("Location:".$referer."&res=$ok");
+        break;
+        
+        case "confermaDatiUtenteWeb":
+            $ok = true;
+            $ipUtente = $_POST['ip_utente_conferma'];
+            $id_cal = $_POST['betaformazione_cal_id'];
+            $id_utente = $_POST['betaformazione_utente_id'];
+            $tabReturn = $_POST['betaformazione_tabella'];
+            $flag_termini = (isset($_POST['termini']) ? 1 : 0 );
+            $flag_privacy = (isset($_POST['privacy']) ? 1 : 0 );
+            $flag_newsletter_commerciale = (isset($_POST['consenso_commerciale']) ? 1 : 0 );
+            switch ($tabReturn) {
+                case md5(str_rot13("calendario")):
+                    $tabella = "calendario";
+                    if(!empty($id_cal)){
+                        $update= array(
+                                "dataagg" => date("Y-m-d H:i:s"),
+                                "scrittore"=>$dblink->filter("confermaDatiWeb"),
+                                "telefono"=>$_POST['telefono'],
+                                "email"=>$_POST['email'],
+                                "cellulare"=>$_POST['cellulare'],
+                                "fax"=>$_POST['fax'],
+                                "data_di_nascita"=>GiraDataOra($_POST['data_di_nascita']),
+                                "luogo_di_nascita"=>$dblink->filter($_POST['luogo_di_nascita']),
+                                "provincia_di_nascita"=>$_POST['provincia_di_nascita'],
+                                "id_classe"=>$_POST['id_classe'],
+                                "provincia_albo"=>$_POST['provincia_albo'],
+                                "numero_albo"=>$_POST['numero_albo'],
+                                "campo_15"=>$flag_termini,
+                                "campo_13"=>$flag_privacy,
+                                "campo_14"=>$flag_newsletter_commerciale,
+                                "campo_16"=>$ipUtente
+                            );
+
+                        $ok = $ok && $dblink->update("calendario",$update, array("id"=>$id_cal));
+                        
+                        $codice_fiscale = $_POST['codice_fiscale'];
+                        
+                        if(strlen($codice_fiscale)==16){
+
+                            $sql_00001 = "SELECT id FROM lista_professionisti WHERE codice_fiscale='$codice_fiscale' AND codice_fiscale!=''";
+                            $row_00001 = $dblink->get_row($sql_00001,true);
+                            if($row_00001['id']>0){
+                                $id_utente = $row_00001['id'];
+                                $update= array(
+                                    "dataagg" => date("Y-m-d H:i:s"),
+                                    "scrittore"=>$dblink->filter("confermaDatiWeb"),
+                                    "telefono"=>$_POST['telefono'],
+                                    "email"=>$_POST['email'],
+                                    "cellulare"=>$_POST['cellulare'],
+                                    "fax"=>$_POST['fax'],
+                                    "data_di_nascita"=>GiraDataOra($_POST['data_di_nascita']),
+                                    "luogo_di_nascita"=>$dblink->filter($_POST['luogo_di_nascita']),
+                                    "provincia_di_nascita"=>$_POST['provincia_di_nascita'],
+                                    "id_classe"=>$_POST['id_classe'],
+                                    "provincia_albo"=>$_POST['provincia_albo'],
+                                    "numero_albo"=>$_POST['numero_albo'],
+                                    "flag_termini"=>$flag_termini,
+                                    "flag_privacy"=>$flag_privacy,
+                                    "flag_newsletter_commerciale"=>$flag_newsletter_commerciale,
+                                    "dataadd_privacy"=>date("Y-m-d H:i:s"),
+                                    "ip_address_privacy"=>$ipUtente,
+                                    "stato" => "Attivo"
+                                );
+
+                                $ok = $ok && $dblink->update("lista_professionisti",$update, array("id"=>$id_utente));
+
+                                $updateCal= array(
+                                    "dataagg" => date("Y-m-d H:i:s"),
+                                    "scrittore"=>$dblink->filter("confermaDatiWeb"),
+                                    "id_professionista"=>$id_utente,
+                                    "telefono"=>$_POST['telefono'],
+                                    "email"=>$_POST['email'],
+                                    "cellulare"=>$_POST['cellulare'],
+                                    "fax"=>$_POST['fax'],
+                                    "data_di_nascita"=>GiraDataOra($_POST['data_di_nascita']),
+                                    "luogo_di_nascita"=>$dblink->filter($_POST['luogo_di_nascita']),
+                                    "provincia_di_nascita"=>$_POST['provincia_di_nascita'],
+                                    "id_classe"=>$_POST['id_classe'],
+                                    "provincia_albo"=>$_POST['provincia_albo'],
+                                    "numero_albo"=>$_POST['numero_albo'],
+                                    "campo_15"=>$flag_termini,
+                                    "campo_13"=>$flag_privacy,
+                                    "campo_14"=>$flag_newsletter_commerciale,
+                                    "campo_16"=>$ipUtente
+                                );
+
+                                $ok = $ok && $dblink->update("calendario",$updateCal, array("id"=>$id_cal));
+                                
+                            }else{
+
+                                if(preg_match('/^[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]{1}$/i', trim($codice_fiscale))) {
+                                    $insert= array(
+                                        "dataagg" => date("Y-m-d H:i:s"),
+                                        "scrittore"=>$dblink->filter("confermaDatiWeb"),
+                                        "codice_fiscale"=>$codice_fiscale,
+                                        "nome"=>$dblink->filter($_POST['nome']),
+                                        "cognome"=>$dblink->filter($_POST['cognome']),
+                                        "telefono"=>$_POST['telefono'],
+                                        "email"=>$_POST['email'],
+                                        "cellulare"=>$_POST['cellulare'],
+                                        "fax"=>$_POST['fax'],
+                                        "data_di_nascita"=>GiraDataOra($_POST['data_di_nascita']),
+                                        "luogo_di_nascita"=>$dblink->filter($_POST['luogo_di_nascita']),
+                                        "provincia_di_nascita"=>$_POST['provincia_di_nascita'],
+                                        "id_classe"=>$_POST['id_classe'],
+                                        "provincia_albo"=>$_POST['provincia_albo'],
+                                        "numero_albo"=>$_POST['numero_albo'],
+                                        "flag_termini"=>$flag_termini,
+                                        "flag_privacy"=>$flag_privacy,
+                                        "flag_newsletter_commerciale"=>$flag_newsletter_commerciale,
+                                        "dataadd_privacy"=>date("Y-m-d H:i:s"),
+                                        "ip_address_privacy"=>$ipUtente,
+                                        "stato" => "Attivo"
+                                    );
+
+                                    $ok = $ok && $dblink->insert("lista_professionisti",$insert);
+                                    $id_utente = $dblink->lastid();
+                                    
+                                    $updateCal= array(
+                                        "dataagg" => date("Y-m-d H:i:s"),
+                                        "scrittore"=>$dblink->filter("confermaDatiWeb"),
+                                        "id_professionista"=>$id_utente,
+                                        "telefono"=>$_POST['telefono'],
+                                        "email"=>$_POST['email'],
+                                        "cellulare"=>$_POST['cellulare'],
+                                        "fax"=>$_POST['fax'],
+                                        "data_di_nascita"=>GiraDataOra($_POST['data_di_nascita']),
+                                        "luogo_di_nascita"=>$dblink->filter($_POST['luogo_di_nascita']),
+                                        "provincia_di_nascita"=>$_POST['provincia_di_nascita'],
+                                        "id_classe"=>$_POST['id_classe'],
+                                        "provincia_albo"=>$_POST['provincia_albo'],
+                                        "numero_albo"=>$_POST['numero_albo'],
+                                        "campo_15"=>$flag_termini,
+                                        "campo_13"=>$flag_privacy,
+                                        "campo_14"=>$flag_newsletter_commerciale,
+                                        "campo_16"=>$ipUtente
+                                    );
+
+                                    $ok = $ok && $dblink->update("calendario",$updateCal, array("id"=>$id_cal));
+                                    
+                                }else{
+                                    header('Location:'.WP_DOMAIN_NAME.'/errore-conferma-dati/');
+                                    die();
+                                }
+                            }
+                        }
+                        
+                    }else{
+                        header('Location:'.WP_DOMAIN_NAME.'/errore-conferma-dati/');
+                        die();
+                    }
+                break;
+            
+                case md5(str_rot13("lista_professionisti")):
+                    $tabella = "lista_professionisti";
+                    
+                    $codice_fiscale = $_POST['codice_fiscale'];
+                    if(empty($id_utente)){
+                        if(strlen($codice_fiscale)==16){
+
+                            $sql_00001 = "SELECT id FROM lista_professionisti WHERE codice_fiscale='$codice_fiscale' AND codice_fiscale!=''";
+                            $row_00001 = $dblink->get_row($sql_00001,true);
+                            if($row_00001['id']>0){
+                                $id_utente = $row_00001['id'];
+                                $update= array(
+                                    "dataagg" => date("Y-m-d H:i:s"),
+                                    "scrittore"=>$dblink->filter("confermaDatiWeb"),
+                                    "telefono"=>$_POST['telefono'],
+                                    "email"=>$_POST['email'],
+                                    "cellulare"=>$_POST['cellulare'],
+                                    "fax"=>$_POST['fax'],
+                                    "data_di_nascita"=>GiraDataOra($_POST['data_di_nascita']),
+                                    "luogo_di_nascita"=>$dblink->filter($_POST['luogo_di_nascita']),
+                                    "provincia_di_nascita"=>$_POST['provincia_di_nascita'],
+                                    "id_classe"=>$_POST['id_classe'],
+                                    "provincia_albo"=>$_POST['provincia_albo'],
+                                    "numero_albo"=>$_POST['numero_albo'],
+                                    "flag_termini"=>$flag_termini,
+                                    "flag_privacy"=>$flag_privacy,
+                                    "flag_newsletter_commerciale"=>$flag_newsletter_commerciale,
+                                    "dataadd_privacy"=>date("Y-m-d H:i:s"),
+                                    "ip_address_privacy"=>$ipUtente,
+                                    "stato" => "Attivo"
+                                );
+
+                                $ok = $ok && $dblink->update("lista_professionisti",$update, array("id"=>$id_utente));
+
+                                $updateCal= array(
+                                    "dataagg" => date("Y-m-d H:i:s"),
+                                    "scrittore"=>$dblink->filter("confermaDatiWeb"),
+                                    "telefono"=>$_POST['telefono'],
+                                    "email"=>$_POST['email'],
+                                    "cellulare"=>$_POST['cellulare'],
+                                    "fax"=>$_POST['fax'],
+                                    "data_di_nascita"=>GiraDataOra($_POST['data_di_nascita']),
+                                    "luogo_di_nascita"=>$dblink->filter($_POST['luogo_di_nascita']),
+                                    "provincia_di_nascita"=>$_POST['provincia_di_nascita'],
+                                    "id_classe"=>$_POST['id_classe'],
+                                    "provincia_albo"=>$_POST['provincia_albo'],
+                                    "numero_albo"=>$_POST['numero_albo'],
+                                    "campo_15"=>$flag_termini,
+                                    "campo_13"=>$flag_privacy,
+                                    "campo_14"=>$flag_newsletter_commerciale,
+                                    "campo_16"=>$ipUtente
+                                );
+
+                                $ok = $ok && $dblink->update("calendario",$updateCal, array("id"=>$id_cal));
+                                
+                            }else{
+
+                                if(preg_match('/^[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]{1}$/i', trim($codice_fiscale))) {
+                                    $insert= array(
+                                        "dataagg" => date("Y-m-d H:i:s"),
+                                        "scrittore"=>$dblink->filter("confermaDatiWeb"),
+                                        "codice_fiscale"=>$codice_fiscale,
+                                        "nome"=>$dblink->filter($_POST['nome']),
+                                        "cognome"=>$dblink->filter($_POST['cognome']),
+                                        "telefono"=>$_POST['telefono'],
+                                        "email"=>$_POST['email'],
+                                        "cellulare"=>$_POST['cellulare'],
+                                        "fax"=>$_POST['fax'],
+                                        "data_di_nascita"=>GiraDataOra($_POST['data_di_nascita']),
+                                        "luogo_di_nascita"=>$dblink->filter($_POST['luogo_di_nascita']),
+                                        "provincia_di_nascita"=>$_POST['provincia_di_nascita'],
+                                        "id_classe"=>$_POST['id_classe'],
+                                        "provincia_albo"=>$_POST['provincia_albo'],
+                                        "numero_albo"=>$_POST['numero_albo'],
+                                        "flag_termini"=>$flag_termini,
+                                        "flag_privacy"=>$flag_privacy,
+                                        "flag_newsletter_commerciale"=>$flag_newsletter_commerciale,
+                                        "dataadd_privacy"=>date("Y-m-d H:i:s"),
+                                        "ip_address_privacy"=>$ipUtente,
+                                        "stato" => "Attivo"
+                                    );
+
+                                    $ok = $ok && $dblink->insert("lista_professionisti",$insert);
+                                    $id_utente = $dblink->lastid();
+                                    
+                                    $updateCal= array(
+                                        "dataagg" => date("Y-m-d H:i:s"),
+                                        "scrittore"=>$dblink->filter("confermaDatiWeb"),
+                                        "id_professionista"=>$id_utente,
+                                        "telefono"=>$_POST['telefono'],
+                                        "email"=>$_POST['email'],
+                                        "cellulare"=>$_POST['cellulare'],
+                                        "fax"=>$_POST['fax'],
+                                        "data_di_nascita"=>GiraDataOra($_POST['data_di_nascita']),
+                                        "luogo_di_nascita"=>$dblink->filter($_POST['luogo_di_nascita']),
+                                        "provincia_di_nascita"=>$_POST['provincia_di_nascita'],
+                                        "id_classe"=>$_POST['id_classe'],
+                                        "provincia_albo"=>$_POST['provincia_albo'],
+                                        "numero_albo"=>$_POST['numero_albo'],
+                                        "campo_15"=>$flag_termini,
+                                        "campo_13"=>$flag_privacy,
+                                        "campo_14"=>$flag_newsletter_commerciale,
+                                        "campo_16"=>$ipUtente
+                                    );
+
+                                    $ok = $ok && $dblink->update("calendario",$updateCal, array("id"=>$id_cal));
+                                    
+                                }else{
+                                    header('Location:'.WP_DOMAIN_NAME.'/errore-conferma-dati/');
+                                    die();
+                                }
+                            }
+                        }else{
+                            header('Location:'.WP_DOMAIN_NAME.'/errore-conferma-dati/');
+                            die();
+                        }
+                    }else{
+                        $update= array(
+                            "dataagg" => date("Y-m-d H:i:s"),
+                            "scrittore"=>$dblink->filter("confermaDatiWeb"),
+                            "telefono"=>$_POST['telefono'],
+                            "email"=>$_POST['email'],
+                            "cellulare"=>$_POST['cellulare'],
+                            "fax"=>$_POST['fax'],
+                            "data_di_nascita"=>GiraDataOra($_POST['data_di_nascita']),
+                            "luogo_di_nascita"=>$dblink->filter($_POST['luogo_di_nascita']),
+                            "provincia_di_nascita"=>$_POST['provincia_di_nascita'],
+                            "id_classe"=>$_POST['id_classe'],
+                            "provincia_albo"=>$_POST['provincia_albo'],
+                            "numero_albo"=>$_POST['numero_albo'],
+                            "flag_termini"=>$flag_termini,
+                            "flag_privacy"=>$flag_privacy,
+                            "flag_newsletter_commerciale"=>$flag_newsletter_commerciale,
+                            "dataadd_privacy"=>date("Y-m-d H:i:s"),
+                            "ip_address_privacy"=>$ipUtente,
+                            "stato" => "Attivo"
+                        );
+
+                        $ok = $ok && $dblink->update("lista_professionisti",$update, array("id"=>$id_utente));
+
+                        $updateCal= array(
+                            "dataagg" => date("Y-m-d H:i:s"),
+                            "scrittore"=>$dblink->filter("confermaDatiWeb"),
+                            "telefono"=>$_POST['telefono'],
+                            "email"=>$_POST['email'],
+                            "cellulare"=>$_POST['cellulare'],
+                            "fax"=>$_POST['fax'],
+                            "data_di_nascita"=>GiraDataOra($_POST['data_di_nascita']),
+                            "luogo_di_nascita"=>$dblink->filter($_POST['luogo_di_nascita']),
+                            "provincia_di_nascita"=>$_POST['provincia_di_nascita'],
+                            "id_classe"=>$_POST['id_classe'],
+                            "provincia_albo"=>$_POST['provincia_albo'],
+                            "numero_albo"=>$_POST['numero_albo'],
+                            "campo_15"=>$flag_termini,
+                            "campo_13"=>$flag_privacy,
+                            "campo_14"=>$flag_newsletter_commerciale,
+                            "campo_16"=>$ipUtente
+                        );
+
+                        $ok = $ok && $dblink->update("calendario",$updateCal, array("id"=>$id_cal));
+                        
+                    }
+                break;
+
+                default:
+                    header('Location:'.WP_DOMAIN_NAME.'/errore-conferma-dati/');
+                    die();
+                break;
+            }
+            
+            header('Location:'.WP_DOMAIN_NAME.'/grazie-conferma-dati/');
+            die;
+        break;
+        
+        case "inviaMailConfermaDati":
+            $urlSmt = $_GET['smt'];
+            $idProfessionista = $_GET['idProf'];
+            $idPreventivo = $_GET['idPrev'];
+            
+            $row_template = $dblink->get_row("SELECT * FROM lista_template_email WHERE nome='invia_conferma_dati_anagrafici'",true);
+            
+            $rowComm = $dblink->get_row("SELECT * FROM lista_password WHERE id ='".$_SESSION['id_utente']."'",true);
+            
+            $rowProf = $dblink->get_row("SELECT * FROM lista_professionisti WHERE id ='$idProfessionista'",true);
+            
+            $rowDettaglioPrev = $dblink->get_row("SELECT * FROM lista_preventivi_dettaglio WHERE id_preventivo = '".$idPreventivo."'", true);
+            
+            $linkDati = "<a href=\"".WP_DOMAIN_NAME."/conferma-dati-forniti/?smt=".$urlSmt."\">Conferma di dati forniti e accetta il regolamento sulla privacy</a><br /><br />Oppure copia e incolla questo link:<br>".WP_DOMAIN_NAME."/conferma-dati-forniti/?smt=".$urlSmt."";
+
+            $dettaglioOfferta = "<b>CORSO DI INTERESSE</b><br>".$rowDettaglioPrev['nome_prodotto']."";
+            
+            $destinatario = $rowProf['email'];
+            $mittente = $row_template['mittente'];
+            $reply = $row_template['reply'];
+            $destinatario_admin = $row_template['destinatario'];
+            $dest_cc = $row_template['cc'];
+            $dest_bcc = $row_template['bcc'];
+            $oggetto_da_inviare = $row_template['oggetto'];
+            $messaggio_da_inviare = html_entity_decode($row_template['messaggio']);
+            $firma_email = html_entity_decode($rowComm['firma_email']);
+            
+            $messaggio_da_inviare = str_replace("_XXX_COGNOME_XXX_", $rowProf['cognome'], $messaggio_da_inviare);
+            $messaggio_da_inviare = str_replace("_XXX_NOME_XXX_", $rowProf['nome'], $messaggio_da_inviare);
+            $messaggio_da_inviare = str_replace("_XXX_FIRMA_MAIL_XXX_", $firma_email, $messaggio_da_inviare);
+            $messaggio_da_inviare = str_replace("_XXX_DETTAGLIO_OFFERTA_XXX_", $dettaglioOfferta, $messaggio_da_inviare);
+            $messaggio_da_inviare = str_replace("_XXX_LINK_DATI_ONLINE_XXX_", $linkDati, $messaggio_da_inviare);
+            
+            if(EMAIL_DEBUG){
+                if (strlen($destinatario_admin) > 5) {
+                    $destinatario = $destinatario_admin;
+                }else{
+                    $destinatario = trim(EMAIL_TO_SEND_DEBUG);
+                }
+            }
+            
+            $insert = array(
+                "dataagg" => date("Y-m-d H:i:s"),
+                "scrittore"=>$dblink->filter($_SESSION['cognome_nome_utente']),
+                "stato" => "Da Inviare",
+                "priorita" => "01-Alta",
+                "nome" => $dblink->filter($_SESSION['cognome_nome_utente']),
+                "mittente" => $dblink->filter($mittente),
+                "reply" => $dblink->filter($reply),
+                "destinatario" => $dblink->filter($destinatario),
+                "cc" => $dblink->filter($dest_cc),
+                "bcc" => $dblink->filter($dest_bcc),
+                "oggetto" => $dblink->filter($oggetto_da_inviare),
+                "messaggio" => $dblink->filter($messaggio_da_inviare),
+                "allegato_1" => "",
+                "allegato_2" => "",
+                "allegato_3" => ""
+            );
+            
+            $ok = $dblink->insert("lista_invio_mail", $insert);
+            if($ok){
+                $ok = 6;
+            }else{
+                $ok = 7;
+            }
             
             header("Location:".$referer."&res=$ok");
         break;

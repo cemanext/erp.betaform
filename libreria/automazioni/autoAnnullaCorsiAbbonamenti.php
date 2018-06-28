@@ -73,6 +73,15 @@ foreach ($rs_lista_iscrizioni_annulla AS $row_lista_iscrizioni_annulla){
         }else{
             if (DISPLAY_DEBUG) echo '<li style="color: RED;"> KO !</li>';
             
+            $sql_aggiorno_iscrizione = "UPDATE lista_iscrizioni 
+            SET stato='Scaduto e Disattivato',
+            dataagg=NOW(),
+            scrittore = 'autoAnnullaCorsiAbbonamentiErrore'
+            WHERE stato='Scaduto' 
+            AND id='".$idIscrizione."'
+            AND abbonamento!='1'";
+            $dblink->query($sql_aggiorno_iscrizione);
+            
             $log->log_all_errors('autoAnnullaCorsiAbbonamenti.php -> impossibile annullare corso [id_utente_moodle = '.$id_utente_moodle.']','ERRORE');
         }
 
@@ -127,6 +136,27 @@ foreach ($rs_lista_iscrizioni_annulla AS $row_lista_iscrizioni_annulla){
         $log->log_all_errors('autoAnnullaCorsiAbbonamenti.php -> abbonamento annullato correttamente [id_utente_moodle = '.$id_utente_moodle.']','OK');
     }else{
         if (DISPLAY_DEBUG) echo '<li style="color: RED;"> KO !</li>';
+        
+        $sql_aggiorno_iscrizione = "UPDATE lista_iscrizioni 
+        SET stato='Scaduto e Disattivato',
+        dataagg=NOW(),
+        scrittore = 'autoAnnullaCorsiAbbonamentiErrore'
+        WHERE stato='Scaduto' 
+        AND id_utente_moodle='".$id_utente_moodle."' 
+        AND id_classe='".$id_classe."' 
+        AND abbonamento='1'";
+        $dblink->query($sql_aggiorno_iscrizione);
+
+        $sql_aggiorno_iscrizione = "UPDATE lista_iscrizioni 
+        SET stato='Configurazione Scaduta e Disattivata',
+        dataagg=NOW(),
+        scrittore = 'autoAnnullaCorsiAbbonamentiErrore'
+        WHERE stato='Configurazione Scaduta' 
+        AND id_utente_moodle='".$id_utente_moodle."' 
+        AND id_classe='".$id_classe."' 
+        AND abbonamento='1'";
+        $dblink->query($sql_aggiorno_iscrizione);
+        
         $log->log_all_errors('autoAnnullaCorsiAbbonamenti.php -> impossibile annullare abbonamento [id_utente_moodle = '.$id_utente_moodle.']','ERRORE');
     }
     

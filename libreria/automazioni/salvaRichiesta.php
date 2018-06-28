@@ -34,8 +34,15 @@ if(isset($_POST)){
             $adMessaggio.= "\\nOra di Contatto: ".$dblink->filter($_POST['ora_contatto']);
         }
         
+        if(!empty($_POST['termini'])){
+            $adMessaggio.= "\\nTermini di Utilizzo: SI";
+            $termini = "1";
+        }else{
+            $termini = "0";
+        }
+        
         if(!empty($_POST['privacy'])){
-            $adMessaggio.= "\\nAcconsente Privacy: SI";
+            $adMessaggio.= "\\nInformativa Privacy: SI";
             $privacy = "1";
         }else{
             $privacy = "0";
@@ -46,6 +53,13 @@ if(isset($_POST)){
             $privacyPromo = "1";
         }else{
             $privacyPromo = "0";
+        }
+        
+        if(!empty($_POST['ip_utente_conferma'])){
+            $adMessaggio.= "\\nIP Utente GDPR: ".$_POST['ip_utente_conferma'];
+            $ipGDPRconferma = $_POST['ip_utente_conferma'];
+        }else{
+            $ipGDPRconferma = "";
         }
         
         $insert = array(
@@ -82,6 +96,8 @@ if(isset($_POST)){
             "campo_12" => $dblink->filter($_POST['ora_contatto']),
             "campo_13" => $dblink->filter($privacy),
             "campo_14" => $dblink->filter($privacyPromo),
+            "campo_15" => $dblink->filter($termini),
+            "campo_16" => $dblink->filter($ipGDPRconferma),
             "nome" => $dblink->filter($_POST['nome']),
             "cognome" => $dblink->filter($_POST['cognome']),
             "telefono" => $dblink->filter($_POST['telefono']),
